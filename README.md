@@ -5,11 +5,11 @@
 title: classメモ
 ---
 classDiagram
-    test1 <|-- ddd
+    title <|-- ddd
     test1 <|-- ccc
     aaa <|-- bbb
 
-    class test{
+    class title{
         +int test1
     }
     class aaa{
