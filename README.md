@@ -2,7 +2,7 @@
 
 ```mermaid
 ---
-title: 予定
+title: classメモ
 ---
 classDiagram
     test1 <|-- ddd
