@@ -63,17 +63,22 @@ class QuizGame extends Phaser.Scene {
   }
 
   displayInput() {
-    // ユーザ入力を受け付けるUIを表示するコードをここに実装
-    // 例えば、テキストボックスなどを表示し、ユーザからの入力を受け付ける
-
-    // 入力が完了したら、回答に進むためのキーボードリスナーを設定
+    // ユーザ入力UIの実装
+  
     this.input.keyboard?.on('keydown', (event: any) => {
       if (event.key === 'Enter') {
+        const currentQuestion = this.questions[this.currentQuestionIndex];
+        const userAnswer = 45; // ユーザの回答を取得するロジック
+  
+        // ローカルストレージに保存
+        this.saveAnswerToLocalStorage(currentQuestion.number, userAnswer);
+  
         this.currentStep = 'answer';
         this.displayStep(this.currentStep);
       }
     });
   }
+  
 
   displayAnswer() {
     const currentQuestion = this.questions[this.currentQuestionIndex];
@@ -139,6 +144,13 @@ class QuizGame extends Phaser.Scene {
   clearScene() {
     this.children.removeAll();
   }
+
+  saveAnswerToLocalStorage(questionNumber: number, userAnswer: number) {
+    const answers = JSON.parse(localStorage.getItem('userAnswers') || '{}');
+    answers[questionNumber] = userAnswer;
+    localStorage.setItem('userAnswers', JSON.stringify(answers));
+  }
+  
 }
 
 const config: Phaser.Types.Core.GameConfig = {
