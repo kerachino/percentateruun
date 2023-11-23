@@ -63,18 +63,26 @@ class QuizGame extends Phaser.Scene {
   }
 
   displayInput() {
-    // ユーザ入力UIの実装
-  
+    // ユーザ入力用のテキストフィールドを作成 (仮の実装)
+    const inputText = this.add.text(100, 200, '', {
+      fontSize: '18px',
+      color: '#ffffff'
+    });
+
     this.input.keyboard?.on('keydown', (event: any) => {
       if (event.key === 'Enter') {
         const currentQuestion = this.questions[this.currentQuestionIndex];
-        const userAnswer = 45; // ユーザの回答を取得するロジック
-  
-        // ローカルストレージに保存
-        this.saveAnswerToLocalStorage(currentQuestion.number, userAnswer);
-  
+
+        // ユーザの回答を取得し、ローカルストレージに保存
+        const userAnswer = inputText.text; // ユーザの回答を取得するロジック
+        this.saveAnswerToLocalStorage(currentQuestion.number, parseInt(userAnswer));
+
+        // 回答画面に進む
         this.currentStep = 'answer';
         this.displayStep(this.currentStep);
+      } else {
+        // ユーザの入力をテキストフィールドに反映
+        inputText.setText(inputText.text + event.key);
       }
     });
   }
@@ -82,7 +90,9 @@ class QuizGame extends Phaser.Scene {
 
   displayAnswer() {
     const currentQuestion = this.questions[this.currentQuestionIndex];
-    const userAnswer = ''; // ユーザの回答をここで取得
+    // ローカルストレージからユーザの回答を取得
+    const answers = JSON.parse(localStorage.getItem('userAnswers') || '{}');
+    const userAnswer = answers[currentQuestion.number] || 0;
 
     // ユーザの回答と正解を比較し、パーセンテージの差を計算
     const correctAnswer = currentQuestion.answer;
