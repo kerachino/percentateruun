@@ -76,7 +76,7 @@ class QuizGame extends Phaser.Scene {
         // ユーザの回答を取得し、ローカルストレージに保存
         const userAnswer = inputText.text; // ユーザの回答を取得するロジック
         this.saveAnswerToLocalStorage(currentQuestion.number, parseInt(userAnswer));
-
+        
         // 回答画面に進む
         this.currentStep = 'answer';
         this.displayStep(this.currentStep);
