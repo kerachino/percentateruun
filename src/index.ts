@@ -4,9 +4,13 @@ class QuizGame extends Phaser.Scene {
   private questions: any[] = [];
   private currentQuestionIndex: number = 0;
   private currentStep: string = 'question';
+  private keydownListener: any; //イベントリスナーの参照保持 ?必要っぽい
+  private allQuestions = 3;
 
   constructor() {
     super('quiz-game');
+    this.keydownListener = null; 
+    this.questions = []; // 問題を格納する配列
   }
 
   preload() {
@@ -14,11 +18,36 @@ class QuizGame extends Phaser.Scene {
   }
 
   create() {
-    this.questions = this.cache.json.get('questions');
+    const allQuestions = this.cache.json.get('questions');
+    // 問題数を制限するため、ランダムに5つの問題を選ぶ
+    this.questions = this.getRandomQuestions(allQuestions, 5);
+    this.currentQuestionIndex = 0;
     this.displayStep(this.currentStep);
+  }
+  
+  getRandomQuestions(allQuestions: any[], count: number) {
+    // 問題数を制限するため、ランダムに問題を選ぶ関数
+    const shuffled = allQuestions.slice(); // コピーを作成
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // 要素をシャッフル
+    }
+    return shuffled.slice(0, count); // 制限された数の問題を返す
   }
 
   displayStep(step: string) {
+    // 既存のリスナーを削除
+    if (this.keydownListener) {
+      this.input.keyboard?.off('keydown', this.keydownListener);
+    }
+
+    
+    if (this.currentQuestionIndex >= this.questions.length) {
+      // インデックスが範囲外の場合の処理（例：ゲーム終了）
+      console.log("No more questions available. Game Over.");
+      return; // ここで処理を終了
+    }
+  
     this.clearScene();
 
     switch (step) {
@@ -41,6 +70,7 @@ class QuizGame extends Phaser.Scene {
   }
 
   displayQuestion() {
+    this.input.keyboard?.removeAllListeners();// 既存のリスナーを削除 これやらんとエラー
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const questionText = currentQuestion.question;
 
@@ -54,12 +84,13 @@ class QuizGame extends Phaser.Scene {
     });
 
     // ユーザ入力に進むためのキーボードリスナーを設定
-    this.input.keyboard?.on('keydown', (event: any) => {
+    this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
         this.currentStep = 'input';
         this.displayStep(this.currentStep);
       }
-    });
+    };
+    this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
   displayInput() {
@@ -69,14 +100,13 @@ class QuizGame extends Phaser.Scene {
       color: '#ffffff'
     });
 
-    this.input.keyboard?.on('keydown', (event: any) => {
+    this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
         const currentQuestion = this.questions[this.currentQuestionIndex];
-
         // ユーザの回答を取得し、ローカルストレージに保存
         const userAnswer = inputText.text; // ユーザの回答を取得するロジック
         this.saveAnswerToLocalStorage(currentQuestion.number, parseInt(userAnswer));
-        
+        alert();
         // 回答画面に進む
         this.currentStep = 'answer';
         this.displayStep(this.currentStep);
@@ -84,7 +114,8 @@ class QuizGame extends Phaser.Scene {
         // ユーザの入力をテキストフィールドに反映
         inputText.setText(inputText.text + event.key);
       }
-    });
+    };
+    this.input.keyboard?.on('keydown', this.keydownListener);
   }
   
 
@@ -93,6 +124,7 @@ class QuizGame extends Phaser.Scene {
     // ローカルストレージからユーザの回答を取得
     const answers = JSON.parse(localStorage.getItem('userAnswers') || '{}');
     const userAnswer = answers[currentQuestion.number] || 0;
+    
 
     // ユーザの回答と正解を比較し、パーセンテージの差を計算
     const correctAnswer = currentQuestion.answer;
