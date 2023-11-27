@@ -32,6 +32,28 @@
         "source": "厚生労働省",
         "genre": "社会",
         "level": 2
+    },
+    {
+        "number" : 3,
+        "question": "将来公務員になりたいと答えた人の割合は？",
+        "omitQuestion": "将来公務員になりたいと答えた人",
+        "answer": "18%",
+        "userAnswer": 0,
+        "surveyRespondent": "東日本に住む20代~50代",
+        "source": "厚生労働省",
+        "genre": "社会",
+        "level": 2
+    },
+    {
+        "number" : 4,
+        "question": "将来公務員になりたいと答えた人の割合は？",
+        "omitQuestion": "将来公務員になりたいと答えた人",
+        "answer": "18%",
+        "userAnswer": 0,
+        "surveyRespondent": "東日本に住む20代~50代",
+        "source": "厚生労働省",
+        "genre": "社会",
+        "level": 2
     }
 ]
   
