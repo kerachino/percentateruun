@@ -80,10 +80,12 @@ class QuizGame extends Phaser.Scene {
     // 背景画像の配置
     this.add.image(0, 0, 'sky').setOrigin(0, 0);
 
-    // バルーンベースの画像を配置
+    // バルーンベースの画像を配置し、サイズを調整
     const balloonBase = this.add.image(this.cameras.main.width / 2, this.cameras.main.height, 'balloonBase');
-    balloonBase.setY(this.cameras.main.height - balloonBase.height / 2);
-
+    const scale = this.cameras.main.width / balloonBase.width;
+    balloonBase.setScale(scale, scale); // 高さも同じスケールで調整
+    balloonBase.setY(this.cameras.main.height - balloonBase.displayHeight / 2);
+  
     //テキスト
     this.add.text(100, 100, 'Question ' + (this.currentQuestionIndex + 1), {
       fontSize: '24px',
@@ -91,7 +93,8 @@ class QuizGame extends Phaser.Scene {
     });
     this.add.text(100, 150, questionText, {
       fontSize: '18px',
-      color: '#ffffff'
+      color: '#ffffff',
+      wordWrap: { width: this.cameras.main.width, useAdvancedWrap: true }
     });
 
     
@@ -213,8 +216,8 @@ class QuizGame extends Phaser.Scene {
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: window.innerWidth, // ウィンドウの幅に設定
+  height: window.innerHeight, // ウィンドウの高さに設定
   parent: 'game-app',
   scene: QuizGame,
 };
