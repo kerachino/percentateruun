@@ -15,6 +15,8 @@ class QuizGame extends Phaser.Scene {
 
   preload() {
     this.load.json('questions', 'assets/questions.json');
+    this.load.image('sky', 'assets/imgs/sky.png');
+    this.load.image('balloonBase', 'assets/imgs/balloon_base.png');
   }
 
   create() {
@@ -23,6 +25,7 @@ class QuizGame extends Phaser.Scene {
     this.questions = this.getRandomQuestions(allQuestions, 5);
     this.currentQuestionIndex = 0;
     this.displayStep(this.currentStep);
+
   }
   
   getRandomQuestions(allQuestions: any[], count: number) {
@@ -74,6 +77,14 @@ class QuizGame extends Phaser.Scene {
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const questionText = currentQuestion.question;
 
+    // 背景画像の配置
+    this.add.image(0, 0, 'sky').setOrigin(0, 0);
+
+    // バルーンベースの画像を配置
+    const balloonBase = this.add.image(this.cameras.main.width / 2, this.cameras.main.height, 'balloonBase');
+    balloonBase.setY(this.cameras.main.height - balloonBase.height / 2);
+
+    //テキスト
     this.add.text(100, 100, 'Question ' + (this.currentQuestionIndex + 1), {
       fontSize: '24px',
       color: '#ffffff'
@@ -82,6 +93,8 @@ class QuizGame extends Phaser.Scene {
       fontSize: '18px',
       color: '#ffffff'
     });
+
+    
 
     // ユーザ入力に進むためのキーボードリスナーを設定
     this.keydownListener = (event: any) => {
@@ -104,9 +117,8 @@ class QuizGame extends Phaser.Scene {
       if (event.key === 'Enter') {
         const currentQuestion = this.questions[this.currentQuestionIndex];
         // ユーザの回答を取得し、ローカルストレージに保存
-        const userAnswer = inputText.text; // ユーザの回答を取得するロジック
+        const userAnswer = inputText.text; // ユーザの回答を取得
         this.saveAnswerToLocalStorage(currentQuestion.number, parseInt(userAnswer));
-        alert();
         // 回答画面に進む
         this.currentStep = 'answer';
         this.displayStep(this.currentStep);
@@ -156,14 +168,18 @@ class QuizGame extends Phaser.Scene {
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const explanationText = currentQuestion.explanation;
 
-    this.add.text(100, 400, 'Explanation:', {
-      fontSize: '24px',
-      color: '#ffffff'
-    });
-    this.add.text(100, 450, explanationText, {
-      fontSize: '18px',
-      color: '#ffffff'
-    });
+    // 四角い枠の作成
+    const graphics = this.add.graphics();
+    graphics.lineStyle(2, 0xffffff); // 白色で2ピクセルの線幅
+    const rectHeight = 200; // 枠の高さ
+    const rectY = this.cameras.main.height / 2; // 画面の下半分に配置
+    graphics.strokeRect(50, rectY, this.cameras.main.width - 100, rectHeight);
+
+    // テキストの追加
+    this.add.text(60, rectY + 10, '短縮問題: ' + currentQuestion.omitQuestion, { fontSize: '16px', color: '#ffffff' });
+    this.add.text(60, rectY + 40, '答え: ' + currentQuestion.answer, { fontSize: '16px', color: '#ffffff' });
+    this.add.text(60, rectY + 70, '情報源: ' + currentQuestion.source, { fontSize: '16px', color: '#ffffff' });
+
 
     // 次の問題に進むためのキーボードリスナーを設定
     this.input.keyboard?.on('keydown', (event: any) => {
