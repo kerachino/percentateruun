@@ -57,6 +57,7 @@ class QuizGame extends Phaser.Scene {
     }
   
     this.clearScene();
+    let husen=100;
 
     this.createSkybg();
     this.createVehicle();
@@ -231,7 +232,12 @@ class QuizGame extends Phaser.Scene {
 
     // ユーザの回答と正解を比較し、パーセンテージの差を計算
     const correctAnswer = currentQuestion.answer;
+<<<<<<< HEAD
     const difference = Math.round(Math.abs(correctAnswer - userAnswer));
+=======
+    const difference = Math.abs((correctAnswer - parseInt(userAnswer)) / correctAnswer) * 100;
+    // ここで関数呼び出し
+>>>>>>> b68180f52b1a63a78637321b3959503ffa375287
 
     // 差の分だけ風船の数を減らす
     this.totalBalloons -= difference;
@@ -277,9 +283,9 @@ class QuizGame extends Phaser.Scene {
     graphics.strokeRect(50, rectY, this.cameras.main.width - 100, rectHeight);
 
     // テキストの追加
-    this.add.text(60, rectY + 10, '短縮問題: ' + currentQuestion.omitQuestion, { fontSize: '16px', color: '#ffffff' });
-    this.add.text(60, rectY + 40, '答え: ' + currentQuestion.answer, { fontSize: '16px', color: '#ffffff' });
-    this.add.text(60, rectY + 70, '情報源: ' + currentQuestion.source, { fontSize: '16px', color: '#ffffff' });
+    this.add.text(60, rectY + 10, '短縮問題: ' + currentQuestion.omitQuestion, { fontSize: '16px', color: '#000000' });
+    this.add.text(60, rectY + 40, '答え: ' + currentQuestion.answer, { fontSize: '16px', color: '#000000' });
+    this.add.text(60, rectY + 70, '情報源: ' + currentQuestion.source, { fontSize: '16px', color: '#000000' });
 
 
     // 次の問題に進むためのキーボードリスナーを設定
