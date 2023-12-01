@@ -232,12 +232,7 @@ class QuizGame extends Phaser.Scene {
 
     // ユーザの回答と正解を比較し、パーセンテージの差を計算
     const correctAnswer = currentQuestion.answer;
-<<<<<<< HEAD
     const difference = Math.round(Math.abs(correctAnswer - userAnswer));
-=======
-    const difference = Math.abs((correctAnswer - parseInt(userAnswer)) / correctAnswer) * 100;
-    // ここで関数呼び出し
->>>>>>> b68180f52b1a63a78637321b3959503ffa375287
 
     // 差の分だけ風船の数を減らす
     this.totalBalloons -= difference;
