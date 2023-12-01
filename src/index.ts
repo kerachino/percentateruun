@@ -7,17 +7,22 @@ class QuizGame extends Phaser.Scene {
   private currentStep: string = 'question';
   private keydownListener: any; //イベントリスナーの参照保持 ?必要っぽい
   private allQuestions = 3;
+  private balloons: Phaser.GameObjects.Image[];
 
   constructor() {
     super('quiz-game');
     this.keydownListener = null; 
     this.questions = []; // 問題を格納する配列
+    this.balloons = [];
   }
 
   preload() {
     this.load.json('questions', 'assets/questions.json');
     this.load.image('sky', 'assets/imgs/sky.png');
     this.load.image('vehicle', 'assets/imgs/vehicle.png');
+    for (let i = 0; i <= 5; i++) {
+      this.load.image(`balloon${i}`, `assets/imgs/balloon${i}.png`);
+    }
   }
 
   create() {
@@ -55,6 +60,7 @@ class QuizGame extends Phaser.Scene {
 
     this.createSkybg();
     this.createVehicle();
+    this.createBalloons();
 
     switch (step) {
       case 'question':
@@ -93,7 +99,7 @@ class QuizGame extends Phaser.Scene {
     const vehicleWidth = vehicle.width;
   
     // 画像の比率を保ちつつ、画面の幅に合わせてサイズを調整
-    const scale = gameWidth / vehicleWidth - gameWidth/2000;
+    const scale = gameWidth / vehicleWidth;//- gameWidth/8000
     vehicle.setScale(scale);
   
     // 画像の位置を設定（X軸は中心、Y軸は画面の下）
@@ -109,7 +115,37 @@ class QuizGame extends Phaser.Scene {
     //   repeat: -1
     // });
   }
+
+  createBalloons() {
+    const objectX = this.cameras.main.width / 2;
+    const objectY = this.cameras.main.height / 2;
+    const balloonAreaSize = 400; // 風船が配置される領域のサイズ
   
+    for (let i = 0; i < 100; i++) {
+      const balloonType = `balloon${Phaser.Math.Between(0, 5)}`;
+      const posX = objectX + Phaser.Math.Between(-balloonAreaSize, balloonAreaSize);
+      const posY = objectY + Phaser.Math.Between(-balloonAreaSize, 0); // 物体の上に集中
+  
+      const balloon = this.add.image(posX, posY, balloonType);
+      this.balloons.push(balloon);
+    }
+  }
+
+  updateBalloonsCount() {
+    const numberOfBalloonsToRemove = this.balloons.length - this.totalBalloons;
+  
+    // 風船の削除が必要な場合のみ処理を実行
+    if (numberOfBalloonsToRemove > 0) {
+      for (let i = 0; i < numberOfBalloonsToRemove; i++) {
+        if (this.balloons.length > 0) {
+          const balloonToRemove = this.balloons.pop(); // 配列の最後の風船を取得
+          if (balloonToRemove) {
+            balloonToRemove.destroy(); // 風船を削除
+          }
+        }
+      }
+    }
+  }
   
 
   showBalloonsCount() {
@@ -120,7 +156,7 @@ class QuizGame extends Phaser.Scene {
 
   displayQuestion() {
     this.showBalloonsCount();
-
+    this.updateBalloonsCount();
     this.input.keyboard?.removeAllListeners();// 既存のリスナーを削除 これやらんとエラー
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const questionText = currentQuestion.question;
