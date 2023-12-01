@@ -17,7 +17,7 @@ class QuizGame extends Phaser.Scene {
   preload() {
     this.load.json('questions', 'assets/questions.json');
     this.load.image('sky', 'assets/imgs/sky.png');
-    this.load.image('balloonBase', 'assets/imgs/balloon_base.png');
+    this.load.image('vehicle', 'assets/imgs/vehicle.png');
   }
 
   create() {
@@ -54,6 +54,7 @@ class QuizGame extends Phaser.Scene {
     this.clearScene();
 
     this.createSkybg();
+    this.createVehicle();
 
     switch (step) {
       case 'question':
@@ -75,17 +76,41 @@ class QuizGame extends Phaser.Scene {
   }
 
   createSkybg() {
-    // 背景画像の配置
+    // 背景画像
     const sky = this.add.image(0, 0, 'sky').setOrigin(0, 0);
     this.tweens.add({
       targets: sky,
-      y: '-=50', // Y座標を10ピクセル上に移動
+      y: '-=50', // Y座標をピクセル上に移動
       // ease: 'Sine.easeInOut', // イージング関数
       duration: 15000, // 一回の動きにかける時間（ミリ秒）
       yoyo: true, // 元の位置に戻る
       repeat: -1 // 無限に繰り返す
     });
   }
+  createVehicle() {
+    const vehicle = this.add.image(0, 0, 'vehicle');
+    const gameWidth = this.cameras.main.width;
+    const vehicleWidth = vehicle.width;
+  
+    // 画像の比率を保ちつつ、画面の幅に合わせてサイズを調整
+    const scale = gameWidth / vehicleWidth - gameWidth/2000;
+    vehicle.setScale(scale);
+  
+    // 画像の位置を設定（X軸は中心、Y軸は画面の下）
+    vehicle.setOrigin(0.5, 1);
+    vehicle.setPosition(gameWidth / 2, this.cameras.main.height + this.cameras.main.height/4);
+  
+    // // トゥイーンアニメーションの追加
+    // this.tweens.add({
+    //   targets: vehicle,
+    //   y: '-=50',
+    //   duration: 15000,
+    //   yoyo: true,
+    //   repeat: -1
+    // });
+  }
+  
+  
 
   showBalloonsCount() {
     // 風船の数を表示するテキストを追加または更新
@@ -102,10 +127,10 @@ class QuizGame extends Phaser.Scene {
 
 
     // バルーンベースの画像を配置し、サイズを調整
-    const balloonBase = this.add.image(this.cameras.main.width / 2, this.cameras.main.height, 'balloonBase');
-    const scale = this.cameras.main.width / balloonBase.width;
-    balloonBase.setScale(scale, scale); // 高さも同じスケールで調整
-    balloonBase.setY(this.cameras.main.height - balloonBase.displayHeight / 2);
+    // const balloonBase = this.add.image(this.cameras.main.width / 2, this.cameras.main.height, 'balloonBase');
+    // const scale = this.cameras.main.width / balloonBase.width;
+    // balloonBase.setScale(scale, scale); // 高さも同じスケールで調整
+    // balloonBase.setY(this.cameras.main.height - balloonBase.displayHeight / 2);
   
     //テキスト
     this.add.text(100, 100, 'Question ' + (this.currentQuestionIndex + 1), {
@@ -138,10 +163,17 @@ class QuizGame extends Phaser.Scene {
 
     this.keydownListener = (event: any) => {
       if (!isNaN(parseInt(event.key))) {
-        inputText.setText(inputText.text + event.key);
-      }else if (event.key === 'Enter') {
+        // 数字が入力された場合
+        const potentialText = inputText.text + event.key;
+        if (parseInt(potentialText) <= 100) {
+          inputText.setText(potentialText);
+        }
+      } else if (event.key === 'Backspace' && inputText.text.length > 0) {
+        // バックスペース,文字削除
+        inputText.setText(inputText.text.slice(0, -1));
+      } else if (event.key === 'Enter') {
+        // Enter
         const currentQuestion = this.questions[this.currentQuestionIndex];
-        // ユーザの回答を取得し、ローカルストレージに保存
         const userAnswer = inputText.text; // ユーザの回答を取得
         this.saveAnswerToLocalStorage(currentQuestion.number, parseInt(userAnswer));
         // 回答画面に進む
@@ -150,6 +182,7 @@ class QuizGame extends Phaser.Scene {
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
+    
   }
   
 
@@ -249,7 +282,7 @@ const config: Phaser.Types.Core.GameConfig = {
   parent: 'game-app',
   scene: QuizGame,
   fps: {
-    target: 60,
+    target: 30,
     forceSetTimeOut: true // 高いフレームレートを強制する
   }
 };
