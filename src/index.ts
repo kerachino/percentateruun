@@ -269,9 +269,9 @@ class QuizGame extends Phaser.Scene {
     graphics.strokeRect(50, rectY, this.cameras.main.width - 100, rectHeight);
 
     // テキストの追加
-    this.add.text(60, rectY + 10, '短縮問題: ' + currentQuestion.omitQuestion, { fontSize: '16px', color: '#ffffff' });
-    this.add.text(60, rectY + 40, '答え: ' + currentQuestion.answer, { fontSize: '16px', color: '#ffffff' });
-    this.add.text(60, rectY + 70, '情報源: ' + currentQuestion.source, { fontSize: '16px', color: '#ffffff' });
+    this.add.text(60, rectY + 10, '短縮問題: ' + currentQuestion.omitQuestion, { fontSize: '16px', color: '#000000' });
+    this.add.text(60, rectY + 40, '答え: ' + currentQuestion.answer, { fontSize: '16px', color: '#000000' });
+    this.add.text(60, rectY + 70, '情報源: ' + currentQuestion.source, { fontSize: '16px', color: '#000000' });
 
 
     // 次の問題に進むためのキーボードリスナーを設定
