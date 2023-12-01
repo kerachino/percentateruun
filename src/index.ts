@@ -57,6 +57,7 @@ class QuizGame extends Phaser.Scene {
     }
   
     this.clearScene();
+    let husen=100;
 
     this.createSkybg();
     this.createVehicle();
@@ -232,6 +233,7 @@ class QuizGame extends Phaser.Scene {
     // ユーザの回答と正解を比較し、パーセンテージの差を計算
     const correctAnswer = currentQuestion.answer;
     const difference = Math.abs((correctAnswer - parseInt(userAnswer)) / correctAnswer) * 100;
+    // ここで関数呼び出し
 
     this.add.text(100, 250, 'Your answer: ' + userAnswer + '%', {
       fontSize: '18px',
