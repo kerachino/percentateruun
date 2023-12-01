@@ -205,7 +205,7 @@ class QuizGame extends Phaser.Scene {
           inputText.setText(potentialText);
         }
       } else if (event.key === 'Backspace' && inputText.text.length > 0) {
-        // バックスペース,文字削除
+        // バックスペース ,文字削除
         inputText.setText(inputText.text.slice(0, -1));
       } else if (event.key === 'Enter') {
         // Enter
@@ -231,13 +231,21 @@ class QuizGame extends Phaser.Scene {
 
     // ユーザの回答と正解を比較し、パーセンテージの差を計算
     const correctAnswer = currentQuestion.answer;
-    const difference = Math.abs((correctAnswer - parseInt(userAnswer)) / correctAnswer) * 100;
+    const difference = Math.round(Math.abs(correctAnswer - userAnswer));
 
-    this.add.text(100, 250, 'Your answer: ' + userAnswer + '%', {
+    // 差の分だけ風船の数を減らす
+    this.totalBalloons -= difference;
+    
+    // 風船の数が0以下にならないようにする
+    if (this.totalBalloons < 0) {
+      this.totalBalloons = 0;
+    }
+
+    this.add.text(100, 250, 'Your answer: ' + userAnswer, {
       fontSize: '18px',
       color: '#ffffff'
     });
-    this.add.text(100, 300, 'Correct answer: ' + correctAnswer + '%', {
+    this.add.text(100, 300, 'Correct answer: ' + correctAnswer, {
       fontSize: '18px',
       color: '#ffffff'
     });
