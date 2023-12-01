@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 
 class QuizGame extends Phaser.Scene {
+  private totalBalloons: number = 100; // 風船の初期数
   private questions: any[] = [];
   private currentQuestionIndex: number = 0;
   private currentStep: string = 'question';
@@ -16,7 +17,7 @@ class QuizGame extends Phaser.Scene {
   preload() {
     this.load.json('questions', 'assets/questions.json');
     this.load.image('sky', 'assets/imgs/sky.png');
-    this.load.image('balloonBase', 'assets/imgs/balloon_base.png');
+    this.load.image('vehicle', 'assets/imgs/vehicle.png');
   }
 
   create() {
@@ -25,7 +26,6 @@ class QuizGame extends Phaser.Scene {
     this.questions = this.getRandomQuestions(allQuestions, 5);
     this.currentQuestionIndex = 0;
     this.displayStep(this.currentStep);
-
   }
   
   getRandomQuestions(allQuestions: any[], count: number) {
@@ -53,6 +53,9 @@ class QuizGame extends Phaser.Scene {
   
     this.clearScene();
 
+    this.createSkybg();
+    this.createVehicle();
+
     switch (step) {
       case 'question':
         this.displayQuestion();
@@ -72,18 +75,63 @@ class QuizGame extends Phaser.Scene {
     }
   }
 
+  createSkybg() {
+    // 背景画像
+    const sky = this.add.image(0, 0, 'sky').setOrigin(0, 0);
+    this.tweens.add({
+      targets: sky,
+      y: '-=50', // Y座標をピクセル上に移動
+      // ease: 'Sine.easeInOut', // イージング関数
+      duration: 15000, // 一回の動きにかける時間（ミリ秒）
+      yoyo: true, // 元の位置に戻る
+      repeat: -1 // 無限に繰り返す
+    });
+  }
+  createVehicle() {
+    const vehicle = this.add.image(0, 0, 'vehicle');
+    const gameWidth = this.cameras.main.width;
+    const vehicleWidth = vehicle.width;
+  
+    // 画像の比率を保ちつつ、画面の幅に合わせてサイズを調整
+    const scale = gameWidth / vehicleWidth - gameWidth/2000;
+    vehicle.setScale(scale);
+  
+    // 画像の位置を設定（X軸は中心、Y軸は画面の下）
+    vehicle.setOrigin(0.5, 1);
+    vehicle.setPosition(gameWidth / 2, this.cameras.main.height + this.cameras.main.height/4);
+  
+    // // トゥイーンアニメーションの追加
+    // this.tweens.add({
+    //   targets: vehicle,
+    //   y: '-=50',
+    //   duration: 15000,
+    //   yoyo: true,
+    //   repeat: -1
+    // });
+  }
+  
+  
+
+  showBalloonsCount() {
+    // 風船の数を表示するテキストを追加または更新
+    const balloonsText = `残りの風船: ${this.totalBalloons}`;
+    this.add.text(100, 50, balloonsText, { fontSize: '24px', color: '#ffffff' });
+  }
+
   displayQuestion() {
+    this.showBalloonsCount();
+
     this.input.keyboard?.removeAllListeners();// 既存のリスナーを削除 これやらんとエラー
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const questionText = currentQuestion.question;
 
-    // 背景画像の配置
-    this.add.image(0, 0, 'sky').setOrigin(0, 0);
 
-    // バルーンベースの画像を配置
-    const balloonBase = this.add.image(this.cameras.main.width / 2, this.cameras.main.height, 'balloonBase');
-    balloonBase.setY(this.cameras.main.height - balloonBase.height / 2);
-
+    // バルーンベースの画像を配置し、サイズを調整
+    // const balloonBase = this.add.image(this.cameras.main.width / 2, this.cameras.main.height, 'balloonBase');
+    // const scale = this.cameras.main.width / balloonBase.width;
+    // balloonBase.setScale(scale, scale); // 高さも同じスケールで調整
+    // balloonBase.setY(this.cameras.main.height - balloonBase.displayHeight / 2);
+  
     //テキスト
     this.add.text(100, 100, 'Question ' + (this.currentQuestionIndex + 1), {
       fontSize: '24px',
@@ -91,10 +139,9 @@ class QuizGame extends Phaser.Scene {
     });
     this.add.text(100, 150, questionText, {
       fontSize: '18px',
-      color: '#ffffff'
+      color: '#ffffff',
+      wordWrap: { width: this.cameras.main.width, useAdvancedWrap: true }
     });
-
-    
 
     // ユーザ入力に進むためのキーボードリスナーを設定
     this.keydownListener = (event: any) => {
@@ -107,6 +154,7 @@ class QuizGame extends Phaser.Scene {
   }
 
   displayInput() {
+    this.showBalloonsCount();
     // ユーザ入力用のテキストフィールドを作成 (仮の実装)
     const inputText = this.add.text(100, 200, '', {
       fontSize: '18px',
@@ -114,20 +162,27 @@ class QuizGame extends Phaser.Scene {
     });
 
     this.keydownListener = (event: any) => {
-      if (event.key === 'Enter') {
+      if (!isNaN(parseInt(event.key))) {
+        // 数字が入力された場合
+        const potentialText = inputText.text + event.key;
+        if (parseInt(potentialText) <= 100) {
+          inputText.setText(potentialText);
+        }
+      } else if (event.key === 'Backspace' && inputText.text.length > 0) {
+        // バックスペース,文字削除
+        inputText.setText(inputText.text.slice(0, -1));
+      } else if (event.key === 'Enter') {
+        // Enter
         const currentQuestion = this.questions[this.currentQuestionIndex];
-        // ユーザの回答を取得し、ローカルストレージに保存
         const userAnswer = inputText.text; // ユーザの回答を取得
         this.saveAnswerToLocalStorage(currentQuestion.number, parseInt(userAnswer));
         // 回答画面に進む
         this.currentStep = 'answer';
         this.displayStep(this.currentStep);
-      } else {
-        // ユーザの入力をテキストフィールドに反映
-        inputText.setText(inputText.text + event.key);
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
+    
   }
   
 
@@ -140,7 +195,7 @@ class QuizGame extends Phaser.Scene {
 
     // ユーザの回答と正解を比較し、パーセンテージの差を計算
     const correctAnswer = currentQuestion.answer;
-    const difference = Math.abs((correctAnswer - parseInt(userAnswer)) ) ;
+    const difference = Math.abs((correctAnswer - parseInt(userAnswer)) / correctAnswer) * 100;
 
     this.add.text(100, 250, 'Your answer: ' + userAnswer + '%', {
       fontSize: '18px',
@@ -162,9 +217,11 @@ class QuizGame extends Phaser.Scene {
         this.displayStep(this.currentStep);
       }
     });
+    this.showBalloonsCount();
   }
 
   displayExplanation() {
+    this.showBalloonsCount();
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const explanationText = currentQuestion.explanation;
 
@@ -213,10 +270,14 @@ class QuizGame extends Phaser.Scene {
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: window.innerWidth, // ウィンドウの幅に設定
+  height: window.innerHeight, // ウィンドウの高さに設定
   parent: 'game-app',
   scene: QuizGame,
+  fps: {
+    target: 30,
+    forceSetTimeOut: true // 高いフレームレートを強制する
+  }
 };
 
 new Phaser.Game(config);

@@ -1,0 +1,38 @@
+* [33m5a2ecd4[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m show balloon, and fix
+* [33mddf4b96[m show balloon
+* [33m065bc6e[m ui and user input filter only use number and less than 100
+* [33mdfee50c[m add baloon count, skybg, and this effect
+* [33m77cbc29[m fixed text and img
+[31m|[m * [33m302ffda[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m quetions.json
+[31m|[m *   [33m3fc1db4[m Merge remote-tracking branch 'refs/remotes/origin/main'
+[31m|[m [33m|[m[31m\[m  
+[31m|[m [33m|[m[31m/[m  
+[31m|[m[31m/[m[33m|[m   
+* [33m|[m [33mcbc4c1c[m add image
+* [33m|[m [33m47a5e6b[m fixed error of question more than 2
+* [33m|[m [33m92fe705[m add reademe
+* [33m|[m [33m2b7fb57[m add reademe
+[34m|[m * [33maadb918[m index.ts
+[34m|[m[34m/[m  
+* [33mb5fe069[m fix bit
+* [33mf7a5483[m adjusted schedule
+* [33mf8f8fa6[m update question data, localstrage, way to switch display
+* [33m279b63f[m fix readme
+* [33m3d3c773[m do npm ci to check to
+* [33me53c6f9[m add base code of main game
+*   [33m7343def[m Merge branch 'main' of https://github.com/kerachino/percentateruun
+[35m|[m[36m\[m  
+[35m|[m * [33m28b3af1[m https://github.com/kerachino/percentateruun.git
+* [36m|[m [33ma743d7e[m add base code of main game
+[36m|[m[36m/[m  
+* [33ma60a622[m fix the readme
+* [33m4dd36ef[m fix the readme
+* [33m7b888ea[m fix the readme
+* [33m2c24dd3[m Create README.md
+* [33m88e3511[m first commit
+* [33m71925cd[m edit mermaid
+* [33m8dc0113[m edit mermaid
+* [33m439421f[m edit mermaid
+* [33m727e745[m create mermaid
+* [33mda4c26c[m test code for confirmed
+* [33m1603413[m Initial commit
