@@ -21,7 +21,7 @@ class QuizGame extends Phaser.Scene {
     this.load.image('sky', 'assets/imgs/sky.png');
     this.load.image('vehicle', 'assets/imgs/vehicle.png');
     for (let i = 0; i <= 5; i++) {
-      this.load.image(`balloon${i}`, `assets/balloon${i}.png`);
+      this.load.image(`balloon${i}`, `assets/imgs/balloon${i}.png`);
     }
   }
 
