@@ -120,17 +120,27 @@ class QuizGame extends Phaser.Scene {
   createBalloons() {
     const objectX = this.cameras.main.width / 2;
     const objectY = this.cameras.main.height / 2;
-    const balloonAreaSize = 400; // 風船が配置される領域のサイズ
+    const balloonAreaSize = 400;
   
     for (let i = 0; i < 100; i++) {
       const balloonType = `balloon${Phaser.Math.Between(0, 5)}`;
       const posX = objectX + Phaser.Math.Between(-balloonAreaSize, balloonAreaSize);
-      const posY = objectY + Phaser.Math.Between(-balloonAreaSize, 0); // 物体の上に集中
+      const posY = objectY + Phaser.Math.Between(-balloonAreaSize, 0);
   
       const balloon = this.add.image(posX, posY, balloonType);
       this.balloons.push(balloon);
+  
+      // トゥイーンアニメーションを追加
+      this.tweens.add({
+        targets: balloon,
+        y: posY + Phaser.Math.Between(-20, 20),
+        duration: Phaser.Math.Between(1000, 2000),
+        yoyo: true,
+        repeat: -1
+      });
     }
   }
+  
 
   updateBalloonsCount() {
     const numberOfBalloonsToRemove = this.balloons.length - this.totalBalloons;
@@ -149,11 +159,30 @@ class QuizGame extends Phaser.Scene {
   }
   
 
-  showBalloonsCount() {
-    // 風船の数を表示するテキストを追加または更新
-    const balloonsText = `残りの風船: ${this.totalBalloons}`;
-    this.add.text(100, 50, balloonsText, { fontSize: '24px', color: '#ffffff' });
+  createBalloosCountBg() {
+    const bg = this.add.image(0, 0, 'balloon0');
+    const gameWidth = this.cameras.main.width;
+    const bgWidth = bg.width;
+  
+    // 画像の比率を保ちつつ、画面の幅に合わせてサイズを調整
+    const scale = gameWidth / bgWidth;//- gameWidth/8000
+    bg.setScale(scale/8);
+  
+    // 画像の位置を設定（X軸は中心、Y軸は画面の下）
+    bg.setOrigin(0.5, 1);
+    bg.setPosition(gameWidth / 1.1, this.cameras.main.height + this.cameras.main.height/5);
   }
+
+  showBalloonsCount() {
+    this.createBalloosCountBg();
+    // 風船の数を表示するテキスト
+    const balloonsText = `残り ${this.totalBalloons}`;
+    this.add.text(this.cameras.main.width - 100, this.cameras.main.height - 50, balloonsText, {
+      fontSize: '28px',
+      color: '#ffffff'
+    }).setOrigin(0.5, 0.5); // 右下に配置
+  }
+  
 
   displayQuestion() {
     this.showBalloonsCount();
@@ -232,12 +261,7 @@ class QuizGame extends Phaser.Scene {
 
     // ユーザの回答と正解を比較し、パーセンテージの差を計算
     const correctAnswer = currentQuestion.answer;
-<<<<<<< HEAD
     const difference = Math.round(Math.abs(correctAnswer - userAnswer));
-=======
-    const difference = Math.abs((correctAnswer - parseInt(userAnswer)) / correctAnswer) * 100;
-    // ここで関数呼び出し
->>>>>>> b68180f52b1a63a78637321b3959503ffa375287
 
     // 差の分だけ風船の数を減らす
     this.totalBalloons -= difference;
@@ -248,15 +272,15 @@ class QuizGame extends Phaser.Scene {
     }
 
     this.add.text(100, 250, 'Your answer: ' + userAnswer, {
-      fontSize: '18px',
+      fontSize: '36px',
       color: '#ffffff'
     });
     this.add.text(100, 300, 'Correct answer: ' + correctAnswer, {
-      fontSize: '18px',
+      fontSize: '36px',
       color: '#ffffff'
     });
     this.add.text(100, 350, 'Difference: ' + difference + '%', {
-      fontSize: '18px',
+      fontSize: '36px',
       color: '#ffffff'
     });
 
