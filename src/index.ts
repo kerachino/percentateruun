@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 
 class QuizGame extends Phaser.Scene {
+  private totalBalloons: number = 100; // 風船の初期数
   private questions: any[] = [];
   private currentQuestionIndex: number = 0;
   private currentStep: string = 'question';
@@ -25,7 +26,6 @@ class QuizGame extends Phaser.Scene {
     this.questions = this.getRandomQuestions(allQuestions, 5);
     this.currentQuestionIndex = 0;
     this.displayStep(this.currentStep);
-
   }
   
   getRandomQuestions(allQuestions: any[], count: number) {
@@ -53,6 +53,8 @@ class QuizGame extends Phaser.Scene {
   
     this.clearScene();
 
+    this.createSkybg();
+
     switch (step) {
       case 'question':
         this.displayQuestion();
@@ -72,13 +74,32 @@ class QuizGame extends Phaser.Scene {
     }
   }
 
+  createSkybg() {
+    // 背景画像の配置
+    const sky = this.add.image(0, 0, 'sky').setOrigin(0, 0);
+    this.tweens.add({
+      targets: sky,
+      y: '-=50', // Y座標を10ピクセル上に移動
+      // ease: 'Sine.easeInOut', // イージング関数
+      duration: 15000, // 一回の動きにかける時間（ミリ秒）
+      yoyo: true, // 元の位置に戻る
+      repeat: -1 // 無限に繰り返す
+    });
+  }
+
+  showBalloonsCount() {
+    // 風船の数を表示するテキストを追加または更新
+    const balloonsText = `残りの風船: ${this.totalBalloons}`;
+    this.add.text(100, 50, balloonsText, { fontSize: '24px', color: '#ffffff' });
+  }
+
   displayQuestion() {
+    this.showBalloonsCount();
+
     this.input.keyboard?.removeAllListeners();// 既存のリスナーを削除 これやらんとエラー
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const questionText = currentQuestion.question;
 
-    // 背景画像の配置
-    this.add.image(0, 0, 'sky').setOrigin(0, 0);
 
     // バルーンベースの画像を配置し、サイズを調整
     const balloonBase = this.add.image(this.cameras.main.width / 2, this.cameras.main.height, 'balloonBase');
@@ -97,8 +118,6 @@ class QuizGame extends Phaser.Scene {
       wordWrap: { width: this.cameras.main.width, useAdvancedWrap: true }
     });
 
-    
-
     // ユーザ入力に進むためのキーボードリスナーを設定
     this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
@@ -110,6 +129,7 @@ class QuizGame extends Phaser.Scene {
   }
 
   displayInput() {
+    this.showBalloonsCount();
     // ユーザ入力用のテキストフィールドを作成 (仮の実装)
     const inputText = this.add.text(100, 200, '', {
       fontSize: '18px',
@@ -117,7 +137,9 @@ class QuizGame extends Phaser.Scene {
     });
 
     this.keydownListener = (event: any) => {
-      if (event.key === 'Enter') {
+      if (!isNaN(parseInt(event.key))) {
+        inputText.setText(inputText.text + event.key);
+      }else if (event.key === 'Enter') {
         const currentQuestion = this.questions[this.currentQuestionIndex];
         // ユーザの回答を取得し、ローカルストレージに保存
         const userAnswer = inputText.text; // ユーザの回答を取得
@@ -125,9 +147,6 @@ class QuizGame extends Phaser.Scene {
         // 回答画面に進む
         this.currentStep = 'answer';
         this.displayStep(this.currentStep);
-      } else {
-        // ユーザの入力をテキストフィールドに反映
-        inputText.setText(inputText.text + event.key);
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
@@ -144,6 +163,13 @@ class QuizGame extends Phaser.Scene {
     // ユーザの回答と正解を比較し、パーセンテージの差を計算
     const correctAnswer = currentQuestion.answer;
     const difference = Math.abs((correctAnswer - parseInt(userAnswer)) / correctAnswer) * 100;
+
+    // 差の分だけ風船の数を減らす
+    this.totalBalloons -= difference;
+    // 風船の数が0以下にならないようにする
+    if (this.totalBalloons < 0) {
+      this.totalBalloons = 0;
+    }
 
     this.add.text(100, 250, 'Your answer: ' + userAnswer, {
       fontSize: '18px',
@@ -165,9 +191,11 @@ class QuizGame extends Phaser.Scene {
         this.displayStep(this.currentStep);
       }
     });
+    this.showBalloonsCount();
   }
 
   displayExplanation() {
+    this.showBalloonsCount();
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const explanationText = currentQuestion.explanation;
 
@@ -220,6 +248,10 @@ const config: Phaser.Types.Core.GameConfig = {
   height: window.innerHeight, // ウィンドウの高さに設定
   parent: 'game-app',
   scene: QuizGame,
+  fps: {
+    target: 60,
+    forceSetTimeOut: true // 高いフレームレートを強制する
+  }
 };
 
 new Phaser.Game(config);
