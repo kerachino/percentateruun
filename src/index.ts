@@ -175,7 +175,7 @@ class QuizGame extends Phaser.Scene {
   showBalloonsCount() {
     this.createBalloosCountBg();
     const balloonsText = `${this.totalBalloons}`;
-    this.add.text(1150, this.cameras.main.height-200, '残り', {
+    this.add.text(1160, this.cameras.main.height-200, '残り', {
       fontSize: '30px',
       color: '#ffffff'
     }).setOrigin(0.5, 0.5);
