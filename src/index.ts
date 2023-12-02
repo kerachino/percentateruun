@@ -170,16 +170,16 @@ class QuizGame extends Phaser.Scene {
     const scale = gameWidth / bgWidth;
     bg.setScale(scale/8);
     bg.setOrigin(0.5, 1);
-    bg.setPosition(1150, this.cameras.main.height + this.cameras.main.height/5);
+    bg.setPosition(this.cameras.main.width-125, this.cameras.main.height + this.cameras.main.height/5);
   }
   showBalloonsCount() {
     this.createBalloosCountBg();
     const balloonsText = `${this.totalBalloons}`;
-    this.add.text(1150, this.cameras.main.height-200, '残り', {
+    this.add.text(this.cameras.main.width - 125, this.cameras.main.height-200, '残り', {
       fontSize: '30px',
       color: '#ffffff'
     }).setOrigin(0.5, 0.5);
-    this.add.text(1150, this.cameras.main.height - 130, balloonsText, {
+    this.add.text(this.cameras.main.width - 125, this.cameras.main.height - 130, balloonsText, {
       fontSize: '50px',
       color: '#ffffff'
     }).setOrigin(0.5, 0.5);
