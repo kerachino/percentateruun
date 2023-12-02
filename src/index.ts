@@ -194,7 +194,7 @@ class QuizGame extends Phaser.Scene {
     this.createBalloosCountBg();
     const balloonsText = `${this.totalBalloons}`;
     this.createText(this.cameras.main.width-15, this.cameras.main.height -110, '残り', 30, '#FFF').setOrigin(1.25, 1);
-    this.createText(this.cameras.main.width-15, this.cameras.main.height -60, balloonsText, 50, '#FFF').setOrigin(1, 1);
+    this.createText(this.cameras.main.width-15, this.cameras.main.height -60, balloonsText, 50, '#FFF').setAlign('center').setOrigin(1.25, 1);
   }
   
 
@@ -220,6 +220,59 @@ class QuizGame extends Phaser.Scene {
     });
 
     this.displayInput();
+
+    // タイマーを設定して、一定時間経過後に自動的に入力画面に進む
+    const timerDuration = 5000; // タイマーの総時間（ミリ秒）
+  
+    // 残り3秒になったら数字を表示
+    const countdownText = this.createText(
+      this.cameras.main.width / 2,
+      this.cameras.main.height / 2,
+      '',
+      50,
+      '#FFF'
+    );
+    countdownText.setOrigin(0.5);
+  
+    // タイマーイベントを設定
+    const timerEvent = this.time.addEvent({
+      delay: timerDuration,
+      callback: () => {
+        this.currentStep = 'answer';
+        this.input.keyboard?.removeAllListeners(); // タイマーが発動したのでリスナーをクリア
+        this.displayStep(this.currentStep);
+      },
+    });
+  
+    // タイマーイベントのコールバックを設定
+    timerEvent.callback = () => {
+      this.currentStep = 'answer';
+      this.input.keyboard?.removeAllListeners(); // タイマーが発動したのでリスナーをクリア
+      this.displayStep(this.currentStep);
+    };
+  
+    // カウントダウン用の関数を定義
+    let countdownValue = Math.floor(timerDuration / 1000);
+    const updateCountdown = () => {
+      if(countdownValue <= 0){
+        countdownValue = 0;
+      }
+      if(countdownValue <= 3){
+        countdownText.setText(countdownValue.toString());
+      }
+      countdownValue--;
+    };
+  
+    // カウントダウン用のタイマーを1秒ごとに起動
+    const countdownInterval = setInterval(updateCountdown, 1000);
+  
+    // カウントダウン用のタイマーを即座に発動させる
+    updateCountdown();
+  
+    // // タイマーが終了したらクリア
+    // setTimeout(() => {
+    //   clearInterval(countdownInterval);
+    // }, countdownThreshold);
 
     // ユーザ入力に進むためのキーボードリスナーを設定
     // this.keydownListener = (event: any) => {
