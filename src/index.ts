@@ -203,15 +203,14 @@ class QuizGame extends Phaser.Scene {
     // balloonBase.setY(this.cameras.main.height - balloonBase.displayHeight / 2);
   
     //テキスト
-    this.add.text(100, 100, 'Question ' + (this.currentQuestionIndex + 1), {
-      fontSize: '24px',
-      color: '#ffffff'
-    });
+    this.createText(100, 100, 'Question ' +(this.currentQuestionIndex + 1), 24, '#fff');
+
     this.add.text(100, 150, questionText, {
       fontSize: '18px',
       color: '#ffffff',
       wordWrap: { width: this.cameras.main.width, useAdvancedWrap: true }
     });
+    
 
     // ユーザ入力に進むためのキーボードリスナーを設定
     this.keydownListener = (event: any) => {
@@ -354,10 +353,9 @@ class QuizGame extends Phaser.Scene {
     graphics.strokeRect(50, rectY, this.cameras.main.width - 100, rectHeight);
 
     // テキストの追加
-    this.add.text(60, rectY + 10, '短縮問題: ' + currentQuestion.omitQuestion, { fontSize: '16px', color: '#000000' });
-    this.add.text(60, rectY + 40, '答え: ' + currentQuestion.answer, { fontSize: '16px', color: '#000000' });
-    this.add.text(60, rectY + 70, '情報源: ' + currentQuestion.source, { fontSize: '16px', color: '#000000' });
-
+    this.createText(60, rectY + 10, '短縮問題: ' + currentQuestion.omitQuestion, 16, '#000000');
+    this.createText(60, rectY + 40, '答え: ' + currentQuestion.answer, 16, '#000000');
+    this.createText(60, rectY + 70, '情報源: ' + currentQuestion.source, 16, '#000000');
 
     // 次の問題に進むためのキーボードリスナーを設定
     this.input.keyboard?.on('keydown', (event: any) => {
