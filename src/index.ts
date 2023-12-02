@@ -24,6 +24,8 @@ class QuizGame extends Phaser.Scene {
     for (let i = 0; i <= 7; i++) {
       this.load.image(`balloon${i}`, `assets/imgs/balloon${i}.png`);
     }
+    this.load.image(`balloon`, `assets/imgs/balloon.png`);
+
     this.load.image('progressBarFull', 'assets/imgs/progressBarFull.jpg');
     this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
 
@@ -162,7 +164,7 @@ class QuizGame extends Phaser.Scene {
   }
   
   createBalloosCountBg() {
-    const bg = this.add.image(0, 0, 'balloon0');
+    const bg = this.add.image(0, 0, 'balloon');
     const gameWidth = this.cameras.main.width;
     const bgWidth = bg.width;
     const scale = gameWidth / bgWidth;
