@@ -144,7 +144,7 @@ class QuizGame extends Phaser.Scene {
     vehicle.setOrigin(0.5, 1);
     vehicle.setPosition(gameWidth / 2, this.cameras.main.height + this.cameras.main.height/4);
   
-    // // トゥイーンアニメーションの追加
+    // アニメーション
     // this.tweens.add({
     //   targets: vehicle,
     //   y: '-=50',
@@ -168,21 +168,21 @@ class QuizGame extends Phaser.Scene {
     const gameWidth = this.cameras.main.width;
     const bgWidth = bg.width;
     const scale = gameWidth / bgWidth;
-    bg.setScale(scale/8);
-    bg.setOrigin(0.5, 1);
-    bg.setPosition(this.cameras.main.width-125, this.cameras.main.height + this.cameras.main.height/5);
+    bg.setOrigin(1, 1);
+    bg.setPosition(this.cameras.main.width, this.cameras.main.height);
+    bg.setScale(120/bg.width);
   }
   showBalloonsCount() {
     this.createBalloosCountBg();
     const balloonsText = `${this.totalBalloons}`;
-    this.add.text(this.cameras.main.width - 125, this.cameras.main.height-200, '残り', {
+    this.add.text(this.cameras.main.width-15, this.cameras.main.height-110, '残り', {
       fontSize: '30px',
       color: '#ffffff'
-    }).setOrigin(0.5, 0.5);
-    this.add.text(this.cameras.main.width - 125, this.cameras.main.height - 130, balloonsText, {
+    }).setOrigin(1.25, 1);
+    this.add.text(this.cameras.main.width-15, this.cameras.main.height -60, balloonsText, {
       fontSize: '50px',
       color: '#ffffff'
-    }).setOrigin(0.5, 0.5);
+    }).setOrigin(1, 1);
   }
   
   displayQuestion() {
