@@ -1,1 +1,3 @@
 node_modules
+# 「.memo」フォルダを除外
+.memo/

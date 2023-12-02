@@ -141,17 +141,26 @@ class QuizGame extends Phaser.Scene {
   }
   createVehicle() {
     const vehicle = this.add.image(0, 0, 'vehicle');
-    const gameWidth = this.cameras.main.width;
-    const vehicleWidth = vehicle.width;
-  
-    // 画像の比率を保ちつつ、画面の幅に合わせてサイズを調整
-    const scale = gameWidth / vehicleWidth;//- gameWidth/8000
-    vehicle.setScale(scale);
-  
-    // 画像の位置を設定（X軸は中心、Y軸は画面の下）
-    vehicle.setOrigin(0.5, 1);
-    vehicle.setPosition(gameWidth / 2, this.cameras.main.height + this.cameras.main.height/4);
-  
+const gameWidth = this.cameras.main.width;
+const gameHeight = this.cameras.main.height;
+
+// 画像のサイズを取得
+const vehicleWidth = vehicle.width;
+const vehicleHeight = vehicle.height;
+
+// 画像のスケールを設定して、下半分が画面下に隠れるようにする
+const desiredScale = (gameWidth / vehicleWidth) * 0.5; // 画像の幅の50%にスケール
+vehicle.setScale(desiredScale);
+
+// 画像の位置を設定
+vehicle.setOrigin(0.5, 1);
+vehicle.setPosition(gameWidth / 2, gameHeight);
+
+// 画像の下半分が画面下に隠れるように調整
+if (vehicleHeight * desiredScale / 2 > gameHeight) {
+  vehicle.setPosition(gameWidth / 2, gameHeight + vehicleHeight * desiredScale / 2 - gameHeight);
+}
+
     // アニメーション
     // this.tweens.add({
     //   targets: vehicle,
