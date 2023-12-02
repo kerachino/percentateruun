@@ -27,14 +27,15 @@ class QuizGame extends Phaser.Scene {
     this.load.image('progressBarFull', 'assets/imgs/progressBarFull.jpg');
     this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
 
-    for (let i = 0; i < 100; i++) {
-      this.balloonPositions.push({
-        id: i,
-        x: Phaser.Math.Between(100, this.cameras.main.width - 100),
-        y: Phaser.Math.Between(100, this.cameras.main.height - 100),
-        colorId: Phaser.Math.Between(0, 7) // 色IDをランダムに設定
-      });
-    }
+    // for (let i = 0; i < 100; i++) {
+    //   this.balloonPositions.push({
+    //     id: i,
+    //     x: Phaser.Math.Between(100, this.cameras.main.width - 100),
+    //     y: Phaser.Math.Between(100, this.cameras.main.height - 100),
+    //     colorId: Phaser.Math.Between(0, 7) // 色IDをランダムに設定
+    //   });
+    // }
+    this.load.json('balloonsData', 'assets/balloons.json');
   }
 
   create() {
@@ -43,8 +44,31 @@ class QuizGame extends Phaser.Scene {
     this.questions = this.getRandomQuestions(allQuestions, 5);
     this.currentQuestionIndex = 0;
     this.displayStep(this.currentStep);
+
+    // JSONデータの読み込み
+    const balloonsData = this.cache.json.get('balloonsData');
+
+    // バルーンの配置
+    balloonsData.forEach((balloonData: { id: number, x: number, y: number, colorId: number }) => {
+      const balloonType = `balloon${balloonData.colorId}`;
+      const posX = this.calculateBalloonX(balloonData.x);
+      const posY = this.calculateBalloonY(balloonData.y);
+      const balloon = this.add.image(posX, posY, balloonType).setOrigin(0.5, 0);
+      // その他のバルーン設定...
+    });
+  }
+  calculateBalloonX(columnIndex: number): number {
+    const padding = 10; // バルーン間の余白
+    const balloonWidth = 50; // バルーンの幅
+    return columnIndex * (balloonWidth + padding) + this.cameras.main.width/2;
   }
   
+  calculateBalloonY(rowIndex: number): number {
+    const padding = 10; // バルーン間の余白
+    const balloonHeight = 50; // バルーンの高さ
+    return rowIndex * (balloonHeight + padding) + 50;
+  }
+
   getRandomQuestions(allQuestions: any[], count: number) {
     // 問題数を制限するため、ランダムに問題を選ぶ関数
     const shuffled = allQuestions.slice(); // コピーを作成
@@ -73,7 +97,6 @@ class QuizGame extends Phaser.Scene {
 
     this.createSkybg();
     this.createVehicle();
-    this.createBalloons();
 
     switch (step) {
       case 'question':
@@ -129,14 +152,6 @@ class QuizGame extends Phaser.Scene {
     // });
   }
 
-  createBalloons() {
-    this.balloons = this.balloonPositions.map(pos => {
-      const balloonType = `balloon${pos.colorId}`; // 色IDに基づいてバルーンタイプを選択
-      const balloon = this.add.image(pos.x, pos.y, balloonType);
-      balloon.setData('id', pos.id); // バルーンにIDを設定
-      return balloon;
-    });
-  }
   updateBalloonsCount() {
     while (this.balloons.length > this.totalBalloons) {
       const balloonToRemove = this.balloons.pop();
