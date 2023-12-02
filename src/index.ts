@@ -234,40 +234,77 @@ class QuizGame extends Phaser.Scene {
     );
     countdownText.setOrigin(0.5);
   
-    // タイマーイベントを設定
-    const timerEvent = this.time.addEvent({
-      delay: timerDuration,
-      callback: () => {
-        this.currentStep = 'answer';
-        this.input.keyboard?.removeAllListeners(); // タイマーが発動したのでリスナーをクリア
-        this.displayStep(this.currentStep);
+    // 赤い背景のテキストを作成
+const countdownTextBg = this.add.text(
+  this.cameras.main.width / 2,
+  this.cameras.main.height / 2,
+  '',
+  {
+    fontSize: '60px',
+    color: '#FF0000', // 赤色
+    backgroundColor: '#000000', // 背景色（黒色）
+    padding: {
+      left: 10,
+      right: 10,
+      top: 5,
+      bottom: 5,
+    },
+  }
+);
+countdownTextBg.setOrigin(0.5);
+countdownTextBg.setVisible(false); // 最初は非表示
+
+// タイマーイベントを設定
+const timerEvent = this.time.addEvent({
+  delay: timerDuration,
+  callback: () => {
+    this.currentStep = 'answer';
+    this.input.keyboard?.removeAllListeners(); // タイマーが発動したのでリスナーをクリア
+    this.displayStep(this.currentStep);
+  },
+});
+
+// カウントダウン用の関数を定義
+let countdownValue = Math.floor(timerDuration / 1000);
+const updateCountdown = () => {
+  if (countdownValue <= 0) {
+    countdownValue = 0;
+  }
+  if (countdownValue <= 3) {
+    countdownText.setText(countdownValue.toString());
+
+    // 強調アニメーション
+    countdownTextBg.setPosition(countdownText.x, countdownText.y);
+    countdownTextBg.setScale(1.5); // 文字が一瞬大きくなる
+    countdownTextBg.setVisible(true);
+
+    // Tweenアニメーションでサイズを元に戻す
+    this.tweens.add({
+      targets: countdownTextBg,
+      scaleX: 1,
+      scaleY: 1,
+      duration: 300, // 0.3秒間で元のサイズに戻る
+      onComplete: () => {
+        countdownTextBg.setVisible(false); // アニメーション終了後に非表示にする
       },
     });
-  
-    // タイマーイベントのコールバックを設定
-    timerEvent.callback = () => {
-      this.currentStep = 'answer';
-      this.input.keyboard?.removeAllListeners(); // タイマーが発動したのでリスナーをクリア
-      this.displayStep(this.currentStep);
-    };
-  
-    // カウントダウン用の関数を定義
-    let countdownValue = Math.floor(timerDuration / 1000);
-    const updateCountdown = () => {
-      if(countdownValue <= 0){
-        countdownValue = 0;
-      }
-      if(countdownValue <= 3){
-        countdownText.setText(countdownValue.toString());
-      }
-      countdownValue--;
-    };
-  
-    // カウントダウン用のタイマーを1秒ごとに起動
-    const countdownInterval = setInterval(updateCountdown, 1000);
-  
-    // カウントダウン用のタイマーを即座に発動させる
-    updateCountdown();
+  } else {
+    countdownText.setText('');
+  }
+  countdownValue--;
+};
+
+// カウントダウン用のタイマーを1秒ごとに起動
+const countdownInterval = setInterval(updateCountdown, 1000);
+
+// カウントダウン用のタイマーを即座に発動させる
+updateCountdown();
+
+// タイマーが終了したらクリア
+setTimeout(() => {
+  clearInterval(countdownInterval);
+}, timerDuration);
+
   
     // // タイマーが終了したらクリア
     // setTimeout(() => {
