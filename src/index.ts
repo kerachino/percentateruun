@@ -9,7 +9,7 @@ class QuizGame extends Phaser.Scene {
   private allQuestions = 3;
   private balloons: Phaser.GameObjects.Image[];
   private balloonPositions: { id: number, x: number, y: number, colorId: number }[] = [];
-
+  private balloonsData: any[] = [];
   constructor() {
     super('quiz-game');
     this.keydownListener = null; 
@@ -19,6 +19,7 @@ class QuizGame extends Phaser.Scene {
 
   preload() {
     this.load.json('questions', 'assets/questions.json');
+    this.load.json('balloonsData', 'assets/balloons.json');
     this.load.image('sky', 'assets/imgs/sky.png');
     this.load.image('vehicle', 'assets/imgs/vehicle.png');
     for (let i = 0; i <= 7; i++) {
@@ -28,6 +29,7 @@ class QuizGame extends Phaser.Scene {
 
     this.load.image('progressBarFull', 'assets/imgs/progressBarFull.png');
     this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
+    this.load.image('qBg', 'assets/imgs/qBg.png');
 
     // for (let i = 0; i < 100; i++) {
     //   this.balloonPositions.push({
@@ -37,7 +39,6 @@ class QuizGame extends Phaser.Scene {
     //     colorId: Phaser.Math.Between(0, 7) // 色IDをランダムに設定
     //   });
     // }
-    this.load.json('balloonsData', 'assets/balloons.json');
   }
 
   create() {
@@ -48,10 +49,11 @@ class QuizGame extends Phaser.Scene {
     this.displayStep(this.currentStep);
 
     // JSONデータの読み込み
-    const balloonsData = this.cache.json.get('balloonsData');
-
+    this.balloonsData = this.cache.json.get('balloonsData');
+  }
+  showBalloons(){
     // バルーンの配置
-    balloonsData.forEach((balloonData: { id: number, x: number, y: number, colorId: number }) => {
+    this.balloonsData.forEach((balloonData: { id: number, x: number, y: number, colorId: number }) => {
       const balloonType = `balloon${balloonData.colorId}`;
       const posX = this.calculateBalloonX(balloonData.x);
       const posY = this.calculateBalloonY(balloonData.y);
@@ -105,7 +107,9 @@ class QuizGame extends Phaser.Scene {
     this.clearScene();
     let husen=100;
 
+    
     this.createSkybg();
+    this.showBalloons();
     this.createVehicle();
 
     switch (step) {
@@ -141,25 +145,25 @@ class QuizGame extends Phaser.Scene {
   }
   createVehicle() {
     const vehicle = this.add.image(0, 0, 'vehicle');
-const gameWidth = this.cameras.main.width;
-const gameHeight = this.cameras.main.height;
+    const gameWidth = this.cameras.main.width;
+    const gameHeight = this.cameras.main.height;
 
-// 画像のサイズを取得
-const vehicleWidth = vehicle.width;
-const vehicleHeight = vehicle.height;
+    // 画像のサイズを取得
+    const vehicleWidth = vehicle.width;
+    const vehicleHeight = vehicle.height;
 
-// 画像のスケールを設定して、下半分が画面下に隠れるようにする
-const desiredScale = (gameWidth / vehicleWidth) * 0.5; // 画像の幅の50%にスケール
-vehicle.setScale(desiredScale);
+    // 画像のスケールを設定して、下半分が画面下に隠れるようにする
+    const desiredScale = (gameWidth / vehicleWidth) * 0.5; // 画像の幅の50%にスケール
+    vehicle.setScale(desiredScale);
 
-// 画像の位置を設定
-vehicle.setOrigin(0.5, 1);
-vehicle.setPosition(gameWidth / 2, gameHeight);
+    // 画像の位置を設定
+    vehicle.setOrigin(0.5, 1);
+    vehicle.setPosition(gameWidth / 2, gameHeight +50);
 
-// 画像の下半分が画面下に隠れるように調整
-if (vehicleHeight * desiredScale / 2 > gameHeight) {
-  vehicle.setPosition(gameWidth / 2, gameHeight + vehicleHeight * desiredScale / 2 - gameHeight);
-}
+    // 画像の下半分が画面下に隠れるように調整
+    if (vehicleHeight * desiredScale / 2 > gameHeight) {
+      vehicle.setPosition(gameWidth / 2, gameHeight + vehicleHeight * desiredScale / 2 - gameHeight);
+    }
 
     // アニメーション
     // this.tweens.add({
@@ -204,22 +208,19 @@ if (vehicleHeight * desiredScale / 2 > gameHeight) {
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const questionText = currentQuestion.question;
 
+    const qBg = this.add.image(0, 0, 'qBg');
+    const gameWidth = this.cameras.main.width;
+    const bgWidth = qBg.width;
+    qBg.setOrigin(0.5, 0);
+    qBg.setPosition(this.cameras.main.width/2, 60);
+    qBg.setScale((gameWidth-80) / bgWidth);
 
-    // バルーンベースの画像を配置し、サイズを調整
-    // const balloonBase = this.add.image(this.cameras.main.width / 2, this.cameras.main.height, 'balloonBase');
-    // const scale = this.cameras.main.width / balloonBase.width;
-    // balloonBase.setScale(scale, scale); // 高さも同じスケールで調整
-    // balloonBase.setY(this.cameras.main.height - balloonBase.displayHeight / 2);
-  
-    //テキスト
-    this.createText(100, 100, 'Question ' +(this.currentQuestionIndex + 1), 24, '#fff');
-
+    this.createText(100, 100, 'Question ' +(this.currentQuestionIndex + 1), 24, '#000');
     this.add.text(100, 150, questionText, {
       fontSize: '18px',
-      color: '#ffffff',
+      color: '#000',
       wordWrap: { width: this.cameras.main.width, useAdvancedWrap: true }
     });
-    
 
     // ユーザ入力に進むためのキーボードリスナーを設定
     this.keydownListener = (event: any) => {
