@@ -8,6 +8,7 @@ class QuizGame extends Phaser.Scene {
   private keydownListener: any; //イベントリスナーの参照保持 ?必要っぽい
   private allQuestions = 3;
   private balloons: Phaser.GameObjects.Image[];
+  private balloonPositions: { id: number, x: number, y: number, colorId: number }[] = [];
 
   constructor() {
     super('quiz-game');
@@ -20,8 +21,19 @@ class QuizGame extends Phaser.Scene {
     this.load.json('questions', 'assets/questions.json');
     this.load.image('sky', 'assets/imgs/sky.png');
     this.load.image('vehicle', 'assets/imgs/vehicle.png');
-    for (let i = 0; i <= 5; i++) {
+    for (let i = 0; i <= 7; i++) {
       this.load.image(`balloon${i}`, `assets/imgs/balloon${i}.png`);
+    }
+    this.load.image('progressBarFull', 'assets/imgs/progressBarFull.jpg');
+    this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
+
+    for (let i = 0; i < 100; i++) {
+      this.balloonPositions.push({
+        id: i,
+        x: Phaser.Math.Between(100, this.cameras.main.width - 100),
+        y: Phaser.Math.Between(100, this.cameras.main.height - 100),
+        colorId: Phaser.Math.Between(0, 7) // 色IDをランダムに設定
+      });
     }
   }
 
@@ -118,72 +130,44 @@ class QuizGame extends Phaser.Scene {
   }
 
   createBalloons() {
-    const objectX = this.cameras.main.width / 2;
-    const objectY = this.cameras.main.height / 2;
-    const balloonAreaSize = 400;
-  
-    for (let i = 0; i < 100; i++) {
-      const balloonType = `balloon${Phaser.Math.Between(0, 5)}`;
-      const posX = objectX + Phaser.Math.Between(-balloonAreaSize, balloonAreaSize);
-      const posY = objectY + Phaser.Math.Between(-balloonAreaSize, 0);
-  
-      const balloon = this.add.image(posX, posY, balloonType);
-      this.balloons.push(balloon);
-  
-      // トゥイーンアニメーションを追加
-      this.tweens.add({
-        targets: balloon,
-        y: posY + Phaser.Math.Between(-20, 20),
-        duration: Phaser.Math.Between(1000, 2000),
-        yoyo: true,
-        repeat: -1
-      });
-    }
+    this.balloons = this.balloonPositions.map(pos => {
+      const balloonType = `balloon${pos.colorId}`; // 色IDに基づいてバルーンタイプを選択
+      const balloon = this.add.image(pos.x, pos.y, balloonType);
+      balloon.setData('id', pos.id); // バルーンにIDを設定
+      return balloon;
+    });
   }
-  
-
   updateBalloonsCount() {
-    const numberOfBalloonsToRemove = this.balloons.length - this.totalBalloons;
-  
-    // 風船の削除が必要な場合のみ処理を実行
-    if (numberOfBalloonsToRemove > 0) {
-      for (let i = 0; i < numberOfBalloonsToRemove; i++) {
-        if (this.balloons.length > 0) {
-          const balloonToRemove = this.balloons.pop(); // 配列の最後の風船を取得
-          if (balloonToRemove) {
-            balloonToRemove.destroy(); // 風船を削除
-          }
-        }
+    while (this.balloons.length > this.totalBalloons) {
+      const balloonToRemove = this.balloons.pop();
+      if (balloonToRemove) {
+        balloonToRemove.destroy();
       }
     }
   }
   
-
   createBalloosCountBg() {
     const bg = this.add.image(0, 0, 'balloon0');
     const gameWidth = this.cameras.main.width;
     const bgWidth = bg.width;
-  
-    // 画像の比率を保ちつつ、画面の幅に合わせてサイズを調整
-    const scale = gameWidth / bgWidth;//- gameWidth/8000
+    const scale = gameWidth / bgWidth;
     bg.setScale(scale/8);
-  
-    // 画像の位置を設定（X軸は中心、Y軸は画面の下）
     bg.setOrigin(0.5, 1);
-    bg.setPosition(gameWidth / 1.1, this.cameras.main.height + this.cameras.main.height/5);
+    bg.setPosition(100, this.cameras.main.height + this.cameras.main.height/5);
   }
-
   showBalloonsCount() {
     this.createBalloosCountBg();
-    // 風船の数を表示するテキスト
-    const balloonsText = `残り ${this.totalBalloons}`;
-    this.add.text(this.cameras.main.width - 100, this.cameras.main.height - 50, balloonsText, {
+    const balloonsText = `${this.totalBalloons}`;
+    this.add.text(100, this.cameras.main.height-90, '残り', {
+      fontSize: '24px',
+      color: '#ffffff'
+    }).setOrigin(0.5, 0.5);
+    this.add.text(100, this.cameras.main.height - 50, balloonsText, {
       fontSize: '28px',
       color: '#ffffff'
-    }).setOrigin(0.5, 0.5); // 右下に配置
+    }).setOrigin(0.5, 0.5);
   }
   
-
   displayQuestion() {
     this.showBalloonsCount();
     this.updateBalloonsCount();
@@ -220,7 +204,7 @@ class QuizGame extends Phaser.Scene {
   }
 
   displayInput() {
-    this.showBalloonsCount();
+    this.updateBalloonsCount();
     // ユーザ入力用のテキストフィールドを作成 (仮の実装)
     const inputText = this.add.text(100, 200, '', {
       fontSize: '18px',
@@ -271,18 +255,59 @@ class QuizGame extends Phaser.Scene {
       this.totalBalloons = 0;
     }
 
-    this.add.text(100, 250, 'Your answer: ' + userAnswer, {
-      fontSize: '36px',
-      color: '#ffffff'
-    });
-    this.add.text(100, 300, 'Correct answer: ' + correctAnswer, {
-      fontSize: '36px',
-      color: '#ffffff'
-    });
-    this.add.text(100, 350, 'Difference: ' + difference + '%', {
-      fontSize: '36px',
-      color: '#ffffff'
-    });
+      // バーの作成と初期化
+      const barHeight = 20;
+      const barWidth = this.cameras.main.width * 0.8;
+      const barX = (this.cameras.main.width - barWidth) / 2;
+      const barY = this.cameras.main.height - 100;
+
+      // バーを表す画像の配置
+      const progressBarFull = this.add.image(barX, barY, 'progressBarFull').setOrigin(0, 0);
+
+      // バーを隠す黒い画像の配置
+      const progressBarCover = this.add.image(progressBarFull.width+barX, barY, 'progressBarCover').setOrigin(1, 0);
+      progressBarCover.displayWidth = progressBarFull.width;
+      progressBarCover.displayHeight = progressBarFull.height;
+    
+      // アニメーション
+      // まず2秒で100%
+      this.tweens.add({
+        targets: progressBarCover,
+        displayWidth: 0,
+        ease: 'Linear',
+        duration: 2000,
+        onComplete: () => {
+          // 次に5秒かけて答えの位置まで幅を縮める
+          this.tweens.add({
+            targets: progressBarCover,
+            setOrigin: barX,
+            displayWidth: progressBarFull.width - (correctAnswer / 100) * progressBarFull.width, // 答えの位置まで幅を縮める
+            ease: 'Linear',
+            duration: 5000,
+            onComplete: () => {
+              // 最後に素早く上がったり下がったりするアニメーション
+              this.tweens.add({
+                targets: progressBarCover,
+                displayWidth: {
+                  from: progressBarFull.width - (correctAnswer / 100) * progressBarFull.width,
+                  to: progressBarFull.width - (correctAnswer / 100) * progressBarFull.width + Phaser.Math.Between(15, 30) // 細かい左右の揺れ
+                },
+                ease: 'Linear',
+                duration: 100, // 揺れの速さ
+                yoyo: true,
+                repeat: 5 // 数回繰り返す
+              });
+            }
+          });
+        }
+      });
+
+      // ユーザの回答位置を示す線の描画
+      const userAnswerPosition = barX + (userAnswer / 100) * progressBarFull.width;
+      const lineGraphics = this.add.graphics();
+      lineGraphics.lineStyle(2, 0xFF0000, 1); // 赤い線、太さ2px
+      lineGraphics.lineBetween(userAnswerPosition, barY - 10, userAnswerPosition, barY + progressBarFull.height + 10);
+
 
     // 解説に進むためのキーボードリスナーを設定
     this.input.keyboard?.on('keydown', (event: any) => {
@@ -292,10 +317,12 @@ class QuizGame extends Phaser.Scene {
       }
     });
     this.showBalloonsCount();
+    this.updateBalloonsCount();
   }
 
   displayExplanation() {
     this.showBalloonsCount();
+    this.updateBalloonsCount();
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const explanationText = currentQuestion.explanation;
 
