@@ -26,7 +26,7 @@ class QuizGame extends Phaser.Scene {
     }
     this.load.image(`balloon`, `assets/imgs/balloon.png`);
 
-    this.load.image('progressBarFull', 'assets/imgs/progressBarFull.jpg');
+    this.load.image('progressBarFull', 'assets/imgs/progressBarFull.png');
     this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
 
     // for (let i = 0; i < 100; i++) {
@@ -275,11 +275,11 @@ class QuizGame extends Phaser.Scene {
       // バーの作成と初期化
       const barHeight = 20;
       const barWidth = this.cameras.main.width * 0.8;
-      const barX = (this.cameras.main.width - barWidth) / 2;
+      const barX = (this.cameras.main.width - barWidth) / 2 +100;
       const barY = this.cameras.main.height - 100;
 
       // バーを表す画像の配置
-      const progressBarFull = this.add.image(barX, barY, 'progressBarFull').setOrigin(0, 0);
+      const progressBarFull = this.add.image(barX, barY, 'progressBarFull').setOrigin(0, 0).setScale(1, 1);
 
       // バーを隠す黒い画像の配置
       const progressBarCover = this.add.image(progressBarFull.width+barX, barY, 'progressBarCover').setOrigin(1, 0);
