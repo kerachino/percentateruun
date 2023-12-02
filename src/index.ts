@@ -116,9 +116,6 @@ class QuizGame extends Phaser.Scene {
       case 'question':
         this.displayQuestion();
         break;
-      case 'input':
-        this.displayInput();
-        break;
       case 'answer':
         this.displayAnswer();
         break;
@@ -222,14 +219,16 @@ class QuizGame extends Phaser.Scene {
       wordWrap: { width: this.cameras.main.width, useAdvancedWrap: true }
     });
 
+    this.displayInput();
+
     // ユーザ入力に進むためのキーボードリスナーを設定
-    this.keydownListener = (event: any) => {
-      if (event.key === 'Enter') {
-        this.currentStep = 'input';
-        this.displayStep(this.currentStep);
-      }
-    };
-    this.input.keyboard?.on('keydown', this.keydownListener);
+    // this.keydownListener = (event: any) => {
+    //   if (event.key === 'Enter') {
+    //     this.currentStep = 'input';
+    //     this.displayStep(this.currentStep);
+    //   }
+    // };
+    // this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
   displayInput() {
@@ -237,7 +236,7 @@ class QuizGame extends Phaser.Scene {
     // ユーザ入力用のテキストフィールドを作成 (仮の実装)
     const inputText = this.add.text(100, 200, '', {
       fontSize: '18px',
-      color: '#ffffff'
+      color: '#000'
     });
 
     this.keydownListener = (event: any) => {
@@ -250,7 +249,7 @@ class QuizGame extends Phaser.Scene {
       } else if (event.key === 'Backspace' && inputText.text.length > 0) {
         // バックスペース ,文字削除
         inputText.setText(inputText.text.slice(0, -1));
-      } else if (event.key === 'Enter') {
+      } else if (event.key === 'Enter' && inputText.text) {
         // Enter
         const currentQuestion = this.questions[this.currentQuestionIndex];
         const userAnswer = inputText.text; // ユーザの回答を取得
@@ -261,7 +260,6 @@ class QuizGame extends Phaser.Scene {
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
-    
   }
   
 
