@@ -59,6 +59,14 @@ class QuizGame extends Phaser.Scene {
       // その他のバルーン設定...
     });
   }
+  createText(x: number, y: number, text: string, fontsize: number, color: string): Phaser.GameObjects.Text {
+    return this.add.text(x, y, text, {
+      fontFamily: 'Arial',
+      fontSize: fontsize,
+      color: color
+    });
+  }
+
   calculateBalloonX(columnIndex: number): number {
     const padding = 10; // バルーン間の余白
     const balloonWidth = 50; // バルーンの幅
@@ -175,16 +183,11 @@ class QuizGame extends Phaser.Scene {
   showBalloonsCount() {
     this.createBalloosCountBg();
     const balloonsText = `${this.totalBalloons}`;
-    this.add.text(this.cameras.main.width-15, this.cameras.main.height-110, '残り', {
-      fontSize: '30px',
-      color: '#ffffff'
-    }).setOrigin(1.25, 1);
-    this.add.text(this.cameras.main.width-15, this.cameras.main.height -60, balloonsText, {
-      fontSize: '50px',
-      color: '#ffffff'
-    }).setOrigin(1, 1);
+    this.createText(this.cameras.main.width-15, this.cameras.main.height -110, '残り', 30, '#FFF').setOrigin(1.25, 1);
+    this.createText(this.cameras.main.width-15, this.cameras.main.height -60, balloonsText, 50, '#FFF').setOrigin(1, 1);
   }
   
+
   displayQuestion() {
     this.showBalloonsCount();
     this.updateBalloonsCount();
