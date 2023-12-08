@@ -4,7 +4,7 @@ class QuizGame extends Phaser.Scene {
   private totalBalloons: number = 100; // 風船の初期数
   private questions: any[] = [];
   private currentQuestionIndex: number = 0;
-  private currentStep: string = 'question';
+  private currentStep: string = 'firstStep';
   private keydownListener: any; //イベントリスナーの参照保持 ?必要っぽい
   private allQuestions = 3;
   private balloons: Phaser.GameObjects.Image[];
@@ -108,21 +108,24 @@ class QuizGame extends Phaser.Scene {
       this.input.keyboard?.off('keydown', this.keydownListener);
     }
 
-
     if (this.currentQuestionIndex >= this.questions.length) {
       // インデックスが範囲外の場合の処理（例：ゲーム終了）
-      console.log("No more questions available. Game Over.");
-      return; // ここで処理を終了
+      alert("No more questions available. Game Over.");
+      return;
     }
 
-    this.clearScene();
-    let husen = 100;
 
     this.updateBg();
     this.showBalloons();
     this.createVehicle();
-
+    
+    this.clearScene(); //処理を軽くするには上をfirstStepに入れ、これを削除できるようにする
+    // let husen = 100;
+    
     switch (step) {
+      case 'firstStep':
+        this.firstStep();
+        break;
       case 'question':
         this.displayQuestion();
         break;
@@ -138,6 +141,15 @@ class QuizGame extends Phaser.Scene {
     }
   }
 
+  firstStep(){
+    // this.updateBg();
+    // this.showBalloons();
+    // this.createVehicle();
+
+    this.currentStep = 'question';
+    this.displayStep(this.currentStep);
+  }
+
   changeBackground(newBgKey: string) {
     const newBg = this.add.image(0, 0, newBgKey).setOrigin(0, 0);
 
@@ -148,10 +160,6 @@ class QuizGame extends Phaser.Scene {
       duration: 15000, // 一回の動きにかける時間
       yoyo: true, // 元の位置に戻る
       repeat: -1, // 無限に繰り返す
-      onComplete: () => {
-        this.bgImage.destroy();
-        this.bgImage = newBg;
-      }
     });
   }
   createVehicle() { //バスケット、乗り物、搭乗位置
