@@ -143,20 +143,32 @@ class QuizGame extends Phaser.Scene {
   }
 
   displayQuestionNumber() {//上バー
-    const circleRadius = 20;
-    const circleSpacing = 50;
+    const circleRadius = 15; // 丸の半径を少し小さくする
+    const circleSpacing = 60; // 丸の間隔を増やす
     const startX = this.cameras.main.width / 2 - (circleSpacing * (this.questions.length - 1)) / 2;
-    const startY = 50;
+    const startY = 40; // 丸のY座標を上に移動
+    const lineColor = 0xAAAAAA; // 線の色
   
     for (let i = 0; i < this.questions.length; i++) {
       const circleX = startX + i * circleSpacing;
-      const color = i === this.currentQuestionIndex ? 0xFF0000 : 0xAAAAAA; // 現在の問題は赤、それ以外は灰色
+      const color = i === this.currentQuestionIndex ? 0xFF0000 : 0xAAAAAA;
   
+      // 丸の描画
       const circle = this.add.circle(circleX, startY, circleRadius, color);
-      const difference = this.differences[i]; // 配列からdifferenceの値を取得
-      this.createText(circleX, startY, difference.toString(), 16, '#FFFFFF').setOrigin(0.5);
+  
+      // 隣の丸との間に線を引く
+      if (i < this.questions.length - 1) {
+        const nextCircleX = circleX + circleSpacing;
+        const line = this.add.line(0, 0, circleX + circleRadius, startY, nextCircleX - circleRadius, startY, lineColor).setOrigin(0, 0);
+        line.setLineWidth(2);
+      }
+  
+      // diffrenceの値の表示
+      const difference = this.differences[i];
+      this.createText(circleX, startY, difference.toString(), 14, '#FFFFFF').setOrigin(0.5);
     }
   }
+  
   
   
   firstStep(){
