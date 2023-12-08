@@ -229,15 +229,6 @@ class QuizGame extends Phaser.Scene {
 
     // タイマーを設定して、一定時間経過後に自動的に入力画面に進む
     const timerDuration = 5000; // タイマーの総時間（ミリ秒）
-    // 残り3秒になったら数字を表示
-    const countdownText = this.createText(
-      this.cameras.main.width / 2,
-      this.cameras.main.height / 2,
-      '',
-      64,
-      '#FFF'
-    );
-    countdownText.setOrigin(0.5);
 
     // 赤い背景のテキストを作成
     const countdownTextBg = this.add.text(
@@ -258,6 +249,16 @@ class QuizGame extends Phaser.Scene {
     );
     countdownTextBg.setOrigin(0.5);
     countdownTextBg.setVisible(false); // 最初は非表示
+
+    // 残り3秒になったら数字を表示
+    const countdownText = this.createText(
+      this.cameras.main.width / 2,
+      this.cameras.main.height / 2,
+      '',
+      64,
+      '#FFF'
+    );
+    countdownText.setOrigin(0.5);
 
     // タイマーイベントを設定
     const timerEvent = this.time.addEvent({
