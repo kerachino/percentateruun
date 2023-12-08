@@ -223,16 +223,41 @@ class QuizGame extends Phaser.Scene {
 
     // タイマーを設定して、一定時間経過後に自動的に入力画面に進む
     const timerDuration = 5000; // タイマーの総時間（ミリ秒）
+<<<<<<< HEAD
 
+=======
+  
+    // 赤い背景のテキストを作成
+    const countdownTextBg = this.add.text(
+      this.cameras.main.width / 2,
+      this.cameras.main.height / 2,
+      '',
+      {
+        fontSize: '60px',
+        color: '#FFF',
+        backgroundColor: '#FF0000',
+        padding: {
+          left: 20,
+          right: 20,
+          top: 10,
+          bottom: 10,
+        },
+      }
+    );
+    countdownTextBg.setOrigin();
+    countdownTextBg.setVisible(false); // 最初は非表示
+    
+>>>>>>> 472c693cf4fa4382258a0298aaa0e1504194192f
     // 残り3秒になったら数字を表示
     const countdownText = this.createText(
       this.cameras.main.width / 2,
       this.cameras.main.height / 2,
       '',
-      50,
+      64,
       '#FFF'
     );
     countdownText.setOrigin(0.5);
+<<<<<<< HEAD
 
     // 赤い背景のテキストを作成
     const countdownTextBg = this.add.text(
@@ -253,6 +278,8 @@ class QuizGame extends Phaser.Scene {
     );
     countdownTextBg.setOrigin(0.5);
     countdownTextBg.setVisible(false); // 最初は非表示
+=======
+>>>>>>> 472c693cf4fa4382258a0298aaa0e1504194192f
 
     // タイマーイベントを設定
     const timerEvent = this.time.addEvent({
@@ -277,6 +304,7 @@ class QuizGame extends Phaser.Scene {
         countdownTextBg.setPosition(countdownText.x, countdownText.y);
         countdownTextBg.setScale(1.5); // 文字が一瞬大きくなる
         countdownTextBg.setVisible(true);
+<<<<<<< HEAD
 
         // Tweenアニメーションでサイズを元に戻す
         this.tweens.add({
@@ -305,6 +333,35 @@ class QuizGame extends Phaser.Scene {
       clearInterval(countdownInterval);
     }, timerDuration);
 
+=======
+
+        // Tweenアニメーションでサイズを元に戻す
+        this.tweens.add({
+          targets: countdownTextBg,
+          scaleX: 1,
+          scaleY: 1,
+          duration: 300, // 0.3秒間で元のサイズに戻る
+          onComplete: () => {
+            countdownTextBg.setVisible(false); // アニメーション終了後に非表示にする
+          },
+        });
+      } else {
+        countdownText.setText('');
+      }
+      countdownValue--;
+    };
+
+    // カウントダウン用のタイマーを1秒ごとに起動
+    const countdownInterval = setInterval(updateCountdown, 1000);
+
+    // カウントダウン用のタイマーを即座に発動させる
+    updateCountdown();
+
+    // タイマーが終了したらクリア
+    setTimeout(() => {
+      clearInterval(countdownInterval);
+    }, timerDuration);
+>>>>>>> 472c693cf4fa4382258a0298aaa0e1504194192f
 
     // // タイマーが終了したらクリア
     // setTimeout(() => {
