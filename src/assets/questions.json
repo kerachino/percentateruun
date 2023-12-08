@@ -8,7 +8,8 @@
         "surveyRespondent": "東日本に住む20代~50代",
         "source": "厚生労働省",
         "genre": "社会",
-        "level": 2
+        "level": 2,
+        "imgId": 0
     },
     {
         "number" : 2,
@@ -19,7 +20,8 @@
         "surveyRespondent": "東日本に住む20代~50代",
         "source": "厚生労働省",
         "genre": "社会",
-        "level": 2
+        "level": 2,
+        "imgId": 0
     },
 
     {
@@ -31,7 +33,8 @@
         "surveyRespondent": "東日本に住む20代~50代",
         "source": "厚生労働省",
         "genre": "社会",
-        "level": 2
+        "level": 2,
+        "imgId": 0
     },
     {
         "number" : 4,
@@ -42,7 +45,8 @@
         "surveyRespondent": "東日本に住む20代~50代",
         "source": "厚生労働省",
         "genre": "社会",
-        "level": 2
+        "level": 2,
+        "imgId": 0
     },
     {
         "number" : 5,
@@ -53,7 +57,8 @@
         "surveyRespondent": "東日本に住む20代~50代",
         "source": "厚生労働省",
         "genre": "社会",
-        "level": 2
+        "level": 2,
+        "imgId": 0
     }
 ]
   

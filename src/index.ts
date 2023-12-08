@@ -35,6 +35,8 @@ class QuizGame extends Phaser.Scene {
     this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
     this.load.image('qFrame', 'assets/imgs/qFrame3.png');
 
+    this.load.image('qImg0', 'assets/imgs/qImg/0.jpg');
+
     // for (let i = 0; i < 100; i++) {
     //   this.balloonPositions.push({
     //     id: i,
@@ -76,7 +78,7 @@ class QuizGame extends Phaser.Scene {
   }
   createText(x: number, y: number, text: string, fontsize: number, color: string): Phaser.GameObjects.Text {
     return this.add.text(x, y, text, {
-      fontFamily: 'Arial',
+      fontFamily: 'Verdana',
       fontSize: fontsize,
       color: color
     });
@@ -273,12 +275,27 @@ class QuizGame extends Phaser.Scene {
     qFrame.setPosition(this.cameras.main.width / 2, 60);
     qFrame.setScale((gameWidth - 80) / bgWidth);
 
-    this.createText(100, 100, 'Question ' + (this.currentQuestionIndex + 1), 24, '#000');
-    this.add.text(100, 150, questionText, {
-      fontSize: '18px',
-      color: '#000',
-      wordWrap: { width: this.cameras.main.width, useAdvancedWrap: true }
-    });
+    // qFrameの左端を計算
+    const qFrameLeft = qFrame.x - qFrame.displayWidth / 2;
+
+    // テキストの位置を設定
+    const textX = qFrameLeft + 40;
+    const textY = 70 + qFrame.displayHeight / 2;
+
+    // テキストの追加
+    this.createText(textX, textY, 'Question ' + (this.currentQuestionIndex + 1), 24, '#000');
+    this.add.text(textX, textY + 80, questionText, {
+      fontSize: '42px',
+      color: '#fff',
+      wordWrap: { width: qFrame.displayWidth - 40, useAdvancedWrap: true }
+    }).setOrigin(0, 0.5); // テキストの原点を左中央に設定
+
+
+    const qImg = this.add.image(0, 0, `qImg${currentQuestion.imgId}`);
+    const qImgWidth = qImg.width;
+    qImg.setOrigin(0.5, -0.075);
+    qImg.setPosition(this.cameras.main.width / 2, 60);
+    qImg.setScale((gameWidth - 80)/1.8 / qImgWidth);
 
     // タイマーを設定して、一定時間経過後に自動的に入力画面に進む
     const timerDuration = 5000; // タイマーの総時間（ミリ秒）
