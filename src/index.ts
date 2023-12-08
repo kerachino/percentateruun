@@ -427,12 +427,11 @@ class QuizGame extends Phaser.Scene {
 
   displayAnswer() {
     const currentQuestion = this.questions[this.currentQuestionIndex];
-    // ローカルストレージからユーザの回答を取得
     const answers = JSON.parse(localStorage.getItem('userAnswers') || '{}');
     const userAnswer = answers[currentQuestion.number] || 0;
 
 
-    // ユーザの回答と正解を比較し、パーセンテージの差を計算
+    // パーセンテージの差
     const correctAnswer = currentQuestion.answer;
     const difference = Math.round(Math.abs(correctAnswer - userAnswer));
 
@@ -444,6 +443,12 @@ class QuizGame extends Phaser.Scene {
       this.totalBalloons = 0;
     }
 
+    // 左下にユーザの回答を表示
+    this.createText(40, this.cameras.main.height - 100, `あなたの回答`, 18, '#FFFFFF').setOrigin(0.5,0);
+
+    this.createText(40, this.cameras.main.height - 70, userAnswer, 32, '#FFFFFF').setOrigin(0.5,0);
+
+    
     //上バー表示用
     this.differences[this.currentQuestionIndex] = difference;
 
@@ -497,7 +502,17 @@ class QuizGame extends Phaser.Scene {
                   ease: 'Linear',
                   duration: 100, // 揺れの速さ
                   yoyo: true,
-                  repeat: 5 // 数回繰り返す
+                  repeat: 3, // 数回繰り返す
+                  onComplete: () => {
+                    // 線
+                    const correctAnswerPosition = barX + (correctAnswer / 100) * barWidth;
+                    const lineGraphics = this.add.graphics();
+                    lineGraphics.lineStyle(4, 0xFF0000, 1); // 赤い線、太さ2px
+                    lineGraphics.lineBetween(correctAnswerPosition, barY - 10, correctAnswerPosition, barY + progressBarFull.height + 10);
+
+                    // バーの上に解答
+                      this.createOutlinedText(barX + (correctAnswer / 100) * barWidth, barY - 30, correctAnswer.toString(), 30, '#FF0000', '#FFFFFF');
+                  }
                 });
               }
             });
@@ -506,13 +521,14 @@ class QuizGame extends Phaser.Scene {
       }
     });
 
-    // ユーザの回答位置を示す線の描画
+    // ユーザ回答線
     const userAnswerPosition = barX + (userAnswer / 100) * barWidth;
     const lineGraphics = this.add.graphics();
-    lineGraphics.lineStyle(2, 0xFF0000, 1); // 赤い線、太さ2px
+    lineGraphics.lineStyle(4, 0x2a5aa5, 1); // 赤い線、太さ2px
     lineGraphics.lineBetween(userAnswerPosition, barY - 10, userAnswerPosition, barY + progressBarFull.height + 10);
 
-
+    // バーの上に回答
+    this.createOutlinedText(barX + (userAnswer / 100) * barWidth, barY - 30, userAnswer.toString(), 30, '#2a5aa5', '#FFFFFF');
 
     // 解説に進むためのキーボードリスナーを設定
     this.input.keyboard?.on('keydown', (event: any) => {
@@ -524,6 +540,30 @@ class QuizGame extends Phaser.Scene {
     this.showBalloonsCount();
     this.updateBalloonsCount();
   }
+
+  //袋文字作成
+  createOutlinedText(x:number, y:number, text:string, fontSize:number, textColor:string, outlineColor:string) {
+    // アウトライン用のテキスト（複数作成して周囲に配置）
+    for (let offsetX = -2; offsetX <= 2; offsetX++) {
+      for (let offsetY = -2; offsetY <= 2; offsetY++) {
+        if (offsetX !== 0 || offsetY !== 0) {
+          this.add.text(x + offsetX, y + offsetY, text, {
+            fontFamily: 'Arial',
+            fontSize: `${fontSize}px`,
+            color: outlineColor
+          }).setOrigin(0.5);
+        }
+      }
+    }
+  
+    // 実際のテキスト（前面に表示）
+    return this.add.text(x, y, text, {
+      fontFamily: 'Arial',
+      fontSize: `${fontSize}px`,
+      color: textColor,
+    }).setOrigin(0.5);
+  }
+  
 
   displayExplanation() {
     this.showBalloonsCount();
