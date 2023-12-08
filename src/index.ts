@@ -444,9 +444,9 @@ class QuizGame extends Phaser.Scene {
     }
 
     // 左下にユーザの回答を表示
-    this.createText(40, this.cameras.main.height - 100, `あなたの回答`, 18, '#FFFFFF').setOrigin(0.5,0);
+    this.createOutlinedText(40, this.cameras.main.height - 100, `あなたの回答`, 18, '#2a5aa5', '#FFFFFF');
 
-    this.createText(40, this.cameras.main.height - 70, userAnswer, 32, '#FFFFFF').setOrigin(0.5,0);
+    this.createOutlinedText(40, this.cameras.main.height - 70, userAnswer, 32, '#2a5aa5', '#FFFFFF');
 
     
     //上バー表示用
@@ -511,7 +511,7 @@ class QuizGame extends Phaser.Scene {
                     lineGraphics.lineBetween(correctAnswerPosition, barY - 10, correctAnswerPosition, barY + progressBarFull.height + 10);
 
                     // バーの上に解答
-                      this.createOutlinedText(barX + (correctAnswer / 100) * barWidth, barY - 30, correctAnswer.toString(), 30, '#FF0000', '#FFFFFF');
+                    this.createOutlinedText(barX + (correctAnswer / 100) * barWidth, barY - 30, correctAnswer.toString(), 30, '#FF0000', '#FFFFFF');
                   }
                 });
               }
@@ -526,9 +526,6 @@ class QuizGame extends Phaser.Scene {
     const lineGraphics = this.add.graphics();
     lineGraphics.lineStyle(4, 0x2a5aa5, 1); // 赤い線、太さ2px
     lineGraphics.lineBetween(userAnswerPosition, barY - 10, userAnswerPosition, barY + progressBarFull.height + 10);
-
-    // バーの上に回答
-    this.createOutlinedText(barX + (userAnswer / 100) * barWidth, barY - 30, userAnswer.toString(), 30, '#2a5aa5', '#FFFFFF');
 
     // 解説に進むためのキーボードリスナーを設定
     this.input.keyboard?.on('keydown', (event: any) => {
