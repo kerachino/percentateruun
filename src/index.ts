@@ -12,7 +12,7 @@ class QuizGame extends Phaser.Scene {
   private balloonsData: any[] = [];
   constructor() {
     super('quiz-game');
-    this.keydownListener = null; 
+    this.keydownListener = null;
     this.questions = []; // 問題を格納する配列
     this.balloons = [];
   }
@@ -77,9 +77,9 @@ class QuizGame extends Phaser.Scene {
   calculateBalloonX(columnIndex: number): number {
     const padding = 10; // バルーン間の余白
     const balloonWidth = 50; // バルーンの幅
-    return columnIndex * (balloonWidth + padding) + this.cameras.main.width/2;
+    return columnIndex * (balloonWidth + padding) + this.cameras.main.width / 2;
   }
-  
+
   calculateBalloonY(rowIndex: number): number {
     const padding = 10; // バルーン間の余白
     const balloonHeight = 50; // バルーンの高さ
@@ -102,17 +102,17 @@ class QuizGame extends Phaser.Scene {
       this.input.keyboard?.off('keydown', this.keydownListener);
     }
 
-    
+
     if (this.currentQuestionIndex >= this.questions.length) {
       // インデックスが範囲外の場合の処理（例：ゲーム終了）
       console.log("No more questions available. Game Over.");
       return; // ここで処理を終了
     }
-  
-    this.clearScene();
-    let husen=100;
 
-    
+    this.clearScene();
+    let husen = 100;
+
+
     this.createSkybg();
     this.showBalloons();
     this.createVehicle();
@@ -159,8 +159,8 @@ class QuizGame extends Phaser.Scene {
     vehicle.setScale(desiredScale);
 
     // 画像の位置を設定
-    vehicle.setOrigin(0.5, 1); 
-    vehicle.setPosition(gameWidth / 2, gameHeight +50);
+    vehicle.setOrigin(0.5, 1);
+    vehicle.setPosition(gameWidth / 2, gameHeight + 50);
 
     // 画像の下半分が画面下に隠れるように調整
     if (vehicleHeight * desiredScale / 2 > gameHeight) {
@@ -186,7 +186,7 @@ class QuizGame extends Phaser.Scene {
       }
     }
   }
-  
+
   createBalloosCountBg() {
     const bg = this.add.image(0, 0, 'balloon');
     const gameWidth = this.cameras.main.width;
@@ -194,15 +194,15 @@ class QuizGame extends Phaser.Scene {
     const scale = gameWidth / bgWidth;
     bg.setOrigin(1, 1);
     bg.setPosition(this.cameras.main.width, this.cameras.main.height);
-    bg.setScale(120/bg.width);
+    bg.setScale(120 / bg.width);
   }
   showBalloonsCount() {
     this.createBalloosCountBg();
     const balloonsText = `${this.totalBalloons}`;
-    this.createText(this.cameras.main.width-15, this.cameras.main.height -110, '残り', 30, '#FFF').setOrigin(1.25, 1);
-    this.createText(this.cameras.main.width-15, this.cameras.main.height -60, balloonsText, 50, '#FFF').setAlign('center').setOrigin(1.25, 1);
+    this.createText(this.cameras.main.width - 15, this.cameras.main.height - 110, '残り', 30, '#FFF').setOrigin(1.25, 1);
+    this.createText(this.cameras.main.width - 15, this.cameras.main.height - 60, balloonsText, 50, '#FFF').setAlign('center').setOrigin(1.25, 1);
   }
-  
+
 
   displayQuestion() {
     this.showBalloonsCount();
@@ -215,10 +215,10 @@ class QuizGame extends Phaser.Scene {
     const gameWidth = this.cameras.main.width;
     const bgWidth = qBg.width;
     qBg.setOrigin(0.5, 0);
-    qBg.setPosition(this.cameras.main.width/2, 60);
-    qBg.setScale((gameWidth-80) / bgWidth);
+    qBg.setPosition(this.cameras.main.width / 2, 60);
+    qBg.setScale((gameWidth - 80) / bgWidth);
 
-    this.createText(100, 100, 'Question ' +(this.currentQuestionIndex + 1), 24, '#000');
+    this.createText(100, 100, 'Question ' + (this.currentQuestionIndex + 1), 24, '#000');
     this.add.text(100, 150, questionText, {
       fontSize: '18px',
       color: '#000',
@@ -229,27 +229,6 @@ class QuizGame extends Phaser.Scene {
 
     // タイマーを設定して、一定時間経過後に自動的に入力画面に進む
     const timerDuration = 5000; // タイマーの総時間（ミリ秒）
-  
-    // 赤い背景のテキストを作成
-    const countdownTextBg = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height / 2,
-      '',
-      {
-        fontSize: '60px',
-        color: '#FFF',
-        backgroundColor: '#FF0000',
-        padding: {
-          left: 20,
-          right: 20,
-          top: 10,
-          bottom: 10,
-        },
-      }
-    );
-    countdownTextBg.setOrigin();
-    countdownTextBg.setVisible(false); // 最初は非表示
-    
     // 残り3秒になったら数字を表示
     const countdownText = this.createText(
       this.cameras.main.width / 2,
@@ -259,6 +238,26 @@ class QuizGame extends Phaser.Scene {
       '#FFF'
     );
     countdownText.setOrigin(0.5);
+
+    // 赤い背景のテキストを作成
+    const countdownTextBg = this.add.text(
+      this.cameras.main.width / 2,
+      this.cameras.main.height / 2,
+      '',
+      {
+        fontSize: '60px',
+        color: '#FF0000', // 赤色
+        backgroundColor: '#000000', // 背景色（黒色）
+        padding: {
+          left: 10,
+          right: 10,
+          top: 5,
+          bottom: 5,
+        },
+      }
+    );
+    countdownTextBg.setOrigin(0.5);
+    countdownTextBg.setVisible(false); // 最初は非表示
 
     // タイマーイベントを設定
     const timerEvent = this.time.addEvent({
@@ -311,7 +310,7 @@ class QuizGame extends Phaser.Scene {
       clearInterval(countdownInterval);
     }, timerDuration);
 
-  
+
     // // タイマーが終了したらクリア
     // setTimeout(() => {
     //   clearInterval(countdownInterval);
@@ -357,14 +356,14 @@ class QuizGame extends Phaser.Scene {
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
-  
+
 
   displayAnswer() {
     const currentQuestion = this.questions[this.currentQuestionIndex];
     // ローカルストレージからユーザの回答を取得
     const answers = JSON.parse(localStorage.getItem('userAnswers') || '{}');
     const userAnswer = answers[currentQuestion.number] || 0;
-    
+
 
     // ユーザの回答と正解を比較し、パーセンテージの差を計算
     const correctAnswer = currentQuestion.answer;
@@ -372,64 +371,77 @@ class QuizGame extends Phaser.Scene {
 
     // 差の分だけ風船の数を減らす
     this.totalBalloons -= difference;
-    
+
     // 風船の数が0以下にならないようにする
     if (this.totalBalloons < 0) {
       this.totalBalloons = 0;
     }
 
-      // バーの作成と初期化
-      const barHeight = 20;
-      const barWidth = this.cameras.main.width * 0.5;
-      const barX = (this.cameras.main.width - barWidth) / 2 +100;
-      const barY = this.cameras.main.height - 100;
+    // バーの作成と初期化
+    const barHeight = 20;
+    const barWidth = this.cameras.main.width * 0.8;
+    // const barX = (this.cameras.main.width - barWidth) / 2 +100;
+    const barX = (this.cameras.main.width - barWidth) / 2;
+    const barY = this.cameras.main.height - 100;
 
-      // バーを表す画像の配置
-      const progressBarFull = this.add.image(barX, barY, 'progressBarFull').setOrigin(0, 0).setScale(1, 1);
+    // バーを表す画像の配置
+    const progressBarFull = this.add.image(barX, barY, 'progressBarFull')
+    progressBarFull.setOrigin(0, 0).setScale(barWidth / progressBarFull.width, 1);
+    //console.log(this.cameras.main.width+","+barWidth+","+barX);
+    //console.log(progressBarFull.width+",");
 
-      // バーを隠す黒い画像の配置
-      const progressBarCover = this.add.image(progressBarFull.width+barX, barY, 'progressBarCover').setOrigin(1, 0);
-      progressBarCover.displayWidth = progressBarFull.width;
-      progressBarCover.displayHeight = progressBarFull.height;
-    
-      // アニメーション
-      // まず2秒で100%
-      this.tweens.add({
-        targets: progressBarCover,
-        displayWidth: 0,
-        ease: 'Linear',
-        duration: 2000,
-        onComplete: () => {
-          // 次に5秒かけて答えの位置まで幅を縮める
-          this.tweens.add({
-            targets: progressBarCover,
-            setOrigin: barX,
-            displayWidth: progressBarFull.width - (correctAnswer / 100) * progressBarFull.width, // 答えの位置まで幅を縮める
-            ease: 'Linear',
-            duration: 5000,
-            onComplete: () => {
-              // 最後に素早く上がったり下がったりするアニメーション
-              this.tweens.add({
-                targets: progressBarCover,
-                displayWidth: {
-                  from: progressBarFull.width - (correctAnswer / 100) * progressBarFull.width,
-                  to: progressBarFull.width - (correctAnswer / 100) * progressBarFull.width + Phaser.Math.Between(15, 30) // 細かい左右の揺れ
-                },
-                ease: 'Linear',
-                duration: 100, // 揺れの速さ
-                yoyo: true,
-                repeat: 5 // 数回繰り返す
-              });
-            }
-          });
-        }
-      });
+    // バーを隠す黒い画像の配置
+    // const progressBarCover = this.add.image(progressBarFull.width+barX, barY, 'progressBarCover')
+    const progressBarCover = this.add.image(barWidth + barX, barY, 'progressBarCover')
+    progressBarCover.setOrigin(1, 0).setScale(barWidth / progressBarCover.width, 1);
+    progressBarCover.displayWidth = progressBarFull.width;
+    progressBarCover.displayHeight = progressBarFull.height;
 
-      // ユーザの回答位置を示す線の描画
-      const userAnswerPosition = barX + (userAnswer / 100) * progressBarFull.width;
-      const lineGraphics = this.add.graphics();
-      lineGraphics.lineStyle(2, 0xFF0000, 1); // 赤い線、太さ2px
-      lineGraphics.lineBetween(userAnswerPosition, barY - 10, userAnswerPosition, barY + progressBarFull.height + 10);
+    this.tweens.add({
+      targets: progressBarCover,
+      displayWidth: 0,
+      ease: 'Linear',
+      duration: 2000,
+      onComplete: () => {
+        this.tweens.add({
+          targets: progressBarCover,
+          displayWidth: barWidth,
+          ease: 'Linear',
+          duration: 2000,
+          onComplete: () => {
+            // 次に5秒かけて答えの位置まで幅を縮める
+            this.tweens.add({
+              targets: progressBarCover,
+              //setOrigin: barX,
+              displayWidth: barWidth - (correctAnswer / 100) * barWidth, // 答えの位置まで幅を縮める
+              ease: 'Linear',
+              duration: 5000,
+              onComplete: () => {
+                // 最後に素早く上がったり下がったりするアニメーション
+                this.tweens.add({
+                  targets: progressBarCover,
+                  displayWidth: {
+                    from: barWidth - (correctAnswer / 100) * barWidth,
+                    to: barWidth - (correctAnswer / 100) * barWidth + Phaser.Math.Between(15, 30) // 細かい左右の揺れ
+                  },
+                  ease: 'Linear',
+                  duration: 100, // 揺れの速さ
+                  yoyo: true,
+                  repeat: 5 // 数回繰り返す
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+
+    // ユーザの回答位置を示す線の描画
+    const userAnswerPosition = barX + (userAnswer / 100) * barWidth;
+    const lineGraphics = this.add.graphics();
+    lineGraphics.lineStyle(2, 0xFF0000, 1); // 赤い線、太さ2px
+    lineGraphics.lineBetween(userAnswerPosition, barY - 10, userAnswerPosition, barY + progressBarFull.height + 10);
+
 
 
     // 解説に進むためのキーボードリスナーを設定
@@ -488,7 +500,7 @@ class QuizGame extends Phaser.Scene {
     answers[questionNumber] = userAnswer;
     localStorage.setItem('userAnswers', JSON.stringify(answers));
   }
-  
+
 }
 
 const config: Phaser.Types.Core.GameConfig = {
