@@ -11,6 +11,8 @@ class QuizGame extends Phaser.Scene {
   private balloonPositions: { id: number, x: number, y: number, colorId: number }[] = [];
   private balloonsData: any[] = [];
   private bgImage: any;
+
+  private differences: number[] = [0, 0, 0, 0, 0];
   constructor() {
     super('quiz-game');
     this.keydownListener = null;
@@ -114,11 +116,12 @@ class QuizGame extends Phaser.Scene {
       return;
     }
     
-    this.clearScene(); //処理を軽くするには下をfirstStepに入れ、これを削除できるようにする
-    this.updateBg();
-    this.showBalloons();
-    this.createVehicle();
-    // let husen = 100;
+    // this.clearScene(); //処理を軽くするには下をfirstStepに入れ、これを削除できるようにする
+    // this.updateBg();
+    // this.showBalloons();
+    // this.createVehicle();
+
+    this.displayQuestionNumber();
     
     switch (step) {
       case 'firstStep':
@@ -139,10 +142,27 @@ class QuizGame extends Phaser.Scene {
     }
   }
 
+  displayQuestionNumber() {//上バー
+    const circleRadius = 20;
+    const circleSpacing = 50;
+    const startX = this.cameras.main.width / 2 - (circleSpacing * (this.questions.length - 1)) / 2;
+    const startY = 50;
+  
+    for (let i = 0; i < this.questions.length; i++) {
+      const circleX = startX + i * circleSpacing;
+      const color = i === this.currentQuestionIndex ? 0xFF0000 : 0xAAAAAA; // 現在の問題は赤、それ以外は灰色
+  
+      const circle = this.add.circle(circleX, startY, circleRadius, color);
+      const difference = this.differences[i]; // 配列からdifferenceの値を取得
+      this.createText(circleX, startY, difference.toString(), 16, '#FFFFFF').setOrigin(0.5);
+    }
+  }
+  
+  
   firstStep(){
-    // this.updateBg();
-    // this.showBalloons();
-    // this.createVehicle();
+    this.updateBg();
+    this.showBalloons();
+    this.createVehicle();
 
     this.currentStep = 'question';
     this.displayStep(this.currentStep);
@@ -394,6 +414,9 @@ class QuizGame extends Phaser.Scene {
     if (this.totalBalloons < 0) {
       this.totalBalloons = 0;
     }
+
+    //上バー表示用
+    this.differences[this.currentQuestionIndex] = difference;
 
     // バーの作成と初期化
     const barHeight = 20;
