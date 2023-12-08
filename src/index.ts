@@ -113,13 +113,11 @@ class QuizGame extends Phaser.Scene {
       alert("No more questions available. Game Over.");
       return;
     }
-
-
+    
+    this.clearScene(); //処理を軽くするには下をfirstStepに入れ、これを削除できるようにする
     this.updateBg();
     this.showBalloons();
     this.createVehicle();
-    
-    this.clearScene(); //処理を軽くするには上をfirstStepに入れ、これを削除できるようにする
     // let husen = 100;
     
     switch (step) {
