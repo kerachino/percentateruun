@@ -242,8 +242,6 @@ class QuizGame extends Phaser.Scene {
       wordWrap: { width: this.cameras.main.width, useAdvancedWrap: true }
     });
 
-    this.displayInput();
-
     // タイマーを設定して、一定時間経過後に自動的に入力画面に進む
     const timerDuration = 5000; // タイマーの総時間（ミリ秒）
 
@@ -328,12 +326,6 @@ class QuizGame extends Phaser.Scene {
       clearInterval(countdownInterval);
     }, timerDuration);
 
-
-    // // タイマーが終了したらクリア
-    // setTimeout(() => {
-    //   clearInterval(countdownInterval);
-    // }, countdownThreshold);
-
     // ユーザ入力に進むためのキーボードリスナーを設定
     // this.keydownListener = (event: any) => {
     //   if (event.key === 'Enter') {
@@ -342,9 +334,9 @@ class QuizGame extends Phaser.Scene {
     //   }
     // };
     // this.input.keyboard?.on('keydown', this.keydownListener);
-  }
 
-  displayInput() {
+
+    //input
     this.updateBalloonsCount();
     // ユーザ入力用のテキストフィールドを作成 (仮の実装)
     const inputText = this.add.text(100, 200, '', {
@@ -363,6 +355,8 @@ class QuizGame extends Phaser.Scene {
         // バックスペース ,文字削除
         inputText.setText(inputText.text.slice(0, -1));
       } else if (event.key === 'Enter' && inputText.text) {
+        // タイマーを停止
+        timerEvent.remove();
         // Enter
         const currentQuestion = this.questions[this.currentQuestionIndex];
         const userAnswer = inputText.text; // ユーザの回答を取得
