@@ -246,13 +246,13 @@ class QuizGame extends Phaser.Scene {
       '',
       {
         fontSize: '60px',
-        color: '#FF0000', // 赤色
-        backgroundColor: '#000000', // 背景色（黒色）
+        color: '#000', // 赤色
+        backgroundColor: '#FF0000', // 背景色（黒色）
         padding: {
-          left: 10,
-          right: 10,
-          top: 5,
-          bottom: 5,
+          left: 20,
+          right: 20,
+          top: 10,
+          bottom: 10,
         },
       }
     );
