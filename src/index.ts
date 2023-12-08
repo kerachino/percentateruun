@@ -31,7 +31,7 @@ class QuizGame extends Phaser.Scene {
 
     this.load.image('progressBarFull', 'assets/imgs/progressBarFull.png');
     this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
-    this.load.image('qBg', 'assets/imgs/qBg.png');
+    this.load.image('qFrame', 'assets/imgs/qFrame.png');
 
     // for (let i = 0; i < 100; i++) {
     //   this.balloonPositions.push({
@@ -234,12 +234,12 @@ class QuizGame extends Phaser.Scene {
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const questionText = currentQuestion.question;
 
-    const qBg = this.add.image(0, 0, 'qBg');
+    const qFrame = this.add.image(0, 0, 'qFrame');
     const gameWidth = this.cameras.main.width;
-    const bgWidth = qBg.width;
-    qBg.setOrigin(0.5, 0);
-    qBg.setPosition(this.cameras.main.width / 2, 60);
-    qBg.setScale((gameWidth - 80) / bgWidth);
+    const bgWidth = qFrame.width;
+    qFrame.setOrigin(0.5, 0);
+    qFrame.setPosition(this.cameras.main.width / 2, 60);
+    qFrame.setScale((gameWidth - 80) / bgWidth);
 
     this.createText(100, 100, 'Question ' + (this.currentQuestionIndex + 1), 24, '#000');
     this.add.text(100, 150, questionText, {
