@@ -31,7 +31,7 @@ class QuizGame extends Phaser.Scene {
 
     this.load.image('progressBarFull', 'assets/imgs/progressBarFull.png');
     this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
-    this.load.image('qFrame', 'assets/imgs/qFrame.png');
+    this.load.image('qFrame', 'assets/imgs/qFrame3.png');
 
     // for (let i = 0; i < 100; i++) {
     //   this.balloonPositions.push({
