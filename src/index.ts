@@ -51,7 +51,11 @@ class QuizGame extends Phaser.Scene {
     // JSONデータの読み込み
     this.balloonsData = this.cache.json.get('balloonsData');
   }
+
   showBalloons(){
+     // 風船配列をクリア
+    this.balloons.forEach(balloon => balloon.destroy());
+    this.balloons = [];
     // バルーンの配置
     this.balloonsData.forEach((balloonData: { id: number, x: number, y: number, colorId: number }) => {
       const balloonType = `balloon${balloonData.colorId}`;
@@ -59,6 +63,7 @@ class QuizGame extends Phaser.Scene {
       const posY = this.calculateBalloonY(balloonData.y);
       const balloon = this.add.image(posX, posY, balloonType).setOrigin(0.5, 0);
       // その他のバルーン設定...
+      this.balloons.push(balloon);
     });
   }
   createText(x: number, y: number, text: string, fontsize: number, color: string): Phaser.GameObjects.Text {
@@ -173,6 +178,7 @@ class QuizGame extends Phaser.Scene {
   }
 
   updateBalloonsCount() {
+    console.log(this.balloons.length)
     while (this.balloons.length > this.totalBalloons) {
       const balloonToRemove = this.balloons.pop();
       if (balloonToRemove) {
