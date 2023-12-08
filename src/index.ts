@@ -116,10 +116,10 @@ class QuizGame extends Phaser.Scene {
       return;
     }
     
-    // this.clearScene(); //処理を軽くするには下をfirstStepに入れ、これを削除できるようにする
-    // this.updateBg();
-    // this.showBalloons();
-    // this.createVehicle();
+    this.clearScene(); //処理を軽くするには下をfirstStepに入れ、これを削除できるようにする
+    this.updateBg();
+    this.showBalloons();
+    this.createVehicle();
 
     this.displayQuestionNumber();
     
@@ -160,9 +160,9 @@ class QuizGame extends Phaser.Scene {
   
   
   firstStep(){
-    this.updateBg();
-    this.showBalloons();
-    this.createVehicle();
+    // this.updateBg();
+    // this.showBalloons();
+    // this.createVehicle();
 
     this.currentStep = 'question';
     this.displayStep(this.currentStep);
