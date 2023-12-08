@@ -140,7 +140,7 @@ class QuizGame extends Phaser.Scene {
       repeat: -1 // 無限に繰り返す
     });
   }
-  createVehicle() {
+  createVehicle() { //バスケット、乗り物、搭乗位置
     const vehicle = this.add.image(0, 0, 'vehicle');
     const gameWidth = this.cameras.main.width;
     const gameHeight = this.cameras.main.height;
@@ -154,7 +154,7 @@ class QuizGame extends Phaser.Scene {
     vehicle.setScale(desiredScale);
 
     // 画像の位置を設定
-    vehicle.setOrigin(0.5, 1);
+    vehicle.setOrigin(0.5, 1); 
     vehicle.setPosition(gameWidth / 2, gameHeight +50);
 
     // 画像の下半分が画面下に隠れるように調整
@@ -374,7 +374,7 @@ setTimeout(() => {
 
       // バーの作成と初期化
       const barHeight = 20;
-      const barWidth = this.cameras.main.width * 0.8;
+      const barWidth = this.cameras.main.width * 0.5;
       const barX = (this.cameras.main.width - barWidth) / 2 +100;
       const barY = this.cameras.main.height - 100;
 
