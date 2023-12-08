@@ -10,6 +10,7 @@ class QuizGame extends Phaser.Scene {
   private balloons: Phaser.GameObjects.Image[];
   private balloonPositions: { id: number, x: number, y: number, colorId: number }[] = [];
   private balloonsData: any[] = [];
+  private bgImage: any;
   constructor() {
     super('quiz-game');
     this.keydownListener = null;
@@ -20,7 +21,8 @@ class QuizGame extends Phaser.Scene {
   preload() {
     this.load.json('questions', 'assets/questions.json');
     this.load.json('balloonsData', 'assets/balloons.json');
-    this.load.image('sky', 'assets/imgs/sky.png');
+    this.load.image('bg2', 'assets/imgs/bg2.png');
+    this.load.image('bg1', 'assets/imgs/bg1.jpg');
     this.load.image('vehicle', 'assets/imgs/vehicle.png');
     for (let i = 0; i <= 7; i++) {
       this.load.image(`balloon${i}`, `assets/imgs/balloon${i}.png`);
@@ -47,9 +49,13 @@ class QuizGame extends Phaser.Scene {
     this.questions = this.getRandomQuestions(allQuestions, 5);
     this.currentQuestionIndex = 0;
     this.displayStep(this.currentStep);
+    // this.bgImage = this.add.image(0, 0, 'bg2').setOrigin(0, 0);
+
 
     // JSONデータの読み込み
     this.balloonsData = this.cache.json.get('balloonsData');
+    
+
   }
 
   showBalloons(){
@@ -112,8 +118,7 @@ class QuizGame extends Phaser.Scene {
     this.clearScene();
     let husen = 100;
 
-
-    this.createSkybg();
+    this.updateBg();
     this.showBalloons();
     this.createVehicle();
 
@@ -133,16 +138,20 @@ class QuizGame extends Phaser.Scene {
     }
   }
 
-  createSkybg() {
-    // 背景画像
-    const sky = this.add.image(0, 0, 'sky').setOrigin(0, 0);
+  changeBackground(newBgKey: string) {
+    const newBg = this.add.image(0, 0, newBgKey).setOrigin(0, 0);
+
     this.tweens.add({
-      targets: sky,
+      targets: newBg,
       y: '-=50', // Y座標をピクセル上に移動
       // ease: 'Sine.easeInOut', // イージング関数
-      duration: 15000, // 一回の動きにかける時間（ミリ秒）
+      duration: 15000, // 一回の動きにかける時間
       yoyo: true, // 元の位置に戻る
-      repeat: -1 // 無限に繰り返す
+      repeat: -1, // 無限に繰り返す
+      onComplete: () => {
+        this.bgImage.destroy();
+        this.bgImage = newBg;
+      }
     });
   }
   createVehicle() { //バスケット、乗り物、搭乗位置
@@ -178,12 +187,20 @@ class QuizGame extends Phaser.Scene {
   }
 
   updateBalloonsCount() {
-    console.log(this.balloons.length)
     while (this.balloons.length > this.totalBalloons) {
       const balloonToRemove = this.balloons.pop();
       if (balloonToRemove) {
         balloonToRemove.destroy();
       }
+    }
+  }
+
+  updateBg(){
+    // 風船の数に応じて背景を変更
+    if (this.totalBalloons > 50) {
+      this.changeBackground('bg2');
+    } else if (this.totalBalloons <= 50) {
+      this.changeBackground('bg1');
     }
   }
 
