@@ -287,7 +287,7 @@ class QuizGame extends Phaser.Scene {
     this.add.text(textX, textY + 80, questionText, {
       fontSize: '42px',
       color: '#fff',
-      wordWrap: { width: qFrame.displayWidth - 40, useAdvancedWrap: true }
+      wordWrap: { width: qFrame.displayWidth - 60, useAdvancedWrap: true }
     }).setOrigin(0, 0.5); // テキストの原点を左中央に設定
 
 
@@ -394,24 +394,30 @@ class QuizGame extends Phaser.Scene {
     //input
     this.updateBalloonsCount();
     // ユーザ入力テキストフィールド
-    // 四角い背景の描画
+    // 四角い背景
     const bgGraphics = this.add.graphics();
-    const rectWidth = 300; // テキストフィールドの幅
-    const rectHeight = 100; // テキストフィールドの高さ
-    const textFieldX = 200; // X座標
-    const textFieldY = 200; // Y座標
+    const rectWidth = 300;
+    const rectHeight = 120;
 
-    bgGraphics.fillStyle(0xffffff, 1); // 白色で塗りつぶし
-    bgGraphics.fillRect(textFieldX, textFieldY, rectWidth, rectHeight);
-
-    // テキストフィールド
-    const inputText = this.add.text(textFieldX + 10, textFieldY + 10, '', {
-      fontSize: '64px',
-      color: '#000000'
+    this.add.text(textX + 10, this.cameras.main.height - rectHeight + 10, '数字を入力してください', {
+      fontSize: '14px',
+      color: '#2a5aa5'
     });
 
+    bgGraphics.fillStyle(0xffffff, 1);
+    bgGraphics.fillRect(textX, this.cameras.main.height -rectHeight, rectWidth, rectHeight);
+
+    // テキストフィールド
+    const inputText = this.add.text(textX + 20, this.cameras.main.height - rectHeight+40, '', {
+      fontSize: '64px',
+      color: '#2a5aa5',
+      fontFamily: 'Lobster',
+    });
+    // const inputText = this.createOutlinedText(textX + 10, this.cameras.main.height - rectHeight+40, '', 64, '#2a5aa5', '#2a5aa5');
+
+
     // 点滅するカーソル
-    const cursor = this.add.text(inputText.x + inputText.width + 5, inputText.y, '|', {
+    const cursor = this.add.text(inputText.x -25 + inputText.width + 5, inputText.y, '|', {
       fontSize: '64px',
       color: '#000000'
     });
@@ -538,7 +544,7 @@ class QuizGame extends Phaser.Scene {
                     // 線
                     const correctAnswerPosition = barX + (correctAnswer / 100) * barWidth;
                     const lineGraphics = this.add.graphics();
-                    lineGraphics.lineStyle(4, 0xFF0000, 1); // 赤い線、太さ2px
+                    lineGraphics.lineStyle(4, 0xFF0000, 1);
                     lineGraphics.lineBetween(correctAnswerPosition, barY - 10, correctAnswerPosition, barY + progressBarFull.height + 10);
 
                     // バーの上に解答
@@ -555,7 +561,7 @@ class QuizGame extends Phaser.Scene {
     // ユーザ回答線
     const userAnswerPosition = barX + (userAnswer / 100) * barWidth;
     const lineGraphics = this.add.graphics();
-    lineGraphics.lineStyle(4, 0x2a5aa5, 1); // 赤い線、太さ2px
+    lineGraphics.lineStyle(4, 0x2a5aa5, 1);
     lineGraphics.lineBetween(userAnswerPosition, barY - 10, userAnswerPosition, barY + progressBarFull.height + 10);
 
     // 解説に進むためのキーボードリスナーを設定
