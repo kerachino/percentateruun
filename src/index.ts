@@ -270,25 +270,30 @@ class QuizGame extends Phaser.Scene {
 
     const qFrame = this.add.image(0, 0, 'qFrame');
     const gameWidth = this.cameras.main.width;
+    const gameHeight = this.cameras.main.height;
     const bgWidth = qFrame.width;
+    const bgHeight = qFrame.height;
     qFrame.setOrigin(0.5, 0);
     qFrame.setPosition(this.cameras.main.width / 2, 60);
-    qFrame.setScale((gameWidth - 80) / bgWidth);
+    if(gameWidth < gameHeight){
+      qFrame.setScale((gameWidth - 80) / bgWidth);
+    }else{
+      qFrame.setScale((gameHeight - 80) / bgHeight);
+    }
 
     // qFrameの左端を計算
     const qFrameLeft = qFrame.x - qFrame.displayWidth / 2;
 
-    // テキストの位置を設定
+    // テキスト
     const textX = qFrameLeft + 40;
     const textY = 70 + qFrame.displayHeight / 2;
 
-    // テキストの追加
     this.createText(textX, textY, 'Question ' + (this.currentQuestionIndex + 1), 24, '#000');
     this.add.text(textX, textY + 80, questionText, {
       fontSize: '42px',
       color: '#fff',
       wordWrap: { width: qFrame.displayWidth - 60, useAdvancedWrap: true }
-    }).setOrigin(0, 0.5); // テキストの原点を左中央に設定
+    }).setOrigin(0, 0.5);
 
 
     const qImg = this.add.image(0, 0, `qImg${currentQuestion.imgId}`);
@@ -297,18 +302,18 @@ class QuizGame extends Phaser.Scene {
     qImg.setPosition(this.cameras.main.width / 2, 60);
     qImg.setScale((gameWidth - 80)/1.8 / qImgWidth);
 
-    // タイマーを設定して、一定時間経過後に自動的に入力画面に進む
-    const timerDuration = 5000; // タイマーの総時間（ミリ秒）
+    // タイマー
+    const timerDuration = 5000; // タイマーの総時間
 
-    // 赤い背景のテキストを作成
+    // 赤い背景のテキスト
     const countdownTextBg = this.add.text(
       this.cameras.main.width / 2,
       this.cameras.main.height / 2,
       '',
       {
         fontSize: '60px',
-        color: '#000', // 赤色
-        backgroundColor: '#FF0000', // 背景色（黒色）
+        color: '#000',
+        backgroundColor: '#FF0000',
         padding: {
           left: 20,
           right: 20,
@@ -330,7 +335,7 @@ class QuizGame extends Phaser.Scene {
     );
     countdownText.setOrigin(0.5);
 
-    // タイマーイベントを設定
+    // タイマーイベント
     const timerEvent = this.time.addEvent({
       delay: timerDuration,
       callback: () => {
