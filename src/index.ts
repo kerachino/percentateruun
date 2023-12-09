@@ -14,9 +14,9 @@ class QuizGame extends Phaser.Scene {
   private keydownListener: any; //イベントリスナーの参照保持 ?必要っぽい
   private allQuestions = 3;
   private balloons: Phaser.GameObjects.Image[];
-  private balloonPositions: { id: number, x: number, y: number, colorId: number }[] = [];
+  // private balloonPositions: { id: number, x: number, y: number, colorId: number }[] = [];
   private balloonsData: any[] = [];
-  private bgImage: any;
+  // private bgImage: any;
   private inputText: any;
   private mbBool: boolean;
   private mainWidth: number;
