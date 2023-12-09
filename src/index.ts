@@ -18,6 +18,7 @@ class QuizGame extends Phaser.Scene {
   private balloonsData: any[] = [];
   private bgImage: any;
   private inputText: any;
+  private mbBool: boolean;
 
   private differences: number[] = [0, 0, 0, 0, 0];
   constructor() {
@@ -25,10 +26,15 @@ class QuizGame extends Phaser.Scene {
     this.keydownListener = null;
     this.questions = []; // 問題を格納する配列
     this.balloons = [];
-    
+    this.mbBool = true;
   }
 
   preload() {
+    if(this.cameras.main.width < 799){
+      this.mbBool = true;
+    }else{
+      this.mbBool = false;
+    }
     this.load.json('questions', 'assets/questions.json');
     this.load.json('balloonsData', 'assets/balloons.json');
     this.load.image('bg2', 'assets/imgs/bg2.png');
@@ -115,10 +121,10 @@ class QuizGame extends Phaser.Scene {
   }
 
   displayStep(step: string) {
-    // 既存のリスナーを削除
-    if (this.keydownListener) {
-      this.input.keyboard?.off('keydown', this.keydownListener);
-    }
+    // 既存のリスナーを削除　たぶん解決済み
+    // if (this.keydownListener) {
+    //   this.input.keyboard?.off('keydown', this.keydownListener);
+    // }
 
     if (this.currentQuestionIndex >= this.questions.length) {
       // インデックスが範囲外の場合の処理（例：ゲーム終了）
@@ -353,6 +359,7 @@ class QuizGame extends Phaser.Scene {
     const timerEvent = this.time.addEvent({
       delay: timerDuration,
       callback: () => {
+        window.showInputField(false);
         this.currentStep = 'answer';
         this.input.keyboard?.removeAllListeners(); // タイマーが発動したのでリスナーをクリア
         this.displayStep(this.currentStep);
@@ -436,7 +443,9 @@ class QuizGame extends Phaser.Scene {
 
     // const inputText = this.createOutlinedText(textX + 10, this.cameras.main.height - rectHeight+40, '', 64, '#2a5aa5', '#2a5aa5');
 
-    window.showInputField(true);
+    if(this.mbBool){//モバイルなら
+      window.showInputField(true);
+    }
     
     // 点滅するカーソル
     const cursor = this.add.text(this.inputText.x -25 + this.inputText.width + 5, this.inputText.y, '|', {
@@ -473,6 +482,8 @@ class QuizGame extends Phaser.Scene {
         timerEvent.remove();
         //
         window.showInputField(false);
+        //キーを削除(軽くするため)
+        this.input.keyboard?.off('keydown', this.keydownListener);
         // Enter
         const currentQuestion = this.questions[this.currentQuestionIndex];
         const userAnswer = this.inputText.text; // ユーザの回答を取得
@@ -589,12 +600,14 @@ class QuizGame extends Phaser.Scene {
     lineGraphics.lineBetween(userAnswerPosition, barY - 10, userAnswerPosition, barY + progressBarFull.height + 10);
 
     // 解説に進むためのキーボードリスナーを設定
-    this.input.keyboard?.on('keydown', (event: any) => {
+    this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
+        this.input.keyboard?.off('keydown', this.keydownListener);
         this.currentStep = 'explanation';
         this.displayStep(this.currentStep);
       }
-    });
+    };
+    this.input.keyboard?.on('keydown', this.keydownListener);
     this.showBalloonsCount();
     this.updateBalloonsCount();
   }
@@ -642,10 +655,11 @@ class QuizGame extends Phaser.Scene {
     this.createText(60, rectY + 70, '情報源: ' + currentQuestion.source, 16, '#000000');
 
     // 次の問題に進むためのキーボードリスナーを設定
-    this.input.keyboard?.on('keydown', (event: any) => {
+    this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
         this.currentQuestionIndex++;
         if (this.currentQuestionIndex < this.questions.length) {
+          this.input.keyboard?.off('keydown', this.keydownListener);
           this.currentStep = 'question';
           this.displayStep(this.currentStep);
         } else {
@@ -656,7 +670,8 @@ class QuizGame extends Phaser.Scene {
           });
         }
       }
-    });
+    };
+    this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
   clearScene() {
@@ -683,4 +698,13 @@ const config: Phaser.Types.Core.GameConfig = {
   }
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+// リサイズイベント
+window.addEventListener('resize', () => {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  // Phaser ゲームインスタンスのサイズを更新
+  game.scale.resize(width, height);
+});
