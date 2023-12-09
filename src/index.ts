@@ -1,4 +1,10 @@
 import * as Phaser from 'phaser';
+declare global {
+  interface Window {
+    showInputField: () => void;
+    inputText: Phaser.GameObjects.Text;
+  }
+}
 
 class QuizGame extends Phaser.Scene {
   private totalBalloons: number = 100; // 風船の初期数
@@ -11,6 +17,7 @@ class QuizGame extends Phaser.Scene {
   private balloonPositions: { id: number, x: number, y: number, colorId: number }[] = [];
   private balloonsData: any[] = [];
   private bgImage: any;
+  private inputText: any;
 
   private differences: number[] = [0, 0, 0, 0, 0];
   constructor() {
@@ -18,6 +25,7 @@ class QuizGame extends Phaser.Scene {
     this.keydownListener = null;
     this.questions = []; // 問題を格納する配列
     this.balloons = [];
+    
   }
 
   preload() {
@@ -268,20 +276,21 @@ class QuizGame extends Phaser.Scene {
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const questionText = currentQuestion.question;
 
+    // qFrame サイズと位置 (よく分からんけどそのまま持ってきた)
     const qFrame = this.add.image(0, 0, 'qFrame');
     const gameWidth = this.cameras.main.width;
     const gameHeight = this.cameras.main.height;
-    const bgWidth = qFrame.width;
-    const bgHeight = qFrame.height;
     qFrame.setOrigin(0.5, 0);
     qFrame.setPosition(this.cameras.main.width / 2, 60);
-    if(gameWidth < gameHeight){
-      qFrame.setScale((gameWidth - 80) / bgWidth);
-    }else{
-      qFrame.setScale((gameHeight - 80) / bgHeight);
-    }
-
-    // qFrameの左端を計算
+  
+    const scaleForWidth = (gameWidth - 80) / qFrame.width;
+    const scaleForHeight = (gameHeight - 120) / qFrame.height;
+    qFrame.setScale(Math.min(scaleForWidth, scaleForHeight));
+  
+    const qFrameDisplayWidth = qFrame.width * qFrame.scaleX;
+    const qFrameDisplayHeight = qFrame.height * qFrame.scaleY;
+  
+    const qFrameTopHalfY = qFrame.y + qFrameDisplayHeight / 4;
     const qFrameLeft = qFrame.x - qFrame.displayWidth / 2;
 
     // テキスト
@@ -296,11 +305,16 @@ class QuizGame extends Phaser.Scene {
     }).setOrigin(0, 0.5);
 
 
+    // qImgの配置
     const qImg = this.add.image(0, 0, `qImg${currentQuestion.imgId}`);
-    const qImgWidth = qImg.width;
-    qImg.setOrigin(0.5, -0.075);
-    qImg.setPosition(this.cameras.main.width / 2, 60);
-    qImg.setScale((gameWidth - 80)/1.8 / qImgWidth);
+    qImg.setOrigin(0.5, 0.5);
+    qImg.setPosition(this.cameras.main.width / 2, qFrameTopHalfY);
+
+    // qImgをqFrameの上半分に収めるようにスケール調整
+    const maxQImgWidth = qFrameDisplayWidth * 0.8; // qFrame幅の80%
+    const maxQImgHeight = qFrameDisplayHeight / 2 * 0.8; // qFrame高さの上半分の80%
+    const qImgScale = Math.min(maxQImgWidth / qImg.width, maxQImgHeight / qImg.height);
+    qImg.setScale(qImgScale);
 
     // タイマー
     const timerDuration = 5000; // タイマーの総時間
@@ -413,16 +427,19 @@ class QuizGame extends Phaser.Scene {
     bgGraphics.fillRect(textX, this.cameras.main.height -rectHeight, rectWidth, rectHeight);
 
     // テキストフィールド
-    const inputText = this.add.text(textX + 20, this.cameras.main.height - rectHeight+40, '', {
+    this.inputText = this.add.text(textX + 20, this.cameras.main.height - rectHeight+40, '', {
       fontSize: '64px',
       color: '#2a5aa5',
       fontFamily: 'Lobster',
     });
+    window.inputText = this.inputText;
+
     // const inputText = this.createOutlinedText(textX + 10, this.cameras.main.height - rectHeight+40, '', 64, '#2a5aa5', '#2a5aa5');
 
-
+    window.showInputField();
+    
     // 点滅するカーソル
-    const cursor = this.add.text(inputText.x -25 + inputText.width + 5, inputText.y, '|', {
+    const cursor = this.add.text(this.inputText.x -25 + this.inputText.width + 5, this.inputText.y, '|', {
       fontSize: '64px',
       color: '#000000'
     });
@@ -440,23 +457,23 @@ class QuizGame extends Phaser.Scene {
     this.keydownListener = (event: any) => {
       if (!isNaN(parseInt(event.key))) {
         // 数字が入力された場合
-        const potentialText = inputText.text + event.key;
+        const potentialText = this.inputText.text + event.key;
         if (parseInt(potentialText) <= 100) {
-          inputText.setText(potentialText);
+          this.inputText.setText(potentialText);
         }
 
         // カーソルの点滅を停止
         cursorBlinkEvent.remove();
         cursor.setVisible(false);
-      } else if (event.key === 'Backspace' && inputText.text.length > 0) {
+      } else if (event.key === 'Backspace' && this.inputText.text.length > 0) {
         // バックスペース ,文字削除
-        inputText.setText(inputText.text.slice(0, -1));
-      } else if (event.key === 'Enter' && inputText.text) {
+        this.inputText.setText(this.inputText.text.slice(0, -1));
+      } else if (event.key === 'Enter' && this.inputText.text) {
         // タイマーを停止
         timerEvent.remove();
         // Enter
         const currentQuestion = this.questions[this.currentQuestionIndex];
-        const userAnswer = inputText.text; // ユーザの回答を取得
+        const userAnswer = this.inputText.text; // ユーザの回答を取得
         this.saveAnswerToLocalStorage(currentQuestion.number, parseInt(userAnswer));
         // 回答画面に進む
         this.currentStep = 'answer';
