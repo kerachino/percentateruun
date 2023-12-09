@@ -19,6 +19,8 @@ class QuizGame extends Phaser.Scene {
   private bgImage: any;
   private inputText: any;
   private mbBool: boolean;
+  private mainWidth: number;
+  private mainHeight: number;
 
   private differences: number[] = [0, 0, 0, 0, 0];
   constructor() {
@@ -27,10 +29,14 @@ class QuizGame extends Phaser.Scene {
     this.questions = []; // 問題を格納する配列
     this.balloons = [];
     this.mbBool = true;
+    this.mainWidth = 0;
+    this.mainHeight = 0;
   }
 
   preload() {
-    if(this.cameras.main.width < 799){
+    this.mainWidth = this.cameras.main.width;
+    this.mainHeight = this.cameras.main.height;
+    if(this.mainWidth < 799){
       this.mbBool = true;
     }else{
       this.mbBool = false;
@@ -54,8 +60,8 @@ class QuizGame extends Phaser.Scene {
     // for (let i = 0; i < 100; i++) {
     //   this.balloonPositions.push({
     //     id: i,
-    //     x: Phaser.Math.Between(100, this.cameras.main.width - 100),
-    //     y: Phaser.Math.Between(100, this.cameras.main.height - 100),
+    //     x: Phaser.Math.Between(100, this.mainWidth - 100),
+    //     y: Phaser.Math.Between(100, this.mainHeight - 100),
     //     colorId: Phaser.Math.Between(0, 7) // 色IDをランダムに設定
     //   });
     // }
@@ -101,7 +107,7 @@ class QuizGame extends Phaser.Scene {
   calculateBalloonX(columnIndex: number): number {
     const padding = 10; // バルーン間の余白
     const balloonWidth = 50; // バルーンの幅
-    return columnIndex * (balloonWidth + padding) + this.cameras.main.width / 2;
+    return columnIndex * (balloonWidth + padding) + this.mainWidth / 2;
   }
 
   calculateBalloonY(rowIndex: number): number {
@@ -161,7 +167,7 @@ class QuizGame extends Phaser.Scene {
   displayQuestionNumber() {//上バー
     const circleRadius = 15; // 丸の半径を少し小さくする
     const circleSpacing = 60; // 丸の間隔を増やす
-    const startX = this.cameras.main.width / 2 - (circleSpacing * (this.questions.length - 1)) / 2;
+    const startX = this.mainWidth / 2 - (circleSpacing * (this.questions.length - 1)) / 2;
     const startY = 40; // 丸のY座標を上に移動
     const lineColor = 0xAAAAAA; // 線の色
   
@@ -210,8 +216,8 @@ class QuizGame extends Phaser.Scene {
   }
   createVehicle() { //バスケット、乗り物、搭乗位置
     const vehicle = this.add.image(0, 0, 'vehicle');
-    const gameWidth = this.cameras.main.width;
-    const gameHeight = this.cameras.main.height;
+    const gameWidth = this.mainWidth;
+    const gameHeight = this.mainHeight;
 
     // 画像のサイズを取得
     const vehicleWidth = vehicle.width;
@@ -260,18 +266,18 @@ class QuizGame extends Phaser.Scene {
 
   createBalloosCountBg() {
     const bg = this.add.image(0, 0, 'balloon');
-    const gameWidth = this.cameras.main.width;
+    const gameWidth = this.mainWidth;
     const bgWidth = bg.width;
     const scale = gameWidth / bgWidth;
     bg.setOrigin(1, 1);
-    bg.setPosition(this.cameras.main.width, this.cameras.main.height);
+    bg.setPosition(this.mainWidth, this.mainHeight);
     bg.setScale(120 / bg.width);
   }
   showBalloonsCount() {
     this.createBalloosCountBg();
     const balloonsText = `${this.totalBalloons}`;
-    this.createText(this.cameras.main.width - 15, this.cameras.main.height - 110, '残り', 30, '#FFF').setOrigin(1.25, 1);
-    this.createText(this.cameras.main.width - 15, this.cameras.main.height - 60, balloonsText, 50, '#FFF').setAlign('center').setOrigin(1.25, 1);
+    this.createText(this.mainWidth - 15, this.mainHeight - 110, '残り', 30, '#FFF').setOrigin(1.25, 1);
+    this.createText(this.mainWidth - 15, this.mainHeight - 60, balloonsText, 50, '#FFF').setAlign('center').setOrigin(1.25, 1);
   }
 
 
@@ -284,10 +290,10 @@ class QuizGame extends Phaser.Scene {
 
     // qFrame サイズと位置 (よく分からんけどそのまま持ってきた)
     const qFrame = this.add.image(0, 0, 'qFrame');
-    const gameWidth = this.cameras.main.width;
-    const gameHeight = this.cameras.main.height;
+    const gameWidth = this.mainWidth;
+    const gameHeight = this.mainHeight;
     qFrame.setOrigin(0.5, 0);
-    qFrame.setPosition(this.cameras.main.width / 2, 60);
+    qFrame.setPosition(this.mainWidth / 2, 60);
   
     const scaleForWidth = (gameWidth - 80) / qFrame.width;
     const scaleForHeight = (gameHeight - 120) / qFrame.height;
@@ -314,7 +320,7 @@ class QuizGame extends Phaser.Scene {
     // qImgの配置
     const qImg = this.add.image(0, 0, `qImg${currentQuestion.imgId}`);
     qImg.setOrigin(0.5, 0.5);
-    qImg.setPosition(this.cameras.main.width / 2, qFrameTopHalfY);
+    qImg.setPosition(this.mainWidth / 2, qFrameTopHalfY);
 
     // qImgをqFrameの上半分に収めるようにスケール調整
     const maxQImgWidth = qFrameDisplayWidth * 0.8; // qFrame幅の80%
@@ -327,8 +333,8 @@ class QuizGame extends Phaser.Scene {
 
     // 赤い背景のテキスト
     const countdownTextBg = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height / 2,
+      this.mainWidth / 2,
+      this.mainHeight / 2,
       '',
       {
         fontSize: '60px',
@@ -347,8 +353,8 @@ class QuizGame extends Phaser.Scene {
 
     // 残り3秒になったら数字を表示
     const countdownText = this.createText(
-      this.cameras.main.width / 2,
-      this.cameras.main.height / 2,
+      this.mainWidth / 2,
+      this.mainHeight / 2,
       '',
       64,
       '#FFF'
@@ -425,23 +431,23 @@ class QuizGame extends Phaser.Scene {
     const rectWidth = 300;
     const rectHeight = 120;
 
-    this.add.text(textX + 10, this.cameras.main.height - rectHeight + 10, '数字を入力してください', {
+    this.add.text(textX + 10, this.mainHeight - rectHeight + 10, '数字を入力してください', {
       fontSize: '14px',
       color: '#2a5aa5'
     });
 
     bgGraphics.fillStyle(0xffffff, 1);
-    bgGraphics.fillRect(textX, this.cameras.main.height -rectHeight, rectWidth, rectHeight);
+    bgGraphics.fillRect(textX, this.mainHeight -rectHeight, rectWidth, rectHeight);
 
     // テキストフィールド
-    this.inputText = this.add.text(textX + 20, this.cameras.main.height - rectHeight+40, '', {
+    this.inputText = this.add.text(textX + 20, this.mainHeight - rectHeight+40, '', {
       fontSize: '64px',
       color: '#2a5aa5',
       fontFamily: 'Lobster',
     });
     window.inputText = this.inputText;
 
-    // const inputText = this.createOutlinedText(textX + 10, this.cameras.main.height - rectHeight+40, '', 64, '#2a5aa5', '#2a5aa5');
+    // const inputText = this.createOutlinedText(textX + 10, this.mainHeight - rectHeight+40, '', 64, '#2a5aa5', '#2a5aa5');
 
     if(this.mbBool){//モバイルなら
       window.showInputField(true);
@@ -516,9 +522,9 @@ class QuizGame extends Phaser.Scene {
     }
 
     // 左下にユーザの回答を表示
-    this.createOutlinedText(40, this.cameras.main.height - 100, `あなたの回答`, 18, '#2a5aa5', '#FFFFFF');
+    this.createOutlinedText(40, this.mainHeight - 100, `あなたの回答`, 18, '#2a5aa5', '#FFFFFF');
 
-    this.createOutlinedText(40, this.cameras.main.height - 70, userAnswer, 32, '#2a5aa5', '#FFFFFF');
+    this.createOutlinedText(40, this.mainHeight - 70, userAnswer, 32, '#2a5aa5', '#FFFFFF');
 
     
     //上バー表示用
@@ -526,15 +532,15 @@ class QuizGame extends Phaser.Scene {
 
     // バーの作成と初期化
     const barHeight = 20;
-    const barWidth = this.cameras.main.width * 0.8;
-    // const barX = (this.cameras.main.width - barWidth) / 2 +100;
-    const barX = (this.cameras.main.width - barWidth) / 2;
-    const barY = this.cameras.main.height - 100;
+    const barWidth = this.mainWidth * 0.8;
+    // const barX = (this.mainWidth - barWidth) / 2 +100;
+    const barX = (this.mainWidth - barWidth) / 2;
+    const barY = this.mainHeight - 100;
 
     // バーを表す画像の配置
     const progressBarFull = this.add.image(barX, barY, 'progressBarFull')
     progressBarFull.setOrigin(0, 0).setScale(barWidth / progressBarFull.width, 1);
-    //console.log(this.cameras.main.width+","+barWidth+","+barX);
+    //console.log(this.mainWidth+","+barWidth+","+barX);
     //console.log(progressBarFull.width+",");
 
     // バーを隠す黒い画像の配置
@@ -646,8 +652,8 @@ class QuizGame extends Phaser.Scene {
     const graphics = this.add.graphics();
     graphics.lineStyle(2, 0xffffff); // 白色で2ピクセルの線幅
     const rectHeight = 200; // 枠の高さ
-    const rectY = this.cameras.main.height / 2; // 画面の下半分に配置
-    graphics.strokeRect(50, rectY, this.cameras.main.width - 100, rectHeight);
+    const rectY = this.mainHeight / 2; // 画面の下半分に配置
+    graphics.strokeRect(50, rectY, this.mainWidth - 100, rectHeight);
 
     // テキストの追加
     this.createText(60, rectY + 10, '短縮問題: ' + currentQuestion.omitQuestion, 16, '#000000');
