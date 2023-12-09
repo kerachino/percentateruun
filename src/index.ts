@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 declare global {
   interface Window {
-    showInputField: () => void;
+    showInputField: (isVisible: boolean) => void;
     inputText: Phaser.GameObjects.Text;
   }
 }
@@ -436,7 +436,7 @@ class QuizGame extends Phaser.Scene {
 
     // const inputText = this.createOutlinedText(textX + 10, this.cameras.main.height - rectHeight+40, '', 64, '#2a5aa5', '#2a5aa5');
 
-    window.showInputField();
+    window.showInputField(true);
     
     // 点滅するカーソル
     const cursor = this.add.text(this.inputText.x -25 + this.inputText.width + 5, this.inputText.y, '|', {
@@ -471,6 +471,8 @@ class QuizGame extends Phaser.Scene {
       } else if (event.key === 'Enter' && this.inputText.text) {
         // タイマーを停止
         timerEvent.remove();
+        //
+        window.showInputField(false);
         // Enter
         const currentQuestion = this.questions[this.currentQuestionIndex];
         const userAnswer = this.inputText.text; // ユーザの回答を取得

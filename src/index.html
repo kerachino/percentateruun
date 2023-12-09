@@ -20,6 +20,9 @@
         max-height: 100%;
         }
 
+        /* @media only screen and (min-width: 750px) {
+            #gameInput{display: none}
+        } */
         #gameInput {
             position: absolute;
             bottom: 10px;
@@ -34,9 +37,13 @@
     </head>
     <body>
         <script>// 仮 scripts.jsを呼び出したいけど処理の順番で上手くいかない
-            function showInputField() {
+            function showInputField(bool) {
                 const inputElement = document.getElementById('gameInput');
-                inputElement.style.display = 'block'; // 入力フィールドを表示
+                if(bool){
+                    inputElement.style.display = 'block'; // 入力フィールドを表示
+                }else{
+                    inputElement.style.display = 'none';
+                }
                 inputElement.focus(); // 入力フィールドにフォーカス
               
                 // 入力値の変更を監視
