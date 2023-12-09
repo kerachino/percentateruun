@@ -393,11 +393,38 @@ class QuizGame extends Phaser.Scene {
 
     //input
     this.updateBalloonsCount();
-    // ユーザ入力用のテキストフィールドを作成 (仮の実装)
-    const inputText = this.add.text(100, 200, '', {
-      fontSize: '18px',
-      color: '#000'
+    // ユーザ入力テキストフィールド
+    // 四角い背景の描画
+    const bgGraphics = this.add.graphics();
+    const rectWidth = 300; // テキストフィールドの幅
+    const rectHeight = 100; // テキストフィールドの高さ
+    const textFieldX = 200; // X座標
+    const textFieldY = 200; // Y座標
+
+    bgGraphics.fillStyle(0xffffff, 1); // 白色で塗りつぶし
+    bgGraphics.fillRect(textFieldX, textFieldY, rectWidth, rectHeight);
+
+    // テキストフィールド
+    const inputText = this.add.text(textFieldX + 10, textFieldY + 10, '', {
+      fontSize: '64px',
+      color: '#000000'
     });
+
+    // 点滅するカーソル
+    const cursor = this.add.text(inputText.x + inputText.width + 5, inputText.y, '|', {
+      fontSize: '64px',
+      color: '#000000'
+    });
+    // 点滅
+    const cursorBlinkEvent = this.time.addEvent({
+      delay: 500,
+      callback: () => {
+        cursor.setVisible(!cursor.visible);
+      },
+      loop: true
+    });
+
+
 
     this.keydownListener = (event: any) => {
       if (!isNaN(parseInt(event.key))) {
@@ -406,6 +433,10 @@ class QuizGame extends Phaser.Scene {
         if (parseInt(potentialText) <= 100) {
           inputText.setText(potentialText);
         }
+
+        // カーソルの点滅を停止
+        cursorBlinkEvent.remove();
+        cursor.setVisible(false);
       } else if (event.key === 'Backspace' && inputText.text.length > 0) {
         // バックスペース ,文字削除
         inputText.setText(inputText.text.slice(0, -1));
