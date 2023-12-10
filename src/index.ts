@@ -21,6 +21,9 @@ class QuizGame extends Phaser.Scene {
   private mbBool: boolean;
   private mainWidth: number;
   private mainHeight: number;
+  private enterSound: any;
+  private inputSound: any;
+  private qSound: any;
 
   private differences: number[] = [0, 0, 0, 0, 0];
   constructor() {
@@ -55,8 +58,18 @@ class QuizGame extends Phaser.Scene {
     this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
     this.load.image('qFrame', 'assets/imgs/qFrame3.png');
 
-    this.load.image('qImg0', 'assets/imgs/qImg/0.jpg');
+    //q_img 
+    for (let i = 0; i <= 1; i++) {
+      this.load.image(`qImg${i}`, `assets/imgs/qImg/${i}.jpg`);
+    }
 
+    //bgm
+    this.load.audio('bgm', 'assets/audio/Midnight_Blue.mp3');
+    //sound
+    this.load.audio('enterSound', 'assets/audio/「ピロリ」決定のボタン音・アクセント音.mp3');
+    this.load.audio('inputSound', 'assets/audio/ボールペンノック.mp3');
+    this.load.audio('qSound', 'assets/audio/デンッ！.mp3');
+    
     // for (let i = 0; i < 100; i++) {
     //   this.balloonPositions.push({
     //     id: i,
@@ -78,9 +91,16 @@ class QuizGame extends Phaser.Scene {
 
     // JSONデータの読み込み
     this.balloonsData = this.cache.json.get('balloonsData');
-    
 
+    this.enterSound = this.sound.add('enterSound');
+    this.inputSound = this.sound.add('inputSound');
+    this.qSound = this.sound.add('qSound');
+    
   }
+
+  onEnterPressed() {this.enterSound.play();}
+  onInputPressed() {this.inputSound.play();}
+  QSound() {if(this.qSound)this.qSound.play();}
 
   showBalloons(){
      // 風船配列をクリア
@@ -198,6 +218,9 @@ class QuizGame extends Phaser.Scene {
     // this.showBalloons();
     // this.createVehicle();
 
+    const bgm = this.sound.add('bgm', { loop: true, volume: 0.2 });
+        bgm.play();
+
     this.currentStep = 'question';
     this.displayStep(this.currentStep);
   }
@@ -285,6 +308,8 @@ class QuizGame extends Phaser.Scene {
     this.showBalloonsCount();
     this.updateBalloonsCount();
     this.input.keyboard?.removeAllListeners();// 既存のリスナーを削除 これやらんとエラー
+
+    this.QSound();
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const questionText = currentQuestion.question;
 
@@ -471,6 +496,7 @@ class QuizGame extends Phaser.Scene {
 
     this.keydownListener = (event: any) => {
       if (!isNaN(parseInt(event.key))) {
+        this.onInputPressed();
         // 数字が入力された場合
         const potentialText = this.inputText.text + event.key;
         if (parseInt(potentialText) <= 100) {
@@ -484,6 +510,7 @@ class QuizGame extends Phaser.Scene {
         // バックスペース ,文字削除
         this.inputText.setText(this.inputText.text.slice(0, -1));
       } else if (event.key === 'Enter' && this.inputText.text) {
+        this.onEnterPressed();
         // タイマーを停止
         timerEvent.remove();
         //
@@ -608,6 +635,7 @@ class QuizGame extends Phaser.Scene {
     // 解説に進むためのキーボードリスナーを設定
     this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
+        this.onEnterPressed();
         this.input.keyboard?.off('keydown', this.keydownListener);
         this.currentStep = 'explanation';
         this.displayStep(this.currentStep);
@@ -663,6 +691,7 @@ class QuizGame extends Phaser.Scene {
     // 次の問題に進むためのキーボードリスナーを設定
     this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
+        this.onEnterPressed();
         this.currentQuestionIndex++;
         if (this.currentQuestionIndex < this.questions.length) {
           this.input.keyboard?.off('keydown', this.keydownListener);
