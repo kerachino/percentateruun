@@ -285,12 +285,27 @@ class QuizGame extends Phaser.Scene {
   }
 
   updateBalloonsCount() {
-    while (this.balloons.length > this.totalBalloons) {
-      const balloonToRemove = this.balloons.pop();
-      if (balloonToRemove) {
-        balloonToRemove.destroy();
+    const removeBalloon = () => {
+      if (this.balloons.length > this.totalBalloons) {
+        const balloonToRemove = this.balloons.pop();
+        if (balloonToRemove) {
+          // この風船を画面から削除
+          balloonToRemove.destroy();
+
+          // 次の風船を削除するために再度タイマーを設定
+          this.time.delayedCall(100, removeBalloon);
+        }
       }
-    }
+    };
+
+    // 最初の風船を削除するためのタイマーを設定
+    this.time.delayedCall(100, removeBalloon);
+    // while (this.balloons.length > this.totalBalloons) {
+    //   const balloonToRemove = this.balloons.pop();
+    //   if (balloonToRemove) {
+    //     balloonToRemove.destroy();
+    //   }
+    // }
   }
 
   updateBg(){
