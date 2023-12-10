@@ -94,14 +94,14 @@ class QuizGame extends Phaser.Scene {
     // JSONデータの読み込み
     this.balloonsData = this.cache.json.get('balloonsData');
 
-    this.enterSound = this.sound.add('enterSound');
-    this.inputSound = this.sound.add('inputSound');
-    this.qSound = this.sound.add('qSound');
+    this.enterSound = this.sound.add('enterSound', {volume: 0.5 });
+    this.inputSound = this.sound.add('inputSound', {volume: 0.5 });
+    this.qSound = this.sound.add('qSound', {volume: 0.5 });
     
   }
 
   EnterSound() {this.enterSound.play();}
-  onInputPressed() {this.inputSound.play();}
+  InputSound() {this.inputSound.play();}
   QSound() {if(this.qSound)this.qSound.play();}
 
   onEnterPressed() {
@@ -234,7 +234,7 @@ class QuizGame extends Phaser.Scene {
     // this.createVehicle();
 
     const bgm = this.sound.add('bgm', { loop: true, volume: 0.2 });
-        bgm.play();
+    bgm.play();
 
     this.currentStep = 'question';
     this.displayStep(this.currentStep);
@@ -511,7 +511,7 @@ class QuizGame extends Phaser.Scene {
 
     this.keydownListener = (event: any) => {
       if (!isNaN(parseInt(event.key))) {
-        this.onInputPressed();
+        this.InputSound();
         // 数字が入力された場合
         const potentialText = this.inputText.text + event.key;
         if (parseInt(potentialText) <= 100) {
