@@ -24,6 +24,7 @@ class QuizGame extends Phaser.Scene {
   private enterSound: any;
   private inputSound: any;
   private qSound: any;
+  private enterPressed: boolean;
 
   private differences: number[] = [0, 0, 0, 0, 0];
   constructor() {
@@ -34,6 +35,7 @@ class QuizGame extends Phaser.Scene {
     this.mbBool = true;
     this.mainWidth = 0;
     this.mainHeight = 0;
+    this.enterPressed = false;
   }
 
   preload() {
@@ -98,9 +100,22 @@ class QuizGame extends Phaser.Scene {
     
   }
 
-  onEnterPressed() {this.enterSound.play();}
+  EnterSound() {this.enterSound.play();}
   onInputPressed() {this.inputSound.play();}
   QSound() {if(this.qSound)this.qSound.play();}
+
+  onEnterPressed() {
+    if (this.enterPressed) {
+        // すでにEnterキーが押されている場合は何もしない
+        return false;
+    }
+    this.enterPressed = true; // Enterキーが押されたことを記録
+    // 必要な処理が完了した後にフラグをリセットする
+    this.time.delayedCall(1000, () => {
+        this.enterPressed = false;
+    });
+    return true;
+}
 
   showBalloons(){
      // 風船配列をクリア
@@ -509,21 +524,22 @@ class QuizGame extends Phaser.Scene {
       } else if (event.key === 'Backspace' && this.inputText.text.length > 0) {
         // バックスペース ,文字削除
         this.inputText.setText(this.inputText.text.slice(0, -1));
-      } else if (event.key === 'Enter' && this.inputText.text) {
-        this.onEnterPressed();
-        // タイマーを停止
-        timerEvent.remove();
-        //
-        window.showInputField(false);
-        //キーを削除(軽くするため)
-        this.input.keyboard?.off('keydown', this.keydownListener);
-        // Enter
-        const currentQuestion = this.questions[this.currentQuestionIndex];
-        const userAnswer = this.inputText.text; // ユーザの回答を取得
-        this.saveAnswerToLocalStorage(currentQuestion.number, parseInt(userAnswer));
-        // 回答画面に進む
-        this.currentStep = 'answer';
-        this.displayStep(this.currentStep);
+      } else if (event.key === 'Enter' && this.inputText.text  && this.onEnterPressed()) {
+          this.EnterSound();
+          // タイマーを停止
+          timerEvent.remove();
+          //
+          window.showInputField(false);
+          //キーを削除(軽くするため)
+          this.input.keyboard?.off('keydown', this.keydownListener);
+          // Enter
+          const currentQuestion = this.questions[this.currentQuestionIndex];
+          const userAnswer = this.inputText.text; // ユーザの回答を取得
+          this.saveAnswerToLocalStorage(currentQuestion.number, parseInt(userAnswer));
+          // 回答画面に進む
+          this.currentStep = 'answer';
+          this.displayStep(this.currentStep);
+        
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
@@ -634,8 +650,8 @@ class QuizGame extends Phaser.Scene {
 
     // 解説に進むためのキーボードリスナーを設定
     this.keydownListener = (event: any) => {
-      if (event.key === 'Enter') {
-        this.onEnterPressed();
+      if (event.key === 'Enter' && this.onEnterPressed()) {
+        this.EnterSound();
         this.input.keyboard?.off('keydown', this.keydownListener);
         this.currentStep = 'explanation';
         this.displayStep(this.currentStep);
@@ -690,8 +706,8 @@ class QuizGame extends Phaser.Scene {
 
     // 次の問題に進むためのキーボードリスナーを設定
     this.keydownListener = (event: any) => {
-      if (event.key === 'Enter') {
-        this.onEnterPressed();
+      if (event.key === 'Enter' && this.onEnterPressed()) {
+        this.EnterSound();
         this.currentQuestionIndex++;
         if (this.currentQuestionIndex < this.questions.length) {
           this.input.keyboard?.off('keydown', this.keydownListener);
