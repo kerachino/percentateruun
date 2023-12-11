@@ -761,25 +761,25 @@ export class QuizGame extends Phaser.Scene {
   }
 
 }
-const config: Phaser.Types.Core.GameConfig = {
-  type: Phaser.AUTO,
-  width: window.innerWidth, // ウィンドウの幅に設定
-  height: window.innerHeight, // ウィンドウの高さに設定
-  parent: 'game-app',
-  scene: [QuizGame],
-  fps: {
-    target: 30,
-    forceSetTimeOut: true // 高いフレームレートを強制する
-  }
-};
+// const config: Phaser.Types.Core.GameConfig = {
+//   type: Phaser.AUTO,
+//   width: window.innerWidth, // ウィンドウの幅に設定
+//   height: window.innerHeight, // ウィンドウの高さに設定
+//   parent: 'game-app',
+//   scene: [QuizGame],
+//   fps: {
+//     target: 30,
+//     forceSetTimeOut: true // 高いフレームレートを強制する
+//   }
+// };
 
-const game = new Phaser.Game(config);
+// const game = new Phaser.Game(config);
 
-// リサイズイベント
-window.addEventListener('resize', () => {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+// // リサイズイベント
+// window.addEventListener('resize', () => {
+//   const width = window.innerWidth;
+//   const height = window.innerHeight;
 
-  // Phaser ゲームインスタンスのサイズを更新
-  game.scale.resize(width, height);
-});
+//   // Phaser ゲームインスタンスのサイズを更新
+//   game.scale.resize(width, height);
+// });
