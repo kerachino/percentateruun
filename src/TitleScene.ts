@@ -7,7 +7,7 @@ export class TitleScene extends Phaser.Scene {
 
   create() {
     // タイトルテキストを表示
-    this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'ゲームのタイトル', { fontSize: '32px', color: '#FFFFFF' }).setOrigin(0.5);
+    this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'ゲームタイトル(enter押して', { fontSize: '32px', color: '#FFFFFF' }).setOrigin(0.5);
 
 
     // enterでQuizGameへ
