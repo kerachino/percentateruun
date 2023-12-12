@@ -30,7 +30,7 @@ export class QuizGame extends Phaser.Scene {
 
   private differences: number[] = [0, 0, 0, 0, 0];
   constructor() {
-    super('quiz-game');
+    super('QuizGame');
     this.keydownListener = null;
     this.questions = []; // 問題を格納する配列
     this.balloons = [];

@@ -9,9 +9,9 @@ export class TitleScene extends Phaser.Scene {
     // タイトルテキストを表示
     this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'ゲームのタイトル', { fontSize: '32px', color: '#FFFFFF' }).setOrigin(0.5);
 
-    // スペースキーの入力を検知するための設定
-    this.input.keyboard?.once('keydown-SPACE', () => {
-      // スペースキーが押されたらゲームシーンを開始
+
+    // enterでQuizGameへ
+    this.input.keyboard?.once('keydown-ENTER', () => {
       this.scene.start('QuizGame');
     });
   }
