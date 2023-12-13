@@ -60,6 +60,7 @@ export class QuizGame extends Phaser.Scene {
     this.load.image('progressBarFull', 'assets/imgs/progressBarFull.png');
     this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
     this.load.image('qFrame', 'assets/imgs/qFrame3.png');
+    this.load.image('TitleSelect0', 'assets/imgs/TitleSelect.png');
 
     //q_img 
     for (let i = 0; i <= 1; i++) {
@@ -118,46 +119,47 @@ export class QuizGame extends Phaser.Scene {
         break;
     }
   }
-  
+
   titleScene() {
     this.updateBg();
     this.showBalloons();
     this.createVehicle();
   
-    // 操作項目の表示
-    const menuItems = ['ゲームスタート', 'スコア'];
-    let selectedItemIndex = 0; // 最初の項目を選択
-  
-    // 選択肢のテキストオブジェクトを生成
-    const menuTexts = menuItems.map((item, index) => 
-      this.add.text(this.mainWidth / 2, this.mainHeight / 2 + 50 * index, item, {
-        font: '20px Arial',
-        color: '#FFFFFF'
-      }).setOrigin(0.5)
-    );
-  
-    const updateMenuDisplay = () => {
-      menuTexts.forEach((text, index) => {
-        text.setStyle({ fill: index === selectedItemIndex ? '#FFFF00' : '#FFFFFF' }); // 選択中の項目を黄色に
+    const images = ['TitleSelect0', 'TitleSelect0']; // 画像のキー名
+    let selectedImageIndex = 0; // 最初に選択されている画像
+
+    // 画像の表示
+    const imageObjects = images.map((imageKey, index) => {
+      const xPosition = index === selectedImageIndex ? this.mainWidth / 2 : this.mainWidth * 1.5; // 最初の画像を中央に、他を画面外に
+      return this.add.image(xPosition, this.mainHeight / 2, imageKey).setOrigin(0.5);
+    });
+
+    const updateImagesPosition = () => {
+      imageObjects.forEach((image, index) => {
+        this.tweens.add({
+          targets: image,
+          x: index === selectedImageIndex ? this.mainWidth / 2 : this.mainWidth * 1.5, // 選択されている画像を中央に、他を画面外に
+          ease: 'Power1',
+          duration: 500
+        });
       });
     };
-  
-    updateMenuDisplay();
-  
+
     this.keydownListener = (event: any) => {
-      if (event.key === 'ArrowRight' && selectedItemIndex < menuItems.length - 1) {
-        selectedItemIndex++;
-        updateMenuDisplay();
-      } else if (event.key === 'ArrowLeft' && selectedItemIndex > 0) {
-        selectedItemIndex--;
-        updateMenuDisplay();
+      if (event.key === 'ArrowRight' && selectedImageIndex < images.length - 1) {
+        selectedImageIndex++;
+        updateImagesPosition();
+      } else if (event.key === 'ArrowLeft' && selectedImageIndex > 0) {
+        selectedImageIndex--;
+        updateImagesPosition();
       } else if (event.key === 'Enter') {
-        // Enterキーが押されたときの処理
-        if (selectedItemIndex === 0) { // ゲームスタート
+        // 選択された画像に応じた処理
+        if (selectedImageIndex === 0) {
+          // ゲームスタート
           this.currentSceneStep = 'main';
           this.displaySceneStep(this.currentSceneStep);
-        } else { // スコア
-          // スコア表示の処理
+        } else if (selectedImageIndex === 1) {
+          // スコア表示などの処理
         }
       }
     };
