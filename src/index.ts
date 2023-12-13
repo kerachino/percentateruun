@@ -7,7 +7,8 @@ const config: Phaser.Types.Core.GameConfig = {
   width: window.innerWidth,
   height: window.innerHeight,
   parent: 'game-app',
-  scene: [TitleScene, QuizGame],
+  scene: [QuizGame],
+  //  scene: [TitleScene, QuizGame],
   fps: {
     target: 30,
     forceSetTimeOut: true
