@@ -12,7 +12,7 @@ export class QuizGame extends Phaser.Scene {
   private totalBalloons: number = 100; // 風船の初期数
   private questions: any[] = [];
   private currentQuestionIndex: number = 0;
-  private currentSceneStep: string = 'main';
+  private currentSceneStep: string = 'title';
   private currentStep: string = 'firstStep';
   private keydownListener: any; //イベントリスナーの参照保持 ?必要っぽい
   private allQuestions = 3;
@@ -220,10 +220,13 @@ export class QuizGame extends Phaser.Scene {
   }
 
   title(){
+    this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'ゲームタイトル(enter押して', { fontSize: '32px', color: '#FFFFFF' }).setOrigin(0.5);
+
     this.keydownListener = (event: any) => {
         if (event.key === 'Enter') {
-          this.currentStep = 'main';
-          this.displaySceneStep(this.currentStep);
+          this.input.keyboard?.off('keydown', this.keydownListener);
+          this.currentSceneStep = 'main';
+          this.displaySceneStep(this.currentSceneStep);
         }
       };
       this.input.keyboard?.on('keydown', this.keydownListener);
