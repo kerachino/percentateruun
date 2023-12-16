@@ -38,6 +38,7 @@ export class QuizGame extends Phaser.Scene {
     this.mainHeight = 0;
     this.enterPressed = false;
   }
+  private gameMode: string = "normal";
 
   preload() {
     this.mainWidth = this.cameras.main.width;
@@ -156,24 +157,33 @@ export class QuizGame extends Phaser.Scene {
       } else if (event.key === 'Enter') {
         // 選択された画像に応じた処理
         if (selectedImageIndex === 0) {
-          // ゲームスタート
+          // 通常ゲームスタート
+          this.startGameMode('normal');
           this.currentSceneStep = 'main';
           this.displaySceneStep(this.currentSceneStep);
         } else if (selectedImageIndex === 1) {
-          // スコア表示などの処理
+          // エンドレスモード
+          this.startGameMode('endless');
+          this.currentSceneStep = 'main';
+          this.displaySceneStep(this.currentSceneStep);
         }
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
   
+  startGameMode(mode: string) {
+    this.gameMode = mode; // ゲームモードを設定
+  }
+
   MainSceneStep(step: string) {
     // 既存のリスナーを削除　たぶん解決済み
     // if (this.keydownListener) {
     //   this.input.keyboard?.off('keydown', this.keydownListener);
     // }
+
+    //問題数が下回ったらエラー処理
     if (this.currentQuestionIndex >= this.questions.length) {
-      // 例：ゲーム終了
       alert("No more questions available. Game Over.");
       return;
     }
@@ -536,6 +546,24 @@ export class QuizGame extends Phaser.Scene {
     });
 
 
+    // エンドレスモード処理
+    if (this.gameMode === 'endless') {
+        // エンドレスモードの特別な処理
+        if (this.checkForBonus()) {
+            this.totalBalloons += 10; // 10個の風船を追加
+        }
+
+        // エンドレスモードでは風船が0になるまで続ける
+        if (this.totalBalloons <= 0) {
+            this.endGame();
+        }
+        // else {
+        //     // 次の問題へ
+        //     this.currentQuestionIndex++;
+        //     this.MainSceneStep('question');
+        // }
+    }
+
 
     this.keydownListener = (event: any) => {
       if (!isNaN(parseInt(event.key))) {
@@ -571,6 +599,17 @@ export class QuizGame extends Phaser.Scene {
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
+  }
+
+  endGame() {
+      // ゲーム終了の処理
+      // 例えばスコアの表示やリセット処理など
+  }
+
+  checkForBonus() {
+      // 最後の5問のdifferenceが10以内かどうかをチェック
+      const recentDifferences = this.differences.slice(-5);
+      return recentDifferences.length === 5 && recentDifferences.every(diff => diff <= 10);
   }
 
 
