@@ -1,6 +1,6 @@
 [
     {
-        "number" : 1,
+        "number" : 0,
         "question": "将来公務員になりたいと答えた人の割合は？",
         "omitQuestion": "将来公務員になりたいと答えた人",
         "answer": 18,
@@ -12,7 +12,7 @@
         "imgId": 0
     },
     {
-        "number" : 2,
+        "number" : 1,
         "question": "将来公務員になりたいと答えた人の割合は？",
         "omitQuestion": "将来公務員になりたいと答えた人",
         "answer": 18,
