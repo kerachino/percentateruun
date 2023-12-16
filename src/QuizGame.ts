@@ -73,6 +73,7 @@ export class QuizGame extends Phaser.Scene {
     this.load.audio('enterSound', 'assets/audio/「ピロリ」決定のボタン音・アクセント音.mp3');
     this.load.audio('inputSound', 'assets/audio/ボールペンノック.mp3');
     this.load.audio('qSound', 'assets/audio/デンッ!.mp3');
+    this.load.audio('answerEffect', 'assets/audio/Accent19-1.mp3');
     
     // for (let i = 0; i < 100; i++) {
     //   this.balloonPositions.push({
@@ -619,18 +620,32 @@ export class QuizGame extends Phaser.Scene {
     progressBarCover.setOrigin(1, 0).setScale(barWidth / progressBarCover.width, 1);
     progressBarCover.displayWidth = progressBarFull.width;
     progressBarCover.displayHeight = progressBarFull.height;
+    
+    const answerEffect = this.sound.add('answerEffect', { volume: 0.5, loop: true }); // 'someSound'はあなたのサウンドファイルのキー
 
     this.tweens.add({
       targets: progressBarCover,
       displayWidth: 0,
       ease: 'Linear',
       duration: 2000,
+      onStart: () => {
+        answerEffect.play();
+      },onUpdate: tween => {
+        const progress = tween.progress;
+        answerEffect.setDetune(Phaser.Math.Linear(-1200, 1200, progress)); // ピッチ
+      },
       onComplete: () => {
         this.tweens.add({
           targets: progressBarCover,
           displayWidth: barWidth,
           ease: 'Linear',
           duration: 2000,
+          onStart: () => {
+            answerEffect.play();
+          },onUpdate: tween => {
+            const progress = tween.progress;
+            answerEffect.setDetune(Phaser.Math.Linear(1200, -1200, progress)); // ピッチ //あえて逆に
+          },
           onComplete: () => {
             // 次に5秒かけて答えの位置まで幅を縮める
             this.tweens.add({
@@ -639,6 +654,12 @@ export class QuizGame extends Phaser.Scene {
               displayWidth: barWidth - (correctAnswer / 100) * barWidth, // 答えの位置まで幅を縮める
               ease: 'Linear',
               duration: 5000,
+              onStart: () => {
+                answerEffect.play();
+              },onUpdate: tween => {
+                const progress = tween.progress;
+                answerEffect.setDetune(Phaser.Math.Linear(-1200, 1200, progress)); // ピッチ
+              },
               onComplete: () => {
                 // 最後に素早く上がったり下がったりするアニメーション
                 this.tweens.add({
@@ -651,6 +672,12 @@ export class QuizGame extends Phaser.Scene {
                   duration: 100, // 揺れの速さ
                   yoyo: true,
                   repeat: 3, // 数回繰り返す
+                  onStart: () => {
+                    answerEffect.play();
+                  },onUpdate: tween => {
+                    const progress = tween.progress;
+                    answerEffect.setDetune(Phaser.Math.Linear(-1200, 1200, progress)); // ピッチ
+                  },
                   onComplete: () => {
                     // 線
                     const correctAnswerPosition = barX + (correctAnswer / 100) * barWidth;
@@ -660,6 +687,7 @@ export class QuizGame extends Phaser.Scene {
 
                     // バーの上に解答
                     this.createOutlinedText(barX + (correctAnswer / 100) * barWidth, barY - 30, correctAnswer.toString(), 30, '#FF0000', '#FFFFFF');
+                    
                   }
                 });
               }
