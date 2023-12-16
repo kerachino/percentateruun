@@ -42,12 +42,12 @@
 "question": "全国の小学生に聞いた、将来公務員になりたいと答えた人は?", //問題文全体
 "omitQuestion": "小学生が公務員になりたいと答えた人", //省略した問題文
 "answer": 18, //答えの数値
-"surveyRespondent": "東日本に住む 20 代~50 代",
-"source": "厚生労働省",
-"genre": "社会",
-"level": 2,
-"imgId": 0,
-"questionLink": ""
+"surveyRespondent": "東日本に住む 20 代~50 代", //調査対象
+"source": "厚生労働省", //アンケートソース
+"sourceLink": "https://asdasdx", //リンク
+"genre": "社会", //ジャンル
+"level": 2, //難易度
+"imgId": 0 //画像 ID とりま 0
 }
 
 ## 基本的な実装
