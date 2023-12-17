@@ -184,8 +184,21 @@ export class QuizGame extends Phaser.Scene {
   }
 
   genreScene(){
-    this.selectedGenre = `社会`;
-    alert("ジャンル選択に移るよ");
+    // 利用可能なジャンルのリスト
+    const genres = ['国語', '算数', '理科', '社会', '英語'];
+
+    // 最初に選択されているジャンルのインデックス
+    let selectedGenreIndex = 0;
+
+    // 選択されているジャンルを表示
+    const genreText = this.add.text(this.mainWidth / 2, this.mainHeight / 2, `選択されているジャンル: ${genres[selectedGenreIndex]}`, {
+        fontSize: '24px',
+        color: '#FFFFFF'
+    }).setOrigin(0.5);
+
+    const updateSelectedGenre = () => {
+        genreText.setText(`選択されているジャンル: ${genres[selectedGenreIndex]}`);
+    };
 
 
     // モード 保留(5つに絞らなくても、5回目で終了すれば良い？)
@@ -194,33 +207,56 @@ export class QuizGame extends Phaser.Scene {
     // }
 
     this.keydownListener = (event: any) => {
-      if (event.key === 'Enter') {
-        this.input.keyboard?.off('keydown', this.keydownListener);
-        this.currentSceneStep = 'level';
-        this.displaySceneStep(this.currentSceneStep);
-      }
+        if (event.key === 'ArrowRight' && selectedGenreIndex < genres.length - 1) {
+            selectedGenreIndex++;
+            updateSelectedGenre();
+        } else if (event.key === 'ArrowLeft' && selectedGenreIndex > 0) {
+            selectedGenreIndex--;
+            updateSelectedGenre();
+        } else if (event.key === 'Enter') {
+            this.selectedGenre = genres[selectedGenreIndex];
+            this.input.keyboard?.off('keydown', this.keydownListener);
+            this.currentSceneStep = 'level';
+            this.displaySceneStep(this.currentSceneStep);
+        }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
   levelScene() {
       const allQuestions = this.cache.json.get('questions');
-      this.selectedLevel = 2;
-      alert("難易度選択に移るよ");
+      const levels = [1, 2, 3];
+      // 最初に選択されているレベル
+      let selectedLevelIndex = 0;
+      // 選択されているレベルを表示
+      const levelText = this.add.text(this.mainWidth / 2, this.mainHeight / 2, `選択されているレベル: ${levels[selectedLevelIndex]}`, {
+          fontSize: '24px',
+          color: '#FFFFFF'
+      }).setOrigin(0.5);
 
-
-      // 出題範囲をを絞る処理
-      this.questions = this.filterQuestionsByGenreAndLevel(allQuestions, this.selectedGenre, this.selectedLevel);
+      const updateSelectedLevel = () => {
+          levelText.setText(`選択されているレベル: ${levels[selectedLevelIndex]}`);
+      };
 
       this.keydownListener = (event: any) => {
-      if (event.key === 'Enter') {
-        this.input.keyboard?.off('keydown', this.keydownListener);
-        this.currentSceneStep = 'main';
-        this.displaySceneStep(this.currentSceneStep);
-      }
-    };
-    this.input.keyboard?.on('keydown', this.keydownListener);
+          if (event.key === 'ArrowRight' && selectedLevelIndex < levels.length - 1) {
+              selectedLevelIndex++;
+              updateSelectedLevel();
+          } else if (event.key === 'ArrowLeft' && selectedLevelIndex > 0) {
+              selectedLevelIndex--;
+              updateSelectedLevel();
+          } else if (event.key === 'Enter') {
+              this.selectedLevel = levels[selectedLevelIndex];
+              this.questions = this.filterQuestionsByGenreAndLevel(allQuestions, this.selectedGenre, this.selectedLevel);
+              this.input.keyboard?.off('keydown', this.keydownListener);
+              this.currentSceneStep = 'main';
+              this.displaySceneStep(this.currentSceneStep);
+          }
+      };
+
+      this.input.keyboard?.on('keydown', this.keydownListener);
   }
+
 
   filterQuestionsByGenreAndLevel(allQuestions: any[], genre:string, level:number) {
     // ジャンルとレベルに基づいて問題をフィルタリング
