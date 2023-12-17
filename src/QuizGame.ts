@@ -66,6 +66,9 @@ export class QuizGame extends Phaser.Scene {
     this.load.image('qFrame', 'assets/imgs/qFrame3.png');
     this.load.image('TitleSelect0', 'assets/imgs/TitleSelect.png');
 
+    this.load.image('arrowKeys', 'assets/imgs/arrowKeys.png'); // 方向キーの画像
+    this.load.image('enterKey', 'assets/imgs/enterKey.png'); // Enterキーの画像
+
     //q_img 
     for (let i = 0; i <= 1; i++) {
       this.load.image(`qImg${i}`, `assets/imgs/qImg/${i}.jpg`);
@@ -112,10 +115,34 @@ export class QuizGame extends Phaser.Scene {
   InputSound() {this.inputSound.play();}
   QSound() {if(this.qSound)this.qSound.play();}
 
+  setControllKeyExplanation(){
+    // 方向キーとEnterキーの画像を配置
+    const arrowKeys = this.add.image(this.mainWidth - 150, 25, 'arrowKeys').setOrigin(1,0.5);
+    const enterKey = this.add.image(this.mainWidth - 50, 25, 'enterKey').setOrigin(1,0.5);
+
+    arrowKeys.setScale((this.mainWidth / arrowKeys.width) * 0.04);
+    enterKey.setScale((this.mainWidth / enterKey.width) * 0.04);
+    
+    // アニメーションを追加（例：上下に動かす）
+    this.tweens.add({
+      targets: [arrowKeys, enterKey],
+      y: '+=10', // 10ピクセル下に移動
+      ease: 'Power1',
+      duration: 800,
+      yoyo: true, // 元の位置に戻る
+      repeat: -1 // 無限に繰り返す
+    });
+
+    this.createText(this.mainWidth - 150, 25, '選択', 24, '#000');
+    this.createText(this.mainWidth - 50, 25, '決定', 24, '#000');
+
+  }
+
   displaySceneStep(step: string){
     this.updateBg();
     this.showBalloons();
     this.createVehicle();
+    this.setControllKeyExplanation();
     
     switch (step) {
       case 'title':
