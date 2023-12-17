@@ -111,6 +111,10 @@ export class QuizGame extends Phaser.Scene {
   QSound() {if(this.qSound)this.qSound.play();}
 
   displaySceneStep(step: string){
+    this.updateBg();
+    this.showBalloons();
+    this.createVehicle();
+    
     switch (step) {
       case 'title':
         this.titleScene();
