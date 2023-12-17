@@ -1,7 +1,19 @@
 [
     {
         "number" : 0,
-        "question": "将来公務員になりたいと答えた人の割合は？",
+        "question": "a",
+        "omitQuestion": "将来公務員になりたいと答えた人",
+        "answer": 18,
+        "surveyRespondent": "東日本に住む20代~50代",
+        "source": "厚生労働省",
+        "sourceLink": "",
+        "genre": "数学",
+        "level": 1,
+        "imgId": 0
+    },
+    {
+        "number" : 1,
+        "question": "b",
         "omitQuestion": "将来公務員になりたいと答えた人",
         "answer": 18,
         "surveyRespondent": "東日本に住む20代~50代",
@@ -13,7 +25,7 @@
     },
     {
         "number" : 1,
-        "question": "将来公務員になりたいと答えた人の割合は？",
+        "question": "c",
         "omitQuestion": "将来公務員になりたいと答えた人",
         "answer": 18,
         "surveyRespondent": "東日本に住む20代~50代",

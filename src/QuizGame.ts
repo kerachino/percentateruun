@@ -39,6 +39,8 @@ export class QuizGame extends Phaser.Scene {
     this.enterPressed = false;
   }
   private gameMode: string = "normal";
+  private selectedGenre: string = ''; // 選択されたジャンル
+  private selectedLevel: number = 0; // 選択されたレベル
 
   preload() {
     this.mainWidth = this.cameras.main.width;
@@ -87,9 +89,9 @@ export class QuizGame extends Phaser.Scene {
   }
 
   create() {
-    const allQuestions = this.cache.json.get('questions');
-    // 問題数を制限するため、ランダムに5つの問題を選ぶ
-    this.questions = this.getRandomQuestions(allQuestions, 5);
+    // const allQuestions = this.cache.json.get('questions');
+    // // 問題数を制限するため、ランダムに5つの問題を選ぶ
+    // this.questions = this.getRandomQuestions(allQuestions, 5);
     this.currentQuestionIndex = 0;
     this.displaySceneStep(this.currentSceneStep);
     // this.bgImage = this.add.image(0, 0, 'bg2').setOrigin(0, 0);
@@ -112,6 +114,12 @@ export class QuizGame extends Phaser.Scene {
     switch (step) {
       case 'title':
         this.titleScene();
+        break;
+      case 'genre':
+        this.genreScene();
+        break;
+      case 'level':
+        this.levelScene();
         break;
       case 'main':
         this.MainSceneStep(this.currentMainStep);
@@ -155,18 +163,17 @@ export class QuizGame extends Phaser.Scene {
         selectedImageIndex--;
         updateImagesPosition();
       } else if (event.key === 'Enter') {
+        this.input.keyboard?.off('keydown', this.keydownListener);
         // 選択された画像に応じた処理
         if (selectedImageIndex === 0) {
           // 通常ゲームスタート
           this.startGameMode('normal');
-          this.currentSceneStep = 'main';
-          this.displaySceneStep(this.currentSceneStep);
         } else if (selectedImageIndex === 1) {
           // エンドレスモード
           this.startGameMode('endless');
-          this.currentSceneStep = 'main';
-          this.displaySceneStep(this.currentSceneStep);
         }
+        this.currentSceneStep = 'genre';
+        this.displaySceneStep(this.currentSceneStep);
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
@@ -176,6 +183,52 @@ export class QuizGame extends Phaser.Scene {
     this.gameMode = mode; // ゲームモードを設定
   }
 
+  genreScene(){
+    this.selectedGenre = `社会`;
+    alert("ジャンル選択に移るよ");
+
+
+    // モード 保留(5つに絞らなくても、5回目で終了すれば良い？)
+    // if(this.gameMode == `normal`){
+    //   this.questions = this.getRandomQuestions(allQuestions, 5);
+    // }
+
+    this.keydownListener = (event: any) => {
+      if (event.key === 'Enter') {
+        this.input.keyboard?.off('keydown', this.keydownListener);
+        this.currentSceneStep = 'level';
+        this.displaySceneStep(this.currentSceneStep);
+      }
+    };
+    this.input.keyboard?.on('keydown', this.keydownListener);
+  }
+
+  levelScene() {
+      const allQuestions = this.cache.json.get('questions');
+      this.selectedLevel = 2;
+      alert("難易度選択に移るよ");
+
+
+      // 出題範囲をを絞る処理
+      this.questions = this.filterQuestionsByGenreAndLevel(allQuestions, this.selectedGenre, this.selectedLevel);
+
+      this.keydownListener = (event: any) => {
+      if (event.key === 'Enter') {
+        this.input.keyboard?.off('keydown', this.keydownListener);
+        this.currentSceneStep = 'main';
+        this.displaySceneStep(this.currentSceneStep);
+      }
+    };
+    this.input.keyboard?.on('keydown', this.keydownListener);
+  }
+
+  filterQuestionsByGenreAndLevel(allQuestions: any[], genre:string, level:number) {
+    // ジャンルとレベルに基づいて問題をフィルタリング
+    return allQuestions.filter(question => {
+      return question.genre === genre && question.level === level;
+    });
+  }
+  
   MainSceneStep(step: string) {
     // 既存のリスナーを削除　たぶん解決済み
     // if (this.keydownListener) {
@@ -184,7 +237,7 @@ export class QuizGame extends Phaser.Scene {
 
     //問題数が下回ったらエラー処理
     if (this.currentQuestionIndex >= this.questions.length) {
-      alert("No more questions available. Game Over.");
+      alert("問題文が足りないエラー");
       return;
     }
     
@@ -798,6 +851,10 @@ export class QuizGame extends Phaser.Scene {
     this.createText(60, rectY + 40, '答え: ' + currentQuestion.answer, 16, '#000000');
     this.createText(60, rectY + 70, '情報源: ' + currentQuestion.source, 16, '#000000');
 
+
+    if(this.totalBalloons <= 0){
+      this.displayGameOver();
+    }
     // 次の問題に進むためのキーボードリスナーを設定
     this.keydownListener = (event: any) => {
       if (event.key === 'Enter' && this.onEnterPressed()) {
@@ -814,6 +871,19 @@ export class QuizGame extends Phaser.Scene {
             color: '#ffffff'
           });
         }
+      }
+    };
+    this.input.keyboard?.on('keydown', this.keydownListener);
+  }
+
+  displayGameOver(){
+    alert("gameOver titleに戻る");
+
+    this.keydownListener = (event: any) => {
+      if (event.key === 'Enter') {
+        this.input.keyboard?.off('keydown', this.keydownListener);
+        this.currentSceneStep = 'title';
+        this.displaySceneStep(this.currentSceneStep);
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
