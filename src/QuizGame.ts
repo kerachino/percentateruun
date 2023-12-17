@@ -26,6 +26,7 @@ export class QuizGame extends Phaser.Scene {
   private enterSound: any;
   private inputSound: any;
   private qSound: any;
+  private answerFinalEffect: any;
   private enterPressed: boolean;
   private differences: number[] = [0, 0, 0, 0, 0];
   constructor() {
@@ -77,6 +78,7 @@ export class QuizGame extends Phaser.Scene {
     this.load.audio('inputSound', 'assets/audio/ボールペンノック.mp3');
     this.load.audio('qSound', 'assets/audio/デンッ!.mp3');
     this.load.audio('answerEffect', 'assets/audio/Accent19-1.mp3');
+    this.load.audio('answerFinalEffect', 'assets/audio/デンッ!.mp3');
     
     // for (let i = 0; i < 100; i++) {
     //   this.balloonPositions.push({
@@ -103,7 +105,7 @@ export class QuizGame extends Phaser.Scene {
     this.enterSound = this.sound.add('enterSound', {volume: 0.5 });
     this.inputSound = this.sound.add('inputSound', {volume: 0.5 });
     this.qSound = this.sound.add('qSound', {volume: 0.5 });
-    
+    this.answerFinalEffect = this.sound.add('answerFinalEffect', {volume: 0.5 });
   }
 
   EnterSound() {this.enterSound.play();}
@@ -392,6 +394,17 @@ export class QuizGame extends Phaser.Scene {
     // });
   }
 
+  showBalloonsCount(num:number) {
+    this.createBalloosCountBg();
+    const balloonsText = `${num}`;
+    this.createText(this.mainWidth - 15, this.mainHeight - 110, '残り', 30, '#FFF').setOrigin(1.25, 1);
+    if(num >= 100){
+      this.createText(this.mainWidth - 0, this.mainHeight - 60, balloonsText, 50, '#FFF').setAlign('center').setOrigin(1.25, 1);
+    }else{
+      this.createText(this.mainWidth - 15, this.mainHeight - 60, balloonsText, 50, '#FFF').setAlign('center').setOrigin(1.25, 1);
+    }
+  }
+
   updateBalloonsCount() {
     const removeBalloon = () => {
       if (this.balloons.length > this.totalBalloons) {
@@ -404,6 +417,8 @@ export class QuizGame extends Phaser.Scene {
             onComplete: () => {
               // アニメーション完了後に風船を削除
               balloonToRemove.destroy();
+
+              this.showBalloonsCount(this.balloons.length);
 
               // 次の風船削除タイマー
               this.time.delayedCall(10, removeBalloon);
@@ -442,16 +457,10 @@ export class QuizGame extends Phaser.Scene {
     bg.setPosition(this.mainWidth, this.mainHeight);
     bg.setScale(120 / bg.width);
   }
-  showBalloonsCount() {
-    this.createBalloosCountBg();
-    const balloonsText = `${this.totalBalloons}`;
-    this.createText(this.mainWidth - 15, this.mainHeight - 110, '残り', 30, '#FFF').setOrigin(1.25, 1);
-    this.createText(this.mainWidth - 15, this.mainHeight - 60, balloonsText, 50, '#FFF').setAlign('center').setOrigin(1.25, 1);
-  }
 
 
   displayQuestion() {
-    this.showBalloonsCount();
+    this.showBalloonsCount(this.totalBalloons);
     this.updateBalloonsCount();
     this.input.keyboard?.removeAllListeners();// 既存のリスナーを削除 これやらんとエラー
 
@@ -716,9 +725,10 @@ export class QuizGame extends Phaser.Scene {
     const correctAnswer = currentQuestion.answer;
     const difference = Math.round(Math.abs(correctAnswer - userAnswer));
 
+    
+    this.showBalloonsCount(this.totalBalloons);
     // 差の分だけ風船の数を減らす
     this.totalBalloons -= difference;
-
     // 風船の数が0以下にならないようにする
     if (this.totalBalloons < 0) {
       this.totalBalloons = 0;
@@ -811,6 +821,7 @@ export class QuizGame extends Phaser.Scene {
                     answerEffect.setDetune(Phaser.Math.Linear(-1200, 1200, progress)); // ピッチ
                   },
                   onComplete: () => {
+                    this.answerFinalEffect.play();
                     // 線
                     const correctAnswerPosition = barX + (correctAnswer / 100) * barWidth;
                     const lineGraphics = this.add.graphics();
@@ -820,6 +831,7 @@ export class QuizGame extends Phaser.Scene {
                     // バーの上に解答
                     this.createOutlinedText(barX + (correctAnswer / 100) * barWidth, barY - 30, correctAnswer.toString(), 30, '#FF0000', '#FFFFFF');
                     
+                    this.updateBalloonsCount();
                   }
                 });
               }
@@ -828,8 +840,6 @@ export class QuizGame extends Phaser.Scene {
         });
       }
     });
-    this.showBalloonsCount();
-    this.updateBalloonsCount();
 
     // ユーザ回答線
     const userAnswerPosition = barX + (userAnswer / 100) * barWidth;
@@ -874,7 +884,7 @@ export class QuizGame extends Phaser.Scene {
   
 
   displayExplanation() {
-    this.showBalloonsCount();
+    this.showBalloonsCount(this.totalBalloons);
     this.updateBalloonsCount();
     const currentQuestion = this.questions[this.currentQuestionIndex];
     const explanationText = currentQuestion.explanation;
