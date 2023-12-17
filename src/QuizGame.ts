@@ -12,6 +12,7 @@ export class QuizGame extends Phaser.Scene {
   private questions: any[] = [];
   private currentQuestionIndex: number = 0;
   private currentSceneStep: string = 'title';
+  private settingStep: boolean = true;
   private currentMainStep: string = 'firstStep';
   private keydownListener: any; //イベントリスナーの参照保持 ?必要っぽい
   private allQuestions = 3;
@@ -42,6 +43,14 @@ export class QuizGame extends Phaser.Scene {
   private gameMode: string = "normal";
   private selectedGenre: string = ''; // 選択されたジャンル
   private selectedLevel: number = 0; // 選択されたレベル
+
+  /*settings */
+  private selectedSettingIndex:number = 0;
+  private settings = [
+    { name: '音量', value: 50 }, // 音量設定（例）
+    { name: '難易度', value: 50 }, // 難易度設定（例）
+    // 他の設定項目
+  ];
 
   preload() {
     this.mainWidth = this.cameras.main.width;
@@ -143,6 +152,9 @@ export class QuizGame extends Phaser.Scene {
     this.showBalloons();
     this.createVehicle();
     this.setControllKeyExplanation();
+    this.input.keyboard?.on('keydown-SPACE', () => {
+      this.settingScene();
+    });
     
     switch (step) {
       case 'title':
@@ -161,6 +173,67 @@ export class QuizGame extends Phaser.Scene {
         console.log('Invalid step: ' + step);
         break;
     }
+  }
+
+  settingScene() {
+    // 設定項目のテキストオブジェクトを生成し、画面に配置
+    this.settings.forEach((setting, index) => {
+      const yPos = 100 + index * 50; // 項目間の間隔を50ピクセルとする
+      this.add.text(100, yPos, `${setting.name}: ${setting.value}`, { fontSize: '24px' });
+    });
+
+    // キーボードイベントリスナーの設定
+    this.input.keyboard?.on('keydown', (event: any) => {
+      if (event.key === 'ArrowUp' && this.selectedSettingIndex > 0) {
+        this.selectedSettingIndex--;
+        this.updateSettingsDisplay();
+      } else if (event.key === 'ArrowDown' && this.selectedSettingIndex < this.settings.length - 1) {
+        this.selectedSettingIndex++;
+        this.updateSettingsDisplay();
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        // 左右キーでの設定値変更（例として音量の変更）
+        if (this.settings[this.selectedSettingIndex].name === '音量') {
+          this.settings[this.selectedSettingIndex].value += (event.key === 'ArrowRight' ? 10 : -10);
+          this.settings[this.selectedSettingIndex].value = Phaser.Math.Clamp(this.settings[this.selectedSettingIndex].value, 0, 100); // 0から100の範囲に制限
+          this.updateSettingsDisplay();
+        }
+      }
+      // } else if(event.key === 'space') {
+      //     this.input.keyboard?.off('keydown', this.keydownListener);
+      //     this.currentSceneStep = 'setting';
+      //     this.displaySceneStep(this.currentSceneStep);
+      // }
+    });
+  }
+
+  updateSettingsDisplay() {
+    // 画面上の設定項目を更新
+    this.settings.forEach((setting, index) => {
+      const yPos = 100 + index * 50;
+      const text = this.children.getByName(`settingText${index}`) as Phaser.GameObjects.Text;
+      if (text) {
+        text.setText(`${setting.name}: ${setting.value}`);
+        text.setColor(index === this.selectedSettingIndex ? '#FF0000' : '#FFFFFF'); // 選択された項目を赤色で表示
+      }
+    });
+  }
+
+
+  setAspectRatio(widthRatio:number, heightRatio:number) {
+    // ウィンドウのサイズを取得
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+  
+    // 16:9の比率で最適なサイズを計算
+    let newWidth = windowWidth;
+    let newHeight = newWidth / widthRatio * heightRatio;
+    if (newHeight > windowHeight) {
+      newHeight = windowHeight;
+      newWidth = newHeight / heightRatio * widthRatio;
+    }
+  
+    // Phaser ゲームインスタンスのサイズを更新
+    this.game.scale.resize(newWidth, newHeight);
   }
 
   titleScene() {
