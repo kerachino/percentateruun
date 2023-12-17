@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import { TitleScene } from './TitleScene';
+import { TitleScene } from './Test';
 import { QuizGame } from './QuizGame';
 
 const config: Phaser.Types.Core.GameConfig = {

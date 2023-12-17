@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 
+// これ保留
 export class TitleScene extends Phaser.Scene {
   constructor() {
     super({ key: 'TitleScene' });
