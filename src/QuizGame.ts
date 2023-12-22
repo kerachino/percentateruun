@@ -291,7 +291,7 @@ export class QuizGame extends Phaser.Scene {
 
   genreScene(){
     // 利用可能なジャンルのリスト
-    const genres = ['国語', '算数', '理科', '社会', '英語'];
+    const genres = ['国語', '算数', '理科', '社会', '英語', '保健', '生活','雑学'];
 
     // 最初に選択されているジャンルのインデックス
     let selectedGenreIndex = 0;

@@ -39,7 +39,7 @@
         "memo":""
     },
     {
-        "number" : 3,
+        "number" : 10,
         "question": "週に１回以上炭酸飲料を飲む人の割合は？",
         "omitQuestion": "週１回以上炭酸飲料を飲む人",
         "answer": 83,
@@ -52,7 +52,7 @@
         "memo":""
     },
     {
-        "number" : 1,
+        "number" : 20,
         "question": "2023年3月第1週での人通りの少ない街なかを歩いているときのマスク着用率は？",
         "omitQuestion": "個人判断直後のマスク着用率",
         "answer": 66,
@@ -65,7 +65,7 @@
         "memo":""
     },
     {
-        "number" : 1,
+        "number" : 21,
         "question": "ワクチン接種後の因果不明含む死亡率は？",
         "omitQuestion": "ワクチン死亡率",
         "answer": 0,
@@ -78,7 +78,7 @@
         "memo":""
     },
     {
-        "number" : 1,
+        "number" : 30,
         "question": "直近一年間に定額制映像配信サービスを利用した割合は？",
         "omitQuestion": "ビデオサブスク利用率",
         "answer": 68,
@@ -91,7 +91,7 @@
         "memo":"68.5%"
     },
     {
-        "number" : 1,
+        "number" : 31,
         "question": "直近一年間に定額制音楽配信サービスを利用した割合は？",
         "omitQuestion": "音楽サブスク利用率",
         "answer": 24,
@@ -104,7 +104,7 @@
         "memo":"24.2%"
     },
     {
-        "number" : 1,
+        "number" :32,
         "question": "直近一年間に定額制電子書籍・雑誌、電子コミックを利用した割合は？",
         "omitQuestion": "本のサブスク利用率",
         "answer": 13,
@@ -117,7 +117,7 @@
         "memo":"13.4%"
     },
     {
-        "number" : 1,
+        "number" : 33,
         "question": "定額制サービスをまた利用したい人の割合は？",
         "omitQuestion": "サブスク再利用率",
         "answer": 27,
@@ -130,7 +130,7 @@
         "memo":"27.9"
     },
     {
-        "number" : 1,
+        "number" : 40,
         "question": "家庭から出た食品廃棄物のうち、まだ食べられるのに捨てられた食品の割合は？",
         "omitQuestion": "台所ごみのまだ食べられるもの",
         "answer": 38,
@@ -143,7 +143,7 @@
         "memo":"38.8"
     },
     {
-        "number" : 1,
+        "number" : 80,
         "question": "鶴と亀合わせて35匹、足が94本。亀の割合は？",
         "omitQuestion": "頭35,足94,亀の割合",
         "answer": 34,
