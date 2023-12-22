@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import { calcNewWindowSize } from './windowUtil/calcNewWindowsize';
 // "テスト用"はリリース時には調整する
 declare global {
   interface Window {
@@ -61,7 +62,7 @@ export class QuizGame extends Phaser.Scene {
       this.mbBool = false;
     }
     this.load.json('questions', 'assets/questions.json');
-    this.load.json('balloonsData', 'assets/balloons.json');
+    this.load.json('balloonsData', 'assets/balloons.json'); 
     this.load.image('bg2', 'assets/imgs/bg2.png');
     this.load.image('bg1', 'assets/imgs/bg1.jpg');
     this.load.image('vehicle', 'assets/imgs/vehicle.png');
@@ -221,16 +222,7 @@ export class QuizGame extends Phaser.Scene {
 
   setAspectRatio(widthRatio:number, heightRatio:number) {
     // ウィンドウのサイズを取得
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-  
-    // 16:9の比率で最適なサイズを計算
-    let newWidth = windowWidth;
-    let newHeight = newWidth / widthRatio * heightRatio;
-    if (newHeight > windowHeight) {
-      newHeight = windowHeight;
-      newWidth = newHeight / heightRatio * widthRatio;
-    }
+    const [newWidth, newHeight] = calcNewWindowSize(widthRatio, heightRatio);
   
     // Phaser ゲームインスタンスのサイズを更新
     this.game.scale.resize(newWidth, newHeight);
