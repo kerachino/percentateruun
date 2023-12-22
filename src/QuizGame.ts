@@ -511,9 +511,24 @@ export class QuizGame extends Phaser.Scene {
         const balloonToRemove = this.balloons.pop();
         if (balloonToRemove) {
           // 風船削除アニメーション
+
+          const rotationAngle = Phaser.Math.RND.between(5, 10);
+          const rotationDirection = Phaser.Math.RND.sign();
+          const moveDirectionX = Phaser.Math.RND.between(-50, 50);
+          const moveDirectionY = Phaser.Math.RND.between(-50, 50);
+
           this.tweens.add({
             targets: balloonToRemove,
-            duration: 10,
+            duration: 300,
+            scaleX: 0,
+            scaleY: 0,
+            alpha: 0,
+            rotation: rotationAngle * rotationDirection,
+            //rotation: 5,
+            x: balloonToRemove.x + moveDirectionX, 
+            y: balloonToRemove.y + moveDirectionY,
+            ease: 'EaseOutQuad',
+            //ease: 'Linear',
             onComplete: () => {
               // アニメーション完了後に風船を削除
               balloonToRemove.destroy();
