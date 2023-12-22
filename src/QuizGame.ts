@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import { calcNewWindowSize } from './windowUtil/calcNewWindowsize';
 // "テスト用"はリリース時には調整する
 declare global {
   interface Window {
@@ -61,7 +62,7 @@ export class QuizGame extends Phaser.Scene {
       this.mbBool = false;
     }
     this.load.json('questions', 'assets/questions.json');
-    this.load.json('balloonsData', 'assets/balloons.json');
+    this.load.json('balloonsData', 'assets/balloons.json'); 
     this.load.image('bg2', 'assets/imgs/bg2.png');
     this.load.image('bg1', 'assets/imgs/bg1.jpg');
     this.load.image('vehicle', 'assets/imgs/vehicle.png');
@@ -221,16 +222,7 @@ export class QuizGame extends Phaser.Scene {
 
   setAspectRatio(widthRatio:number, heightRatio:number) {
     // ウィンドウのサイズを取得
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-  
-    // 16:9の比率で最適なサイズを計算
-    let newWidth = windowWidth;
-    let newHeight = newWidth / widthRatio * heightRatio;
-    if (newHeight > windowHeight) {
-      newHeight = windowHeight;
-      newWidth = newHeight / heightRatio * widthRatio;
-    }
+    const [newWidth, newHeight] = calcNewWindowSize(widthRatio, heightRatio);
   
     // Phaser ゲームインスタンスのサイズを更新
     this.game.scale.resize(newWidth, newHeight);
@@ -505,31 +497,70 @@ export class QuizGame extends Phaser.Scene {
     }
   }
 
+  //最新の
+
+
+  //二番目の
   updateBalloonsCount() {
-    const removeBalloon = () => {
+    const removeInterval = 100; // 0.1秒おき
+    const intervalId = setInterval(() => {
       if (this.balloons.length > this.totalBalloons) {
         const balloonToRemove = this.balloons.pop();
         if (balloonToRemove) {
           // 風船削除アニメーション
+          const moveDistanceX = 10; // 左右に振動させる距離
+          const moveDuration = 5; // 1回の振動の時間
+          const moveDelay = 25; // 振動の間隔
+  
+          // 左右に振動するアニメーション
+          this.tweens.add({
+            targets: balloonToRemove,
+            duration: 1,
+            //scaleX: 0,
+            //scaleY: 0,
+            x: balloonToRemove.x - moveDistanceX,
+            ease: 'EaseInOutQuad',
+            yoyo: true,
+            repeat: 1,
+            onComplete: () => {
+              // 上方向に移動するアニメーション
+              this.tweens.add({
+                targets: balloonToRemove,
+                duration: 1,
+                alpha: 0,
+                y: balloonToRemove.y - 300, // 上方向に移動させる（負の値）
+                onComplete: () => {
+                  // アニメーション完了後に風船を削除
+                  balloonToRemove.destroy();
+                  this.showBalloonsCount(this.balloons.length);
+                }
+              });
+            }
+          });
+        }
+      } else {
+        clearInterval(intervalId); // 残りの風船が指定数以下になったらインターバルを停止
+      }
+    }, removeInterval);
+  }
 
-          const rotationAngle = Phaser.Math.RND.between(5, 10);
-          const rotationDirection = Phaser.Math.RND.sign();
+    //最初の
+         /* const rotationDirection = Phaser.Math.RND.sign();
           const moveDirectionX = Phaser.Math.RND.between(-50, 50);
           const moveDirectionY = Phaser.Math.RND.between(-50, 50);
 
           this.tweens.add({
             targets: balloonToRemove,
-            duration: 300,
+            duration: 1000,
             scaleX: 0,
             scaleY: 0,
             alpha: 0,
-            rotation: rotationAngle * rotationDirection,
-            //rotation: 5,
+            rotation: 2 * Math.PI * rotationDirection,
             x: balloonToRemove.x + moveDirectionX, 
-            y: balloonToRemove.y + moveDirectionY,
+            y: balloonToRemove.y + -50,//moveDirectionY,
             ease: 'EaseOutQuad',
             //ease: 'Linear',
-            onComplete: () => {
+           onComplete: () => {
               // アニメーション完了後に風船を削除
               balloonToRemove.destroy();
 
@@ -542,9 +573,11 @@ export class QuizGame extends Phaser.Scene {
         }
       }
     };
+    */
+
 
     // 最初の風船を削除するためのタイマー
-    this.time.delayedCall(10, removeBalloon);
+    // this.time.delayedCall(10, removeBalloon);
 
     // while (this.balloons.length > this.totalBalloons) {
     //   const balloonToRemove = this.balloons.pop();
@@ -552,7 +585,7 @@ export class QuizGame extends Phaser.Scene {
     //     balloonToRemove.destroy();
     //   }
     // }
-  }
+  // }
 
   updateBg(){
     // 風船の数に応じて背景を変更
