@@ -10,6 +10,7 @@ declare global {
 
 export class QuizGame extends Phaser.Scene {
   private totalBalloons: number = 100; // 風船の初期数
+  private avatar?: Phaser.GameObjects.Image; // アバター画像用のプロパティ
   private questions: any[] = [];
   private currentQuestionIndex: number = 0;
   private currentSceneStep: string = 'title';
@@ -75,6 +76,7 @@ export class QuizGame extends Phaser.Scene {
     this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
     this.load.image('qFrame', 'assets/imgs/qFrame3.png');
     this.load.image('TitleSelect0', 'assets/imgs/TitleSelect.png');
+    this.load.image('userAvatar', 'assets/imgs/userAvatar.png'); // 'path/to/avatar.jpg'はアバター画像のパス
 
     this.load.image('arrowKeys', 'assets/imgs/arrowKeys.png'); // 方向キーの画像
     this.load.image('enterKey', 'assets/imgs/enterKey.png'); // Enterキーの画像
@@ -111,7 +113,7 @@ export class QuizGame extends Phaser.Scene {
     this.displaySceneStep(this.currentSceneStep);
     // this.bgImage = this.add.image(0, 0, 'bg2').setOrigin(0, 0);
 
-
+    
     // JSONデータの読み込み
     this.balloonsData = this.cache.json.get('balloonsData');
 
@@ -132,7 +134,7 @@ export class QuizGame extends Phaser.Scene {
 
     arrowKeys.setScale((this.mainWidth / arrowKeys.width) * 0.04);
     enterKey.setScale((this.mainWidth / enterKey.width) * 0.04);
-    
+
     // アニメーションを追加（例：上下に動かす）
     this.tweens.add({
       targets: [arrowKeys, enterKey],
@@ -400,6 +402,8 @@ export class QuizGame extends Phaser.Scene {
     this.createVehicle();
 
     this.displayQuestionNumber();
+
+    this.displayAvatar();
     
     switch (step) {
       case 'firstStep':
@@ -516,10 +520,7 @@ export class QuizGame extends Phaser.Scene {
     }
   }
 
-  //最新の
-
-
-  //二番目の
+  //振動して上に消える版
   updateBalloonsCount() {
     const removeInterval = 100; // 0.1秒おき
     const intervalId = setInterval(() => {
@@ -534,7 +535,8 @@ export class QuizGame extends Phaser.Scene {
           // 左右に振動するアニメーション
           this.tweens.add({
             targets: balloonToRemove,
-            duration: 1,
+            duration: 10,
+            //duration: 1,
             //scaleX: 0,
             //scaleY: 0,
             x: balloonToRemove.x - moveDistanceX,
@@ -545,9 +547,10 @@ export class QuizGame extends Phaser.Scene {
               // 上方向に移動するアニメーション
               this.tweens.add({
                 targets: balloonToRemove,
-                duration: 1,
+                duration: 500,
+                //duration: 1,
                 alpha: 0,
-                y: balloonToRemove.y - 300, // 上方向に移動させる（負の値）
+                y: balloonToRemove.y - 500, // 上方向に移動させる（負の値）
                 onComplete: () => {
                   // アニメーション完了後に風船を削除
                   balloonToRemove.destroy();
@@ -563,7 +566,7 @@ export class QuizGame extends Phaser.Scene {
     }, removeInterval);
   }
 
-    //最初の
+    //回転して消える版
          /* const rotationDirection = Phaser.Math.RND.sign();
           const moveDirectionX = Phaser.Math.RND.between(-50, 50);
           const moveDirectionY = Phaser.Math.RND.between(-50, 50);
@@ -1176,6 +1179,26 @@ export class QuizGame extends Phaser.Scene {
     return shuffled.slice(0, count); // 制限された数の問題を返す
   }
 
+  // アバターを表示する共通関数
+  displayAvatar() {
+    // 以前のアバターがあれば削除
+    if (this.avatar) {
+      this.avatar.destroy();
+    }
+
+    // アバターの新しいインスタンスを作成
+    this.avatar = this.add.image(this.mainWidth -10, this.mainHeight - 160, 'userAvatar').setOrigin(1.25, 1); // 位置は必要に応じて調整
+    this.avatar.setScale(0.5); // サイズは必要に応じて調整
+  }
+
+  // アバター画像の動的読み込み
+  loadAvatarImage(imagePath: string) {
+    this.load.image('userAvatar', imagePath);
+    this.load.once('complete', () => {
+      this.add.image(100, 100, 'userAvatar').setScale(0.5);
+    });
+    this.load.start();
+  }
 }
 // const config: Phaser.Types.Core.GameConfig = {
 //   type: Phaser.AUTO,
