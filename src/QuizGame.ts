@@ -661,7 +661,7 @@ export class QuizGame extends Phaser.Scene {
     qImg.setScale(qImgScale);
 
     // タイマー
-    const timerDuration = 5000; // タイマーの総時間
+    const timerDuration = 10000; // タイマーの総時間
 
     // 赤い背景のテキスト
     const countdownTextBg = this.add.text(

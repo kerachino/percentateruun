@@ -144,7 +144,7 @@
     },
     {
         "number" : 80,
-        "question": "鶴と亀合わせて35匹、足が94本。亀の割合は？",
+        "question": "鶴と亀合わせて35匹、足が94本。亀の割合は?",
         "omitQuestion": "頭35,足94,亀の割合",
         "answer": 34,
         "surveyRespondent": "",
@@ -152,6 +152,19 @@
         "sourceLink": "",
         "genre": "数学",
         "level": 2,
+        "imgId": 0,
+        "memo":""
+    },
+    {
+        "number" : 80,
+        "question": "週に1度以上カレーを食べる人の割合は?",
+        "omitQuestion": "週に1度以上カレーを食べる人",
+        "answer": 14,
+        "surveyRespondent": "",
+        "source": "https://myel.myvoice.jp/products/detail.php?product_id=24101",
+        "sourceLink": "",
+        "genre": "生活",
+        "level": 1,
         "imgId": 0,
         "memo":""
     }
