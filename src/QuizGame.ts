@@ -427,6 +427,7 @@ export class QuizGame extends Phaser.Scene {
         break;
     }
   }
+
   displayGameEnd(){
     alert("gameEnd");
     this.add.text(100, 500, 'Game Over', {
@@ -1127,7 +1128,7 @@ export class QuizGame extends Phaser.Scene {
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
-  displayGameOver(){alert();
+  displayGameOver(){
     alert("gameOver titleに戻る");
 
     this.keydownListener = (event: any) => {
