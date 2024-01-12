@@ -497,10 +497,7 @@ export class QuizGame extends Phaser.Scene {
     }
   }
 
-  //最新の
-
-
-  //二番目の
+  //振動して上に消える版
   updateBalloonsCount() {
     const removeInterval = 100; // 0.1秒おき
     const intervalId = setInterval(() => {
@@ -515,7 +512,8 @@ export class QuizGame extends Phaser.Scene {
           // 左右に振動するアニメーション
           this.tweens.add({
             targets: balloonToRemove,
-            duration: 1,
+            duration: 10,
+            //duration: 1,
             //scaleX: 0,
             //scaleY: 0,
             x: balloonToRemove.x - moveDistanceX,
@@ -526,9 +524,10 @@ export class QuizGame extends Phaser.Scene {
               // 上方向に移動するアニメーション
               this.tweens.add({
                 targets: balloonToRemove,
-                duration: 1,
+                duration: 500,
+                //duration: 1,
                 alpha: 0,
-                y: balloonToRemove.y - 300, // 上方向に移動させる（負の値）
+                y: balloonToRemove.y - 500, // 上方向に移動させる（負の値）
                 onComplete: () => {
                   // アニメーション完了後に風船を削除
                   balloonToRemove.destroy();
@@ -544,7 +543,7 @@ export class QuizGame extends Phaser.Scene {
     }, removeInterval);
   }
 
-    //最初の
+    //回転して消える版
          /* const rotationDirection = Phaser.Math.RND.sign();
           const moveDirectionX = Phaser.Math.RND.between(-50, 50);
           const moveDirectionY = Phaser.Math.RND.between(-50, 50);
