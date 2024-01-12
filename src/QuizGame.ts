@@ -108,7 +108,7 @@ export class QuizGame extends Phaser.Scene {
   create() {
     const allQuestions = this.cache.json.get('questions');
     // // 問題数を制限するため、ランダムに5つの問題を選ぶ
-    this.questions = this.getRandomQuestions(allQuestions, 5);
+    this.questions = this.getRandomQuestions(allQuestions, 3);
     this.currentQuestionIndex = 0;
     this.displaySceneStep(this.currentSceneStep);
     // this.bgImage = this.add.image(0, 0, 'bg2').setOrigin(0, 0);
@@ -329,7 +329,7 @@ export class QuizGame extends Phaser.Scene {
       // 最初に選択されているレベル
       let selectedLevelIndex = 0;
       // 選択されているレベルを表示
-      const levelText = this.add.text(this.mainWidth / 2, this.mainHeight / 2, `選択されているレベル: ${levels[selectedLevelIndex]}`, {
+      const levelText = this.add.text(this.mainWidth / 2, this.mainHeight / 2, `選択されているレベル: ランダム`, {
           fontSize: '24px',
           color: '#FFFFFF'
       }).setOrigin(0.5);
@@ -1096,7 +1096,7 @@ export class QuizGame extends Phaser.Scene {
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
-  displayGameOver(){
+  displayGameOver(){alert();
     alert("gameOver titleに戻る");
 
     this.keydownListener = (event: any) => {
