@@ -939,10 +939,11 @@ export class QuizGame extends Phaser.Scene {
       targets: progressBarCover,
       displayWidth: 0,
       ease: 'Linear',
-      duration: 2000,
+      //duration: 2000,
+      duration: 1000,
       onStart: () => {
         answerEffect.play();
-      },onUpdate: tween => {
+      }, onUpdate: tween => {
         const progress = tween.progress;
         answerEffect.setDetune(Phaser.Math.Linear(-1200, 1200, progress)); // ピッチ
       },
@@ -951,10 +952,11 @@ export class QuizGame extends Phaser.Scene {
           targets: progressBarCover,
           displayWidth: barWidth,
           ease: 'Linear',
-          duration: 2000,
+          //duration: 2000,
+          duration: 1000,
           onStart: () => {
             answerEffect.play();
-          },onUpdate: tween => {
+          }, onUpdate: tween => {
             const progress = tween.progress;
             answerEffect.setDetune(Phaser.Math.Linear(1200, -1200, progress)); // ピッチ //あえて逆に
           },
@@ -963,12 +965,15 @@ export class QuizGame extends Phaser.Scene {
             this.tweens.add({
               targets: progressBarCover,
               //setOrigin: barX,
-              displayWidth: barWidth - (correctAnswer / 100) * barWidth, // 答えの位置まで幅を縮める
+              // displayWidth: barWidth - (correctAnswer / 100) * barWidth, // 答えの位置まで幅を縮める
+              // ease: 'Linear',
+              displayWidth: barWidth - (userAnswer / 100) * barWidth, // 答えの位置まで幅を縮める
               ease: 'Linear',
-              duration: 5000,
+              //duration: 5000,
+              duration: 1000,
               onStart: () => {
                 answerEffect.play();
-              },onUpdate: tween => {
+              }, onUpdate: tween => {
                 const progress = tween.progress;
                 answerEffect.setDetune(Phaser.Math.Linear(-1200, 1200, progress)); // ピッチ
               },
@@ -977,8 +982,12 @@ export class QuizGame extends Phaser.Scene {
                 this.tweens.add({
                   targets: progressBarCover,
                   displayWidth: {
-                    from: barWidth - (correctAnswer / 100) * barWidth,
-                    to: barWidth - (correctAnswer / 100) * barWidth + Phaser.Math.Between(15, 30) // 細かい左右の揺れ
+                    // from: barWidth - (correctAnswer / 100) * barWidth,
+                    // to: barWidth - (correctAnswer / 100) * barWidth + Phaser.Math.Between(15, 30) // 細かい左右の揺れ
+                    // from: barWidth - (userAnswer / 100) * barWidth,
+                    from: barWidth - (userAnswer / 100) * barWidth + Phaser.Math.Between(-30, 30),
+                    //form: progressBarCover,
+                    to: barWidth - (userAnswer / 100) * barWidth + Phaser.Math.Between(-30, 30) // 細かい左右の揺れ
                   },
                   ease: 'Linear',
                   duration: 100, // 揺れの速さ
@@ -986,7 +995,7 @@ export class QuizGame extends Phaser.Scene {
                   repeat: 3, // 数回繰り返す
                   onStart: () => {
                     answerEffect.play();
-                  },onUpdate: tween => {
+                  }, onUpdate: tween => {
                     const progress = tween.progress;
                     answerEffect.setDetune(Phaser.Math.Linear(-1200, 1200, progress)); // ピッチ
                   },
@@ -998,9 +1007,20 @@ export class QuizGame extends Phaser.Scene {
                     lineGraphics.lineStyle(4, 0xFF0000, 1);
                     lineGraphics.lineBetween(correctAnswerPosition, barY - 10, correctAnswerPosition, barY + progressBarFull.height + 10);
 
+                    this.tweens.add({
+                      targets: progressBarCover,
+                      //setOrigin: barX,
+                      // displayWidth: barWidth - (correctAnswer / 100) * barWidth, // 答えの位置まで幅を縮める
+                      // ease: 'Linear',
+                      displayWidth: barWidth - (correctAnswer / 100) * barWidth, // 答えの位置まで幅を縮める
+                      ease: 'Linear',
+                      //duration: 5000,
+                      duration: 100,
+
+                    });
                     // バーの上に解答
                     this.createOutlinedText(barX + (correctAnswer / 100) * barWidth, barY - 30, correctAnswer.toString(), 30, '#FF0000', '#FFFFFF');
-                    
+
                     this.updateBalloonsCount();
                   }
                 });
