@@ -76,7 +76,7 @@ export class QuizGame extends Phaser.Scene {
     this.load.image('progressBarCover', 'assets/imgs/progressBarCover.png');
     this.load.image('qFrame', 'assets/imgs/qFrame3.png');
     this.load.image('TitleSelect0', 'assets/imgs/TitleSelect.png');
-    this.load.image('userAvatar', 'assets/imgs/userAvatar.jpg'); // 'path/to/avatar.jpg'はアバター画像のパス
+    this.load.image('userAvatar', 'src/assets/imgs/userAvatar.png'); // 'path/to/avatar.jpg'はアバター画像のパス
 
     this.load.image('arrowKeys', 'assets/imgs/arrowKeys.png'); // 方向キーの画像
     this.load.image('enterKey', 'assets/imgs/enterKey.png'); // Enterキーの画像
