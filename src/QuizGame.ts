@@ -16,7 +16,7 @@ export class QuizGame extends Phaser.Scene {
   private settingStep: boolean = true;
   private currentMainStep: string = 'firstStep';
   private keydownListener: any; //イベントリスナーの参照保持 ?必要っぽい
-  private allQuestions = 3;
+  private allQuestions = 10;
   private balloons: Phaser.GameObjects.Image[];
   // private balloonPositions: { id: number, x: number, y: number, colorId: number }[] = [];
   private balloonsData: any[] = [];
@@ -104,9 +104,9 @@ export class QuizGame extends Phaser.Scene {
   }
 
   create() {
-    // const allQuestions = this.cache.json.get('questions');
+    const allQuestions = this.cache.json.get('questions');
     // // 問題数を制限するため、ランダムに5つの問題を選ぶ
-    // this.questions = this.getRandomQuestions(allQuestions, 5);
+    this.questions = this.getRandomQuestions(allQuestions, 5);
     this.currentQuestionIndex = 0;
     this.displaySceneStep(this.currentSceneStep);
     // this.bgImage = this.add.image(0, 0, 'bg2').setOrigin(0, 0);
@@ -283,8 +283,8 @@ export class QuizGame extends Phaser.Scene {
 
   genreScene(){
     // 利用可能なジャンルのリスト
-    const genres = ['国語', '算数', '理科', '社会', '英語', '保健', '生活','雑学'];
-
+    const genres = ['ランダム', '国語', '算数', '理科', '社会', '英語', '保健', '生活','雑学'];
+    
     // 最初に選択されているジャンルのインデックス
     let selectedGenreIndex = 0;
 
@@ -323,7 +323,7 @@ export class QuizGame extends Phaser.Scene {
 
   levelScene() {
       const allQuestions = this.cache.json.get('questions');
-      const levels = [1, 2, 3];
+      const levels = [0, 1, 2, 3];
       // 最初に選択されているレベル
       let selectedLevelIndex = 0;
       // 選択されているレベルを表示
@@ -333,7 +333,11 @@ export class QuizGame extends Phaser.Scene {
       }).setOrigin(0.5);
 
       const updateSelectedLevel = () => {
+        if(selectedLevelIndex == 0){
+          levelText.setText(`選択されているレベル: ランダム`);
+        }else{
           levelText.setText(`選択されているレベル: ${levels[selectedLevelIndex]}`);
+        }
       };
 
       this.keydownListener = (event: any) => {
@@ -345,6 +349,8 @@ export class QuizGame extends Phaser.Scene {
               updateSelectedLevel();
           } else if (event.key === 'Enter') {
               this.selectedLevel = levels[selectedLevelIndex];
+              if(this.selectedGenre == 'ランダム' || this.selectedLevel == 0){
+              }else
               this.questions = this.filterQuestionsByGenreAndLevel(allQuestions, this.selectedGenre, this.selectedLevel);
               this.input.keyboard?.off('keydown', this.keydownListener);
               this.currentSceneStep = 'main';
@@ -356,12 +362,25 @@ export class QuizGame extends Phaser.Scene {
   }
 
 
-  filterQuestionsByGenreAndLevel(allQuestions: any[], genre:string, level:number) {
+  filterQuestionsByGenreAndLevel(allQuestions: any[], genre: string, level: number) {
     // ジャンルとレベルに基づいて問題をフィルタリング
-    return allQuestions.filter(question => {
-      return question.genre === genre && question.level === level;
-    });
-  }
+    if (genre !== 'ランダム' || level !== 0) {
+        return allQuestions.filter(question => {
+            return question.genre === genre && question.level === level;
+        });
+    } else if (genre === 'ランダム' && level !== 0) {
+        return allQuestions.filter(question => {
+            return question.level === level;
+        });
+    } else if (level === 0 && genre !== 'ランダム') {
+        return allQuestions.filter(question => {
+            return question.genre === genre;
+        });
+    } else {//保留　エラーが出る
+        return allQuestions;
+    }
+}
+
   
   MainSceneStep(step: string) {
     // 既存のリスナーを削除　たぶん解決済み
