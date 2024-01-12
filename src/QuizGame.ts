@@ -1169,7 +1169,7 @@ export class QuizGame extends Phaser.Scene {
     }
 
     // アバターの新しいインスタンスを作成
-    this.avatar = this.add.image(this.mainWidth + 20, this.mainHeight - 160, 'userAvatar').setOrigin(1.25, 1); // 位置は必要に応じて調整
+    this.avatar = this.add.image(this.mainWidth -10, this.mainHeight - 160, 'userAvatar').setOrigin(1.25, 1); // 位置は必要に応じて調整
     this.avatar.setScale(0.5); // サイズは必要に応じて調整
   }
 
