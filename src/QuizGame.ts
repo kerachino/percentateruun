@@ -77,6 +77,7 @@ export class QuizGame extends Phaser.Scene {
     this.load.image('qFrame', 'assets/imgs/qFrame3.png');
     this.load.image('TitleSelect0', 'assets/imgs/TitleSelect.png');
     this.load.image('userAvatar', 'assets/imgs/userAvatar.png'); // 'path/to/avatar.jpg'はアバター画像のパス
+    this.load.image('persent_balloon_logo2', 'assets/imgs/persent_balloon_logo2.png');
 
     this.load.image('arrowKeys', 'assets/imgs/arrowKeys.png'); // 方向キーの画像
     this.load.image('enterKey', 'assets/imgs/enterKey.png'); // Enterキーの画像
@@ -234,7 +235,15 @@ export class QuizGame extends Phaser.Scene {
     this.updateBg();
     this.showBalloons();
     this.createVehicle();
+
+    const logoX=this.mainWidth*0.8
+    const logoY=this.mainHeight*0.3
+    const titleLogo = this.add.image(this.mainWidth*0.1, this.mainHeight*0.1, 'persent_balloon_logo2')
+    //サイズ調整
+    
+    titleLogo.setOrigin(0, 0).setScale(logoX / titleLogo.width, logoY / titleLogo.height);
   
+    // const images = ['TitleSelect0', 'TitleSelect0']; // 画像のキー名
     const images = ['TitleSelect0', 'TitleSelect0']; // 画像のキー名
     let selectedImageIndex = 0; // 最初に選択されている画像
 
