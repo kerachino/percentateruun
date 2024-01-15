@@ -401,8 +401,9 @@ export class QuizGame extends Phaser.Scene {
 
     //問題数が下回ったらエラー処理
     if (this.currentQuestionIndex >= this.questions.length) {
-      alert("問題文が足りないエラー");
-      return;
+      this.displayGameEnd();
+      // alert("問題文が足りないエラー");
+      this.MainSceneStep('gameEnd');
     }
     
     // this.clearScene(); //処理を軽くするには下をfirstStepに入れ、これを削除できるようにする
@@ -427,10 +428,21 @@ export class QuizGame extends Phaser.Scene {
       case 'explanation':
         this.displayExplanation();
         break;
+      case 'gameEnd':
+        this.displayGameEnd();
+        break;
       default:
         console.log('Invalid step: ' + step);
         break;
     }
+  }
+
+  displayGameEnd(){
+    alert("gameEnd");
+    this.add.text(100, 500, 'Game Over', {
+      fontSize: '24px',
+      color: '#ffffff'
+    });
   }
 
   displayQuestionNumber() {//上バー
@@ -1115,17 +1127,17 @@ export class QuizGame extends Phaser.Scene {
           this.MainSceneStep(this.currentMainStep);
         } else {
           // ゲーム終了
-          this.add.text(100, 500, 'Game Over', {
-            fontSize: '24px',
-            color: '#ffffff'
-          });
+          this.input.keyboard?.off('keydown', this.keydownListener);
+          this.currentMainStep = 'gameEnd';
+          this.MainSceneStep(this.currentMainStep);
+          
         }
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
-  displayGameOver(){alert();
+  displayGameOver(){
     alert("gameOver titleに戻る");
 
     this.keydownListener = (event: any) => {
