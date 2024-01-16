@@ -167,6 +167,9 @@ export class QuizGame extends Phaser.Scene {
       case 'genre':
         this.genreScene();
         break;
+      case 'score':
+        this.scoreScene();
+        break;
       case 'level':
         this.levelScene();
         break;
@@ -178,6 +181,34 @@ export class QuizGame extends Phaser.Scene {
         break;
     }
   }
+
+  scoreScene() {
+    // スコア画面の処理
+
+    // ローカルストレージから問題とユーザの回答情報を取得
+    const allQuestions = this.cache.json.get('questions');
+    const userAnswersJSON = localStorage.getItem('userAnswers');
+    const userAnswers: { [key: string]: string } = userAnswersJSON ? JSON.parse(userAnswersJSON) : {};
+
+    // スコア表示用のテキストを作成
+    let scoreText = 'スコア\n\n';
+
+    // 各問題に対してユーザの回答情報を表示
+    allQuestions.forEach((question: { omitQuestion: string, number:number }) => {
+        const userAnswer = userAnswers[question.number] || '未回答';
+        scoreText += `${question.omitQuestion}: ${userAnswer}\n`;
+    });
+
+    // スコア表示用のテキストを表示
+    this.add.text(100, 100, scoreText, { fontSize: '24px', color: '#FFF' });
+
+    // キー入力待機
+    this.input.keyboard?.once('keydown', (event: any) => {
+        // スタート画面に戻る
+        this.currentSceneStep = 'start';
+        this.displaySceneStep(this.currentSceneStep);
+    });
+}
 
   settingScene() {
     // 設定項目のテキストオブジェクトを生成し、画面に配置
@@ -438,7 +469,6 @@ export class QuizGame extends Phaser.Scene {
   }
 
   displayGameEnd(){
-    alert("gameEnd");
     this.add.text(100, 500, 'Game Over', {
       fontSize: '24px',
       color: '#ffffff'
@@ -543,7 +573,7 @@ export class QuizGame extends Phaser.Scene {
 
   //振動して上に消える版
   updateBalloonsCount() {
-    const removeInterval = 100; // 0.1秒おき
+    const removeInterval = 50; // 0.1秒おき
     const intervalId = setInterval(() => {
       if (this.balloons.length > this.totalBalloons) {
         const balloonToRemove = this.balloons.pop();
