@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "phaser": "^3.70.0"
+    "phaser": "^3.70.0",
+    "vue": "^2.7.16"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",
@@ -13,7 +14,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "vite",
     "build": "vite build"
   }
 }
