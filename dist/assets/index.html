@@ -4,62 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PHASER GAME</title>
-<style>
-    html, body {
-    height: 100%;
-    margin: 0;
-    }
-    #game-app {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    }
-    #game-app > canvas {
-    max-width: 100%;
-    max-height: 100%;
-    }
-
-    /* @media only screen and (min-width: 750px) {
-        #gameInput{display: none}
-    } */
-    #gameInput {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        width: calc(100% - 20px);
-        padding: 10px;
-        font-size: 20px;
-        display: none; /* 初期状態では非表示 */
-    }
-
-</style>
-
-</head>
-<body>
-    <script>// 仮 scripts.jsを呼び出したいけど処理の順番で上手くいかない
-        function showInputField(bool) {
-            const inputElement = document.getElementById('gameInput');
-            if(bool){
-                inputElement.style.display = 'block'; // 入力フィールドを表示
-            }else{
-                inputElement.style.display = 'none';
-            }
-            inputElement.focus(); // 入力フィールドにフォーカス
-            
-            // 入力値の変更を監視
-            inputElement.addEventListener('input', function(event) {
-                // 入力値に基づいてゲームの状態を更新
-                const inputValue = event.target.value;
-                // 例：Phaserのテキストオブジェクトに値を設定
-                inputText.setText(inputValue);
-            });
-            }
-            window.inputText = showInputField;
-    </script>
-
-
-    <input type="text" id="gameInput" placeholder="ここに入力">
-    <div id="game-app"></div>
+  <div id="game-app"></div>
 </body>
 </html>
