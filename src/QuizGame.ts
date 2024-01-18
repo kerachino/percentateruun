@@ -519,10 +519,34 @@ export class QuizGame extends Phaser.Scene {
   }
 
   displayGameEnd() {
-    this.add.text(100, 500, 'Game Over', {
+    this.add.text(100, 500, 'Game End', {
       fontSize: '24px',
       color: '#ffffff'
     });
+
+    this.keydownListener = (event: any) => {
+      if (event.key === 'Enter') {
+        this.input.keyboard?.off('keydown', this.keydownListener);
+        
+        // this.currentSceneStep = 'title';
+        // this.displaySceneStep(this.currentSceneStep);
+
+        window.location.reload();
+      }
+    };
+    this.input.keyboard?.on('keydown', this.keydownListener);
+  }
+
+  displayGameOver() {
+    this.keydownListener = (event: any) => {
+      if (event.key === 'Enter') {
+        this.input.keyboard?.off('keydown', this.keydownListener);
+        
+        this.currentSceneStep = 'title';
+        this.displaySceneStep(this.currentSceneStep);
+      }
+    };
+    this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
   displayQuestionNumber() {//上バー
@@ -1212,19 +1236,6 @@ export class QuizGame extends Phaser.Scene {
           this.MainSceneStep(this.currentMainStep);
 
         }
-      }
-    };
-    this.input.keyboard?.on('keydown', this.keydownListener);
-  }
-
-  displayGameOver() {
-    alert("gameOver titleに戻る");
-
-    this.keydownListener = (event: any) => {
-      if (event.key === 'Enter') {
-        this.input.keyboard?.off('keydown', this.keydownListener);
-        this.currentSceneStep = 'title';
-        this.displaySceneStep(this.currentSceneStep);
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
