@@ -364,7 +364,7 @@ export class QuizGame extends Phaser.Scene {
     frame.setOrigin(0, 0).setScale(jPanelW * 1.2 / frame.width, jPanelH * 1.2 / frame.height);
 
     for (let y = jPanelY, i = 0; y < this.mainHeight * 5 / 8; y += jPanelH + jPanelHb) {
-      for (let x = jPanelX; x < this.mainWidth-jPanelW; x += jPanelW + jPanelWb) {
+      for (let x = jPanelX; x < this.mainWidth - jPanelW; x += jPanelW + jPanelWb) {
         jPanel[i] = this.add.image(x, y, `jpics${i}`);
         jPanel[i].setOrigin(0, 0).setScale(jPanelW / jPanel[i].width, jPanelH / jPanel[i].height);
         i++;
@@ -379,12 +379,18 @@ export class QuizGame extends Phaser.Scene {
     }).setOrigin(0.5);
 
     const updateSelectedGenre = () => {
+      if(selectedGenreIndex>8){
+        selectedGenreIndex-=9;
+      }
+      if(selectedGenreIndex<0){
+        selectedGenreIndex+=9;
+      }
       genreText.setText(`選択されているジャンル: ${genres[selectedGenreIndex]}`);
     };
 
     const moveFrame = () => {
-      frame.x=jPanelX- jPanelW * 0.1+(selectedGenreIndex%3)*(jPanelW+jPanelWb);
-      frame.y=jPanelY- jPanelH * 0.1+Math.floor(selectedGenreIndex/3)*(jPanelH+jPanelHb);
+      frame.x = jPanelX - jPanelW * 0.1 + (selectedGenreIndex % 3) * (jPanelW + jPanelWb);
+      frame.y = jPanelY - jPanelH * 0.1 + Math.floor(selectedGenreIndex / 3) * (jPanelH + jPanelHb);
       //console.log(selectedGenreIndex/3);
     };
 
@@ -395,12 +401,20 @@ export class QuizGame extends Phaser.Scene {
     // }selectedGenreIndex
 
     this.keydownListener = (event: any) => {
-      if (event.key === 'ArrowRight' && selectedGenreIndex < genres.length - 1) {
+      if (event.key === 'ArrowRight' ) {//&& selectedGenreIndex < genres.length - 1
         selectedGenreIndex++;
         updateSelectedGenre();
         moveFrame();
-      } else if (event.key === 'ArrowLeft' && selectedGenreIndex > 0) {
+      } else if (event.key === 'ArrowLeft') {
         selectedGenreIndex--;
+        updateSelectedGenre();
+        moveFrame();
+      } else if (event.key === 'ArrowUp') {
+        selectedGenreIndex -= 3;
+        updateSelectedGenre();
+        moveFrame();
+      } else if (event.key === 'ArrowDown') {
+        selectedGenreIndex += 3;
         updateSelectedGenre();
         moveFrame();
       } else if (event.key === 'Enter') {
@@ -527,7 +541,7 @@ export class QuizGame extends Phaser.Scene {
     this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
         this.input.keyboard?.off('keydown', this.keydownListener);
-        
+
         // this.currentSceneStep = 'title';
         // this.displaySceneStep(this.currentSceneStep);
 
@@ -541,7 +555,7 @@ export class QuizGame extends Phaser.Scene {
     this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
         this.input.keyboard?.off('keydown', this.keydownListener);
-        
+
         this.currentSceneStep = 'title';
         this.displaySceneStep(this.currentSceneStep);
       }
