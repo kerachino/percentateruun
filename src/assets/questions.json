@@ -167,5 +167,18 @@
         "level": 1,
         "imgId": 0,
         "memo":""
+    },
+    {
+        "number" : 13,
+        "question": "コーヒー豆の全世界生産量のうち、ブラジルの割合は?",
+        "omitQuestion": "全世界のコーヒー豆のブラジルの割合",
+        "answer": 33,
+        "surveyRespondent": "",
+        "source": "",
+        "sourceLink": "",
+        "genre": "社会",
+        "level": 1,
+        "imgId": 0,
+        "memo":""
     }
 ]

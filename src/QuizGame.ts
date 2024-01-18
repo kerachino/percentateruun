@@ -385,7 +385,7 @@ export class QuizGame extends Phaser.Scene {
     const moveFrame = () => {
       frame.x=jPanelX- jPanelW * 0.1+(selectedGenreIndex%3)*(jPanelW+jPanelWb);
       frame.y=jPanelY- jPanelH * 0.1+Math.floor(selectedGenreIndex/3)*(jPanelH+jPanelHb);
-      console.log(selectedGenreIndex/3);
+      //console.log(selectedGenreIndex/3);
     };
 
 
