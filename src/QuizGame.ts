@@ -86,14 +86,14 @@ export class QuizGame extends Phaser.Scene {
     for (let i = 0; i <= 1; i++) {
       this.load.image(`qImg${i}`, `assets/imgs/qImg/${i}.jpg`);
     }
-    
+
     //ジャンル選択パネル
     for (let i = 0; i < 9; i++) {
       this.load.image(`jpics${i}`, `assets/imgs/jannru_senntaku/${i}.png`);
     }
     //枠
     this.load.image(`choosingFrame`, `assets/imgs/jannru_senntaku/waku2.jpg`);
-    
+
 
     //bgm
     this.load.audio('bgm', 'assets/audio/Midnight_Blue.mp3');
@@ -351,7 +351,7 @@ export class QuizGame extends Phaser.Scene {
     // }
 
     const jPanel = [];
-    
+
 
     //パネル
     const jPanelX = this.mainWidth / 10;
@@ -360,16 +360,13 @@ export class QuizGame extends Phaser.Scene {
     const jPanelWb = this.mainWidth / 10;
     const jPanelH = this.mainHeight / 8;
     const jPanelHb = this.mainHeight / 16;
-    
+    const frame = this.add.image(jPanelX - jPanelW * 0.1, jPanelY - jPanelH * 0.1, "choosingFrame");
+    frame.setOrigin(0, 0).setScale(jPanelW * 1.2 / frame.width, jPanelH * 1.2 / frame.height);
 
-    for (let y = jPanelY, i=0; y < this.mainHeight * 5/ 8; y += jPanelH + jPanelHb) {
-      for (let x = jPanelX; x < this.mainWidth; x += jPanelW + jPanelWb) {
-        if(i==0){
-          const frame=this.add.image(x-jPanelW*0.1,y-jPanelH*0.1,"choosingFrame");
-          frame.setOrigin(0,0).setScale(jPanelW*1.2 / frame.width, jPanelH*1.2 / frame.height);
-        }
-        jPanel[i] = this.add.image(x,y,`jpics${i}`);
-        jPanel[i].setOrigin(0,0).setScale(jPanelW / jPanel[i].width, jPanelH / jPanel[i].height);
+    for (let y = jPanelY, i = 0; y < this.mainHeight * 5 / 8; y += jPanelH + jPanelHb) {
+      for (let x = jPanelX; x < this.mainWidth-jPanelW; x += jPanelW + jPanelWb) {
+        jPanel[i] = this.add.image(x, y, `jpics${i}`);
+        jPanel[i].setOrigin(0, 0).setScale(jPanelW / jPanel[i].width, jPanelH / jPanel[i].height);
         i++;
       }
     }
@@ -385,19 +382,27 @@ export class QuizGame extends Phaser.Scene {
       genreText.setText(`選択されているジャンル: ${genres[selectedGenreIndex]}`);
     };
 
+    const moveFrame = () => {
+      frame.x=jPanelX- jPanelW * 0.1+(selectedGenreIndex%3)*(jPanelW+jPanelWb);
+      frame.y=jPanelY- jPanelH * 0.1+Math.floor(selectedGenreIndex/3)*(jPanelH+jPanelHb);
+      console.log(selectedGenreIndex/3);
+    };
+
 
     // モード 保留(5つに絞らなくても、5回目で終了すれば良い？)
     // if(this.gameMode == `normal`){
     //   this.questions = this.getRandomQuestions(allQuestions, 5);
-    // }
+    // }selectedGenreIndex
 
     this.keydownListener = (event: any) => {
       if (event.key === 'ArrowRight' && selectedGenreIndex < genres.length - 1) {
         selectedGenreIndex++;
         updateSelectedGenre();
+        moveFrame();
       } else if (event.key === 'ArrowLeft' && selectedGenreIndex > 0) {
         selectedGenreIndex--;
         updateSelectedGenre();
+        moveFrame();
       } else if (event.key === 'Enter') {
         this.selectedGenre = genres[selectedGenreIndex];
         this.input.keyboard?.off('keydown', this.keydownListener);
