@@ -12,6 +12,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "build": "react-scripts build"
   }
 }

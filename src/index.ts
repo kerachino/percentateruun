@@ -1,5 +1,4 @@
 import * as Phaser from 'phaser';
-import { Test } from './Test';
 import { QuizGame } from './QuizGame';
 
 const config: Phaser.Types.Core.GameConfig = {
