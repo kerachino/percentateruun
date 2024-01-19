@@ -47,7 +47,7 @@ export class QuizGame extends Phaser.Scene {
   private selectedLevel: number = 0; // 選択されたレベル
 
   /*settings */
-  private selectedSettingIndex:number = 0;
+  private selectedSettingIndex: number = 0;
   private settings = [
     { name: '音量', value: 50 }, // 音量設定（例）
     { name: '難易度', value: 50 }, // 難易度設定（例）
@@ -57,13 +57,13 @@ export class QuizGame extends Phaser.Scene {
   preload() {
     this.mainWidth = this.cameras.main.width;
     this.mainHeight = this.cameras.main.height;
-    if(this.mainWidth < 799){
+    if (this.mainWidth < 799) {
       this.mbBool = true;
-    }else{
+    } else {
       this.mbBool = false;
     }
     this.load.json('questions', 'assets/questions.json');
-    this.load.json('balloonsData', 'assets/balloons.json'); 
+    this.load.json('balloonsData', 'assets/balloons.json');
     this.load.image('bg2', 'assets/imgs/bg2.png');
     this.load.image('bg1', 'assets/imgs/bg1.jpg');
     this.load.image('vehicle', 'assets/imgs/vehicle.png');
@@ -77,6 +77,7 @@ export class QuizGame extends Phaser.Scene {
     this.load.image('qFrame', 'assets/imgs/qFrame3.png');
     this.load.image('TitleSelect0', 'assets/imgs/TitleSelect.png');
     this.load.image('userAvatar', 'assets/imgs/userAvatar.png'); // 'path/to/avatar.jpg'はアバター画像のパス
+    this.load.image('persent_balloon_logo2', 'assets/imgs/persent_balloon_logo2.png');
 
     this.load.image('arrowKeys', 'assets/imgs/arrowKeys.png'); // 方向キーの画像
     this.load.image('enterKey', 'assets/imgs/enterKey.png'); // Enterキーの画像
@@ -86,6 +87,14 @@ export class QuizGame extends Phaser.Scene {
       this.load.image(`qImg${i}`, `assets/imgs/qImg/${i}.jpg`);
     }
 
+    //ジャンル選択パネル
+    for (let i = 0; i < 9; i++) {
+      this.load.image(`jpics${i}`, `assets/imgs/jannru_senntaku/${i}.png`);
+    }
+    //枠
+    this.load.image(`choosingFrame`, `assets/imgs/jannru_senntaku/waku2.jpg`);
+
+
     //bgm
     this.load.audio('bgm', 'assets/audio/Midnight_Blue.mp3');
     //sound
@@ -94,7 +103,7 @@ export class QuizGame extends Phaser.Scene {
     this.load.audio('qSound', 'assets/audio/デンッ!.mp3');
     this.load.audio('answerEffect', 'assets/audio/Accent19-1.mp3');
     this.load.audio('answerFinalEffect', 'assets/audio/デンッ!.mp3');
-    
+
     // for (let i = 0; i < 100; i++) {
     //   this.balloonPositions.push({
     //     id: i,
@@ -113,24 +122,24 @@ export class QuizGame extends Phaser.Scene {
     this.displaySceneStep(this.currentSceneStep);
     // this.bgImage = this.add.image(0, 0, 'bg2').setOrigin(0, 0);
 
-    
+
     // JSONデータの読み込み
     this.balloonsData = this.cache.json.get('balloonsData');
 
-    this.enterSound = this.sound.add('enterSound', {volume: 0.5 });
-    this.inputSound = this.sound.add('inputSound', {volume: 0.5 });
-    this.qSound = this.sound.add('qSound', {volume: 0.5 });
-    this.answerFinalEffect = this.sound.add('answerFinalEffect', {volume: 0.5 });
+    this.enterSound = this.sound.add('enterSound', { volume: 0.5 });
+    this.inputSound = this.sound.add('inputSound', { volume: 0.5 });
+    this.qSound = this.sound.add('qSound', { volume: 0.5 });
+    this.answerFinalEffect = this.sound.add('answerFinalEffect', { volume: 0.5 });
   }
 
-  EnterSound() {this.enterSound.play();}
-  InputSound() {this.inputSound.play();}
-  QSound() {if(this.qSound)this.qSound.play();}
+  EnterSound() { this.enterSound.play(); }
+  InputSound() { this.inputSound.play(); }
+  QSound() { if (this.qSound) this.qSound.play(); }
 
-  setControllKeyExplanation(){
+  setControllKeyExplanation() {
     // 方向キーとEnterキーの画像を配置
-    const arrowKeys = this.add.image(this.mainWidth - 150, 25, 'arrowKeys').setOrigin(1,0.5);
-    const enterKey = this.add.image(this.mainWidth - 50, 25, 'enterKey').setOrigin(1,0.5);
+    const arrowKeys = this.add.image(this.mainWidth - 150, 25, 'arrowKeys').setOrigin(1, 0.5);
+    const enterKey = this.add.image(this.mainWidth - 50, 25, 'enterKey').setOrigin(1, 0.5);
 
     arrowKeys.setScale((this.mainWidth / arrowKeys.width) * 0.04);
     enterKey.setScale((this.mainWidth / enterKey.width) * 0.04);
@@ -150,7 +159,7 @@ export class QuizGame extends Phaser.Scene {
 
   }
 
-  displaySceneStep(step: string){
+  displaySceneStep(step: string) {
     this.updateBg();
     this.showBalloons();
     this.createVehicle();
@@ -158,13 +167,16 @@ export class QuizGame extends Phaser.Scene {
     this.input.keyboard?.on('keydown-SPACE', () => {
       this.settingScene();
     });
-    
+
     switch (step) {
       case 'title':
         this.titleScene();
         break;
       case 'genre':
         this.genreScene();
+        break;
+      case 'score':
+        this.scoreScene();
         break;
       case 'level':
         this.levelScene();
@@ -176,6 +188,34 @@ export class QuizGame extends Phaser.Scene {
         console.log('Invalid step: ' + step);
         break;
     }
+  }
+
+  scoreScene() {
+    // スコア画面の処理
+
+    // ローカルストレージから問題とユーザの回答情報を取得
+    const allQuestions = this.cache.json.get('questions');
+    const userAnswersJSON = localStorage.getItem('userAnswers');
+    const userAnswers: { [key: string]: string } = userAnswersJSON ? JSON.parse(userAnswersJSON) : {};
+
+    // スコア表示用のテキストを作成
+    let scoreText = 'スコア\n\n';
+
+    // 各問題に対してユーザの回答情報を表示
+    allQuestions.forEach((question: { omitQuestion: string, number: number }) => {
+      const userAnswer = userAnswers[question.number] || '未回答';
+      scoreText += `${question.omitQuestion}: ${userAnswer}\n`;
+    });
+
+    // スコア表示用のテキストを表示
+    this.add.text(100, 100, scoreText, { fontSize: '24px', color: '#FFF' });
+
+    // キー入力待機
+    this.input.keyboard?.once('keydown', (event: any) => {
+      // スタート画面に戻る
+      this.currentSceneStep = 'start';
+      this.displaySceneStep(this.currentSceneStep);
+    });
   }
 
   settingScene() {
@@ -201,6 +241,7 @@ export class QuizGame extends Phaser.Scene {
           this.updateSettingsDisplay();
         }
       }
+      //
       // } else if(event.key === 'space') {
       //     this.input.keyboard?.off('keydown', this.keydownListener);
       //     this.currentSceneStep = 'setting';
@@ -222,10 +263,10 @@ export class QuizGame extends Phaser.Scene {
   }
 
 
-  setAspectRatio(widthRatio:number, heightRatio:number) {
+  setAspectRatio(widthRatio: number, heightRatio: number) {
     // ウィンドウのサイズを取得
     const [newWidth, newHeight] = calcNewWindowSize(widthRatio, heightRatio);
-  
+
     // Phaser ゲームインスタンスのサイズを更新
     this.game.scale.resize(newWidth, newHeight);
   }
@@ -234,7 +275,19 @@ export class QuizGame extends Phaser.Scene {
     this.updateBg();
     this.showBalloons();
     this.createVehicle();
-  
+
+    const logoX = this.mainWidth * 0.8
+    const logoY = this.mainHeight * 0.3
+    const titleLogo = this.add.image(this.mainWidth * 0.1, this.mainHeight * 0.1, 'persent_balloon_logo2')
+    //サイズ調整
+
+    if (this.currentSceneStep == 'title') {
+      titleLogo.setOrigin(0, 0).setScale(logoX / titleLogo.width, logoY / titleLogo.height);
+    } else {
+
+    }
+
+    // const images = ['TitleSelect0', 'TitleSelect0']; // 画像のキー名
     const images = ['TitleSelect0', 'TitleSelect0']; // 画像のキー名
     let selectedImageIndex = 0; // 最初に選択されている画像
 
@@ -278,112 +331,163 @@ export class QuizGame extends Phaser.Scene {
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
-  
+
   startGameMode(mode: string) {
     this.gameMode = mode; // ゲームモードを設定
   }
 
-  genreScene(){
+  genreScene() {
     // 利用可能なジャンルのリスト
-    const genres = ['ランダム', '国語', '算数', '理科', '社会', '英語', '保健', '生活','雑学'];
-    
+    const genres = ['ランダム', '国語', '算数', '理科', '社会', '英語', '保健', '生活', '雑学'];
+
     // 最初に選択されているジャンルのインデックス
     let selectedGenreIndex = 0;
 
+    // const jPanel = ["", "", "",
+    //   "", "", "",
+    //   "", "", ""];
+    // for (let i = 0; i < jPanel.length; i++) {
+    //   jPanel[i] = `jpics${i}`;
+    // }
+
+    const jPanel = [];
+
+
+    //パネル
+    const jPanelX = this.mainWidth / 10;
+    const jPanelY = this.mainHeight / 8;
+    const jPanelW = this.mainWidth / 5;
+    const jPanelWb = this.mainWidth / 10;
+    const jPanelH = this.mainHeight / 8;
+    const jPanelHb = this.mainHeight / 16;
+    const frame = this.add.image(jPanelX - jPanelW * 0.1, jPanelY - jPanelH * 0.1, "choosingFrame");
+    frame.setOrigin(0, 0).setScale(jPanelW * 1.2 / frame.width, jPanelH * 1.2 / frame.height);
+
+    for (let y = jPanelY, i = 0; y < this.mainHeight * 5 / 8; y += jPanelH + jPanelHb) {
+      for (let x = jPanelX; x < this.mainWidth - jPanelW; x += jPanelW + jPanelWb) {
+        jPanel[i] = this.add.image(x, y, `jpics${i}`);
+        jPanel[i].setOrigin(0, 0).setScale(jPanelW / jPanel[i].width, jPanelH / jPanel[i].height);
+        i++;
+      }
+    }
+
+
     // 選択されているジャンルを表示
-    const genreText = this.add.text(this.mainWidth / 2, this.mainHeight / 2, `選択されているジャンル: ${genres[selectedGenreIndex]}`, {
-        fontSize: '24px',
-        color: '#FFFFFF'
+    const genreText = this.add.text(this.mainWidth / 2, this.mainHeight * 3 / 4, `選択されているジャンル: ${genres[selectedGenreIndex]}`, {
+      fontSize: '24px',
+      color: '#FF0000'
     }).setOrigin(0.5);
 
     const updateSelectedGenre = () => {
-        genreText.setText(`選択されているジャンル: ${genres[selectedGenreIndex]}`);
+      if(selectedGenreIndex>8){
+        selectedGenreIndex-=9;
+      }
+      if(selectedGenreIndex<0){
+        selectedGenreIndex+=9;
+      }
+      genreText.setText(`選択されているジャンル: ${genres[selectedGenreIndex]}`);
+    };
+
+    const moveFrame = () => {
+      frame.x = jPanelX - jPanelW * 0.1 + (selectedGenreIndex % 3) * (jPanelW + jPanelWb);
+      frame.y = jPanelY - jPanelH * 0.1 + Math.floor(selectedGenreIndex / 3) * (jPanelH + jPanelHb);
+      //console.log(selectedGenreIndex/3);
     };
 
 
     // モード 保留(5つに絞らなくても、5回目で終了すれば良い？)
     // if(this.gameMode == `normal`){
     //   this.questions = this.getRandomQuestions(allQuestions, 5);
-    // }
+    // }selectedGenreIndex
 
     this.keydownListener = (event: any) => {
-        if (event.key === 'ArrowRight' && selectedGenreIndex < genres.length - 1) {
-            selectedGenreIndex++;
-            updateSelectedGenre();
-        } else if (event.key === 'ArrowLeft' && selectedGenreIndex > 0) {
-            selectedGenreIndex--;
-            updateSelectedGenre();
-        } else if (event.key === 'Enter') {
-            this.selectedGenre = genres[selectedGenreIndex];
-            this.input.keyboard?.off('keydown', this.keydownListener);
-            this.currentSceneStep = 'level';
-            this.displaySceneStep(this.currentSceneStep);
-        }
+      if (event.key === 'ArrowRight' ) {//&& selectedGenreIndex < genres.length - 1
+        selectedGenreIndex++;
+        updateSelectedGenre();
+        moveFrame();
+      } else if (event.key === 'ArrowLeft') {
+        selectedGenreIndex--;
+        updateSelectedGenre();
+        moveFrame();
+      } else if (event.key === 'ArrowUp') {
+        selectedGenreIndex -= 3;
+        updateSelectedGenre();
+        moveFrame();
+      } else if (event.key === 'ArrowDown') {
+        selectedGenreIndex += 3;
+        updateSelectedGenre();
+        moveFrame();
+      } else if (event.key === 'Enter') {
+        this.selectedGenre = genres[selectedGenreIndex];
+        this.input.keyboard?.off('keydown', this.keydownListener);
+        this.currentSceneStep = 'level';
+        this.displaySceneStep(this.currentSceneStep);
+      }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
   levelScene() {
-      const allQuestions = this.cache.json.get('questions');
-      const levels = [0, 1, 2, 3];
-      // 最初に選択されているレベル
-      let selectedLevelIndex = 0;
-      // 選択されているレベルを表示
-      const levelText = this.add.text(this.mainWidth / 2, this.mainHeight / 2, `選択されているレベル: ${levels[selectedLevelIndex]}`, {
-          fontSize: '24px',
-          color: '#FFFFFF'
-      }).setOrigin(0.5);
+    const allQuestions = this.cache.json.get('questions');
+    const levels = [0, 1, 2, 3];
+    // 最初に選択されているレベル
+    let selectedLevelIndex = 0;
+    // 選択されているレベルを表示
+    const levelText = this.add.text(this.mainWidth / 2, this.mainHeight / 2, `選択されているレベル: ランダム`, {
+      fontSize: '24px',
+      color: '#FFFFFF'
+    }).setOrigin(0.5);
 
-      const updateSelectedLevel = () => {
-        if(selectedLevelIndex == 0){
-          levelText.setText(`選択されているレベル: ランダム`);
-        }else{
-          levelText.setText(`選択されているレベル: ${levels[selectedLevelIndex]}`);
-        }
-      };
+    const updateSelectedLevel = () => {
+      if (selectedLevelIndex == 0) {
+        levelText.setText(`選択されているレベル: ランダム`);
+      } else {
+        levelText.setText(`選択されているレベル: ${levels[selectedLevelIndex]}`);
+      }
+    };
 
-      this.keydownListener = (event: any) => {
-          if (event.key === 'ArrowRight' && selectedLevelIndex < levels.length - 1) {
-              selectedLevelIndex++;
-              updateSelectedLevel();
-          } else if (event.key === 'ArrowLeft' && selectedLevelIndex > 0) {
-              selectedLevelIndex--;
-              updateSelectedLevel();
-          } else if (event.key === 'Enter') {
-              this.selectedLevel = levels[selectedLevelIndex];
-              if(this.selectedGenre == 'ランダム' || this.selectedLevel == 0){
-              }else
-              this.questions = this.filterQuestionsByGenreAndLevel(allQuestions, this.selectedGenre, this.selectedLevel);
-              this.input.keyboard?.off('keydown', this.keydownListener);
-              this.currentSceneStep = 'main';
-              this.displaySceneStep(this.currentSceneStep);
-          }
-      };
+    this.keydownListener = (event: any) => {
+      if (event.key === 'ArrowRight' && selectedLevelIndex < levels.length - 1) {
+        selectedLevelIndex++;
+        updateSelectedLevel();
+      } else if (event.key === 'ArrowLeft' && selectedLevelIndex > 0) {
+        selectedLevelIndex--;
+        updateSelectedLevel();
+      } else if (event.key === 'Enter') {
+        this.selectedLevel = levels[selectedLevelIndex];
+        if (this.selectedGenre == 'ランダム' || this.selectedLevel == 0) {
+        } else
+          this.questions = this.filterQuestionsByGenreAndLevel(allQuestions, this.selectedGenre, this.selectedLevel);
+        this.input.keyboard?.off('keydown', this.keydownListener);
+        this.currentSceneStep = 'main';
+        this.displaySceneStep(this.currentSceneStep);
+      }
+    };
 
-      this.input.keyboard?.on('keydown', this.keydownListener);
+    this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
 
   filterQuestionsByGenreAndLevel(allQuestions: any[], genre: string, level: number) {
     // ジャンルとレベルに基づいて問題をフィルタリング
     if (genre !== 'ランダム' || level !== 0) {
-        return allQuestions.filter(question => {
-            return question.genre === genre && question.level === level;
-        });
+      return allQuestions.filter(question => {
+        return question.genre === genre && question.level === level;
+      });
     } else if (genre === 'ランダム' && level !== 0) {
-        return allQuestions.filter(question => {
-            return question.level === level;
-        });
+      return allQuestions.filter(question => {
+        return question.level === level;
+      });
     } else if (level === 0 && genre !== 'ランダム') {
-        return allQuestions.filter(question => {
-            return question.genre === genre;
-        });
+      return allQuestions.filter(question => {
+        return question.genre === genre;
+      });
     } else {//保留　エラーが出る
-        return allQuestions;
+      return allQuestions;
     }
-}
+  }
 
-  
+
   MainSceneStep(step: string) {
     // 既存のリスナーを削除　たぶん解決済み
     // if (this.keydownListener) {
@@ -392,10 +496,10 @@ export class QuizGame extends Phaser.Scene {
 
     //問題数が下回ったらエラー処理
     if (this.currentQuestionIndex >= this.questions.length) {
-      alert("問題文が足りないエラー");
-      return;
+      this.displayGameEnd();
+      // alert("問題文が足りないエラー");
     }
-    
+
     // this.clearScene(); //処理を軽くするには下をfirstStepに入れ、これを削除できるようにする
     this.updateBg();
     this.showBalloons();
@@ -404,7 +508,7 @@ export class QuizGame extends Phaser.Scene {
     this.displayQuestionNumber();
 
     this.displayAvatar();
-    
+
     switch (step) {
       case 'firstStep':
         this.firstStep();
@@ -418,10 +522,63 @@ export class QuizGame extends Phaser.Scene {
       case 'explanation':
         this.displayExplanation();
         break;
+      case 'gameEnd':
+        this.displayGameEnd();
+        break;
       default:
         console.log('Invalid step: ' + step);
         break;
     }
+  }
+
+  displayGameEnd() {
+  
+    // 最終スコアを表示
+    const finalScoreText = this.add.text(100, 500, `Final Score: ${this.totalBalloons}`, {
+      fontSize: '24px',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+      padding: {
+        x: 10,
+        y: 5
+      }
+    });
+  
+    // "Enterでタイトル画面へ戻る"メッセージを表示
+    const returnMessage = this.add.text(100, 550, 'Press Enter to return to the title screen', {
+      fontSize: '16px',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+      padding: {
+        x: 10,
+        y: 5
+      }
+    });
+  
+    // Enterキーのリスナーを追加
+    this.keydownListener = (event: any) => {
+      if (event.key === 'Enter') {
+        this.input.keyboard?.off('keydown', this.keydownListener);
+  
+        // ページをリロード
+        window.location.reload();
+      }
+    };
+    this.input.keyboard?.on('keydown', this.keydownListener);
+  }
+  
+  
+
+  displayGameOver() {
+    this.keydownListener = (event: any) => {
+      if (event.key === 'Enter') {
+        this.input.keyboard?.off('keydown', this.keydownListener);
+
+        this.currentSceneStep = 'title';
+        this.displaySceneStep(this.currentSceneStep);
+      }
+    };
+    this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
   displayQuestionNumber() {//上バー
@@ -430,30 +587,30 @@ export class QuizGame extends Phaser.Scene {
     const startX = this.mainWidth / 2 - (circleSpacing * (this.questions.length - 1)) / 2;
     const startY = 40; // 丸のY座標を上に移動
     const lineColor = 0xAAAAAA; // 線の色
-  
+
     for (let i = 0; i < this.questions.length; i++) {
       const circleX = startX + i * circleSpacing;
       const color = i === this.currentQuestionIndex ? 0xFF0000 : 0xAAAAAA;
-  
+
       // 丸の描画
       const circle = this.add.circle(circleX, startY, circleRadius, color);
-  
+
       // 隣の丸との間に線を引く
       if (i < this.questions.length - 1) {
         const nextCircleX = circleX + circleSpacing;
         const line = this.add.line(0, 0, circleX + circleRadius, startY, nextCircleX - circleRadius, startY, lineColor).setOrigin(0, 0);
         line.setLineWidth(2);
       }
-  
+
       // diffrenceの値の表示
       const difference = this.differences[i];
       this.createText(circleX, startY, difference.toString(), 14, '#FFFFFF').setOrigin(0.5);
     }
   }
-  
-  
-  
-  firstStep(){
+
+
+
+  firstStep() {
     this.updateBg();
     this.showBalloons();
     this.createVehicle();
@@ -509,20 +666,20 @@ export class QuizGame extends Phaser.Scene {
     // });
   }
 
-  showBalloonsCount(num:number) {
+  showBalloonsCount(num: number) {
     this.createBalloosCountBg();
     const balloonsText = `${num}`;
     this.createText(this.mainWidth - 15, this.mainHeight - 110, '残り', 30, '#FFF').setOrigin(1.25, 1);
-    if(num >= 100){
+    if (num >= 100) {
       this.createText(this.mainWidth - 0, this.mainHeight - 60, balloonsText, 50, '#FFF').setAlign('center').setOrigin(1.25, 1);
-    }else{
+    } else {
       this.createText(this.mainWidth - 15, this.mainHeight - 60, balloonsText, 50, '#FFF').setAlign('center').setOrigin(1.25, 1);
     }
   }
 
   //振動して上に消える版
   updateBalloonsCount() {
-    const removeInterval = 100; // 0.1秒おき
+    const removeInterval = 50; // 0.1秒おき
     const intervalId = setInterval(() => {
       if (this.balloons.length > this.totalBalloons) {
         const balloonToRemove = this.balloons.pop();
@@ -531,7 +688,7 @@ export class QuizGame extends Phaser.Scene {
           const moveDistanceX = 10; // 左右に振動させる距離
           const moveDuration = 5; // 1回の振動の時間
           const moveDelay = 25; // 振動の間隔
-  
+
           // 左右に振動するアニメーション
           this.tweens.add({
             targets: balloonToRemove,
@@ -566,50 +723,50 @@ export class QuizGame extends Phaser.Scene {
     }, removeInterval);
   }
 
-    //回転して消える版
-         /* const rotationDirection = Phaser.Math.RND.sign();
-          const moveDirectionX = Phaser.Math.RND.between(-50, 50);
-          const moveDirectionY = Phaser.Math.RND.between(-50, 50);
+  //回転して消える版
+  /* const rotationDirection = Phaser.Math.RND.sign();
+   const moveDirectionX = Phaser.Math.RND.between(-50, 50);
+   const moveDirectionY = Phaser.Math.RND.between(-50, 50);
 
-          this.tweens.add({
-            targets: balloonToRemove,
-            duration: 1000,
-            scaleX: 0,
-            scaleY: 0,
-            alpha: 0,
-            rotation: 2 * Math.PI * rotationDirection,
-            x: balloonToRemove.x + moveDirectionX, 
-            y: balloonToRemove.y + -50,//moveDirectionY,
-            ease: 'EaseOutQuad',
-            //ease: 'Linear',
-           onComplete: () => {
-              // アニメーション完了後に風船を削除
-              balloonToRemove.destroy();
+   this.tweens.add({
+     targets: balloonToRemove,
+     duration: 1000,
+     scaleX: 0,
+     scaleY: 0,
+     alpha: 0,
+     rotation: 2 * Math.PI * rotationDirection,
+     x: balloonToRemove.x + moveDirectionX, 
+     y: balloonToRemove.y + -50,//moveDirectionY,
+     ease: 'EaseOutQuad',
+     //ease: 'Linear',
+    onComplete: () => {
+       // アニメーション完了後に風船を削除
+       balloonToRemove.destroy();
 
-              this.showBalloonsCount(this.balloons.length);
+       this.showBalloonsCount(this.balloons.length);
 
-              // 次の風船削除タイマー
-              this.time.delayedCall(10, removeBalloon);
-            }
-          });
-        }
-      }
-    };
-    */
+       // 次の風船削除タイマー
+       this.time.delayedCall(10, removeBalloon);
+     }
+   });
+ }
+}
+};
+*/
 
 
-    // 最初の風船を削除するためのタイマー
-    // this.time.delayedCall(10, removeBalloon);
+  // 最初の風船を削除するためのタイマー
+  // this.time.delayedCall(10, removeBalloon);
 
-    // while (this.balloons.length > this.totalBalloons) {
-    //   const balloonToRemove = this.balloons.pop();
-    //   if (balloonToRemove) {
-    //     balloonToRemove.destroy();
-    //   }
-    // }
+  // while (this.balloons.length > this.totalBalloons) {
+  //   const balloonToRemove = this.balloons.pop();
+  //   if (balloonToRemove) {
+  //     balloonToRemove.destroy();
+  //   }
+  // }
   // }
 
-  updateBg(){
+  updateBg() {
     // 風船の数に応じて背景を変更
     if (this.totalBalloons > 50) {
       this.changeBackground('bg2');
@@ -644,14 +801,14 @@ export class QuizGame extends Phaser.Scene {
     const gameHeight = this.mainHeight;
     qFrame.setOrigin(0.5, 0);
     qFrame.setPosition(this.mainWidth / 2, 60);
-  
+
     const scaleForWidth = (gameWidth - 80) / qFrame.width;
     const scaleForHeight = (gameHeight - 120) / qFrame.height;
     qFrame.setScale(Math.min(scaleForWidth, scaleForHeight));
-  
+
     const qFrameDisplayWidth = qFrame.width * qFrame.scaleX;
     const qFrameDisplayHeight = qFrame.height * qFrame.scaleY;
-  
+
     const qFrameTopHalfY = qFrame.y + qFrameDisplayHeight / 4;
     const qFrameLeft = qFrame.x - qFrame.displayWidth / 2;
 
@@ -787,10 +944,10 @@ export class QuizGame extends Phaser.Scene {
     });
 
     bgGraphics.fillStyle(0xffffff, 1);
-    bgGraphics.fillRect(textX, this.mainHeight -rectHeight, rectWidth, rectHeight);
+    bgGraphics.fillRect(textX, this.mainHeight - rectHeight, rectWidth, rectHeight);
 
     // テキストフィールド
-    this.inputText = this.add.text(textX + 20, this.mainHeight - rectHeight+40, '', {
+    this.inputText = this.add.text(textX + 20, this.mainHeight - rectHeight + 40, '', {
       fontSize: '64px',
       color: '#2a5aa5',
       fontFamily: 'Lobster',
@@ -799,12 +956,12 @@ export class QuizGame extends Phaser.Scene {
 
     // const inputText = this.createOutlinedText(textX + 10, this.mainHeight - rectHeight+40, '', 64, '#2a5aa5', '#2a5aa5');
 
-    if(this.mbBool){//モバイルなら
+    if (this.mbBool) {//モバイルなら
       window.showInputField(true);
     }
-    
+
     // 点滅するカーソル
-    const cursor = this.add.text(this.inputText.x -25 + this.inputText.width + 5, this.inputText.y, '|', {
+    const cursor = this.add.text(this.inputText.x - 25 + this.inputText.width + 5, this.inputText.y, '|', {
       fontSize: '64px',
       color: '#000000'
     });
@@ -820,20 +977,20 @@ export class QuizGame extends Phaser.Scene {
 
     // エンドレスモード処理
     if (this.gameMode === 'endless') {
-        // エンドレスモードの特別な処理
-        if (this.checkForBonus()) {
-            this.totalBalloons += 10; // 10個の風船を追加
-        }
+      // エンドレスモードの特別な処理
+      if (this.checkForBonus()) {
+        this.totalBalloons += 10; // 10個の風船を追加
+      }
 
-        // エンドレスモードでは風船が0になるまで続ける
-        if (this.totalBalloons <= 0) {
-            this.endGame();
-        }
-        // else {
-        //     // 次の問題へ
-        //     this.currentQuestionIndex++;
-        //     this.MainSceneStep('question');
-        // }
+      // エンドレスモードでは風船が0になるまで続ける
+      if (this.totalBalloons <= 0) {
+        this.endGame();
+      }
+      // else {
+      //     // 次の問題へ
+      //     this.currentQuestionIndex++;
+      //     this.MainSceneStep('question');
+      // }
     }
 
 
@@ -852,36 +1009,36 @@ export class QuizGame extends Phaser.Scene {
       } else if (event.key === 'Backspace' && this.inputText.text.length > 0) {
         // バックスペース ,文字削除
         this.inputText.setText(this.inputText.text.slice(0, -1));
-      } else if (event.key === 'Enter' && this.inputText.text  && this.onEnterPressed()) {
-          this.EnterSound();
-          // タイマーを停止
-          timerEvent.remove();
-          //
-          window.showInputField(false);
-          //キーを削除(軽くするため)
-          this.input.keyboard?.off('keydown', this.keydownListener);
-          // Enter
-          const currentQuestion = this.questions[this.currentQuestionIndex];
-          const userAnswer = this.inputText.text; // ユーザの回答を取得
-          this.saveAnswerToLocalStorage(currentQuestion.number, parseInt(userAnswer));
-          // 回答画面に進む
-          this.currentMainStep = 'answer';
-          this.MainSceneStep(this.currentMainStep);
-        
+      } else if (event.key === 'Enter' && this.inputText.text && this.onEnterPressed()) {
+        this.EnterSound();
+        // タイマーを停止
+        timerEvent.remove();
+        //
+        window.showInputField(false);
+        //キーを削除(軽くするため)
+        this.input.keyboard?.off('keydown', this.keydownListener);
+        // Enter
+        const currentQuestion = this.questions[this.currentQuestionIndex];
+        const userAnswer = this.inputText.text; // ユーザの回答を取得
+        this.saveAnswerToLocalStorage(currentQuestion.number, parseInt(userAnswer));
+        // 回答画面に進む
+        this.currentMainStep = 'answer';
+        this.MainSceneStep(this.currentMainStep);
+
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
   endGame() {
-      // ゲーム終了の処理
-      // 例えばスコアの表示やリセット処理など
+    // ゲーム終了の処理
+    // 例えばスコアの表示やリセット処理など
   }
 
   checkForBonus() {
-      // 最後の5問のdifferenceが10以内かどうかをチェック
-      const recentDifferences = this.differences.slice(-5);
-      return recentDifferences.length === 5 && recentDifferences.every(diff => diff <= 10);
+    // 最後の5問のdifferenceが10以内かどうかをチェック
+    const recentDifferences = this.differences.slice(-5);
+    return recentDifferences.length === 5 && recentDifferences.every(diff => diff <= 10);
   }
 
 
@@ -890,12 +1047,10 @@ export class QuizGame extends Phaser.Scene {
     const answers = JSON.parse(localStorage.getItem('userAnswers') || '{}');
     const userAnswer = answers[currentQuestion.number] || 0;
 
-
     // パーセンテージの差
     const correctAnswer = currentQuestion.answer;
     const difference = Math.round(Math.abs(correctAnswer - userAnswer));
 
-    
     this.showBalloonsCount(this.totalBalloons);
     // 差の分だけ風船の数を減らす
     this.totalBalloons -= difference;
@@ -909,7 +1064,7 @@ export class QuizGame extends Phaser.Scene {
 
     this.createOutlinedText(40, this.mainHeight - 70, userAnswer, 32, '#2a5aa5', '#FFFFFF');
 
-    
+
     //上バー表示用
     this.differences[this.currentQuestionIndex] = difference;
 
@@ -932,7 +1087,7 @@ export class QuizGame extends Phaser.Scene {
     progressBarCover.setOrigin(1, 0).setScale(barWidth / progressBarCover.width, 1);
     progressBarCover.displayWidth = progressBarFull.width;
     progressBarCover.displayHeight = progressBarFull.height;
-    
+
     const answerEffect = this.sound.add('answerEffect', { volume: 0.5, loop: true }); // 'someSound'はあなたのサウンドファイルのキー
 
     this.tweens.add({
@@ -1050,7 +1205,7 @@ export class QuizGame extends Phaser.Scene {
   }
 
   //袋文字作成
-  createOutlinedText(x:number, y:number, text:string, fontSize:number, textColor:string, outlineColor:string) {
+  createOutlinedText(x: number, y: number, text: string, fontSize: number, textColor: string, outlineColor: string) {
     // アウトライン用のテキスト（複数作成して周囲に配置）
     for (let offsetX = -2; offsetX <= 2; offsetX++) {
       for (let offsetY = -2; offsetY <= 2; offsetY++) {
@@ -1063,7 +1218,7 @@ export class QuizGame extends Phaser.Scene {
         }
       }
     }
-  
+
     // 実際のテキスト（前面に表示）
     return this.add.text(x, y, text, {
       fontFamily: 'Arial',
@@ -1071,7 +1226,7 @@ export class QuizGame extends Phaser.Scene {
       color: textColor,
     }).setOrigin(0.5);
   }
-  
+
 
   displayExplanation() {
     this.showBalloonsCount(this.totalBalloons);
@@ -1092,7 +1247,7 @@ export class QuizGame extends Phaser.Scene {
     this.createText(60, rectY + 70, '情報源: ' + currentQuestion.source, 16, '#000000');
 
 
-    if(this.totalBalloons <= 0){
+    if (this.totalBalloons <= 0) {
       this.displayGameOver();
     }
     // 次の問題に進むためのキーボードリスナーを設定
@@ -1106,6 +1261,7 @@ export class QuizGame extends Phaser.Scene {
           this.MainSceneStep(this.currentMainStep);
         } else {
           // ゲーム終了
+<<<<<<< HEAD
           /*this.add.text(100, 500, 'Game Over', {
             fontSize: '24px',
             color: '#ffffff'
@@ -1118,12 +1274,19 @@ export class QuizGame extends Phaser.Scene {
           });
           gameClearText.setOrigin(0.5);
           alert("gameclear titleに戻る");
+=======
+          this.input.keyboard?.off('keydown', this.keydownListener);
+          this.currentMainStep = 'gameEnd';
+          this.MainSceneStep(this.currentMainStep);
+
+>>>>>>> 34b5656c3621b73ee61213f7335d6021b1d35ede
         }
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
+<<<<<<< HEAD
   displayGameOver(){
 // ゲームオーバーのメッセージを表示
 const gameOverText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 200, 'Game Over', {
@@ -1163,6 +1326,8 @@ alert("gameOver titleに戻る");
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
 
+=======
+>>>>>>> 34b5656c3621b73ee61213f7335d6021b1d35ede
   clearScene() {
     this.children.removeAll();
   }
@@ -1175,25 +1340,25 @@ alert("gameOver titleに戻る");
 
   onEnterPressed() {
     if (this.enterPressed) {
-        // すでにEnterキーが押されている場合は何もしない
-        return false;
+      // すでにEnterキーが押されている場合は何もしない
+      return false;
     }
     this.enterPressed = true; // Enterキーが押されたことを記録
     // 必要な処理が完了した後にフラグをリセットする
-    this.time.delayedCall(1, () => {// テスト用
-        this.enterPressed = false;
+    this.time.delayedCall(1000, () => {// テスト用
+      this.enterPressed = false;
     });
     return true;
   }
 
-  showBalloons(){
-     // 風船配列をクリア
+  showBalloons() {
+    // 風船配列をクリア
     this.balloons.forEach(balloon => balloon.destroy());
     this.balloons = [];
     // バルーンの配置
-    this.balloonsData.forEach((balloonData: { id: number, x: number, y: number, colorId: number },i) => {
-      
-      if(i < this.totalBalloons){
+    this.balloonsData.forEach((balloonData: { id: number, x: number, y: number, colorId: number }, i) => {
+
+      if (i < this.totalBalloons) {
         const balloonType = `balloon${balloonData.colorId}`;
         const posX = this.calculateBalloonX(balloonData.x);
         const posY = this.calculateBalloonY(balloonData.y);
@@ -1241,7 +1406,7 @@ alert("gameOver titleに戻る");
     }
 
     // アバターの新しいインスタンスを作成
-    this.avatar = this.add.image(this.mainWidth -10, this.mainHeight - 160, 'userAvatar').setOrigin(1.25, 1); // 位置は必要に応じて調整
+    this.avatar = this.add.image(this.mainWidth - 10, this.mainHeight - 160, 'userAvatar').setOrigin(1.25, 1); // 位置は必要に応じて調整
     this.avatar.setScale(0.5); // サイズは必要に応じて調整
   }
 
