@@ -117,7 +117,7 @@ export class QuizGame extends Phaser.Scene {
   create() {
     const allQuestions = this.cache.json.get('questions');
     // // 問題数を制限するため、ランダムに5つの問題を選ぶ
-    this.questions = this.getRandomQuestions(allQuestions, 3);
+    this.questions = this.getRandomQuestions(allQuestions, 5);
     this.currentQuestionIndex = 0;
     this.displaySceneStep(this.currentSceneStep);
     // this.bgImage = this.add.image(0, 0, 'bg2').setOrigin(0, 0);
@@ -532,24 +532,42 @@ export class QuizGame extends Phaser.Scene {
   }
 
   displayGameEnd() {
-    // window.location.reload();
-    this.add.text(100, 500, 'Game End', {
+  
+    // 最終スコアを表示
+    const finalScoreText = this.add.text(100, 500, `Final Score: ${this.totalBalloons}`, {
       fontSize: '24px',
-      color: '#ffffff'
+      color: '#ffffff',
+      backgroundColor: '#000000',
+      padding: {
+        x: 10,
+        y: 5
+      }
     });
-
+  
+    // "Enterでタイトル画面へ戻る"メッセージを表示
+    const returnMessage = this.add.text(100, 550, 'Press Enter to return to the title screen', {
+      fontSize: '16px',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+      padding: {
+        x: 10,
+        y: 5
+      }
+    });
+  
+    // Enterキーのリスナーを追加
     this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
         this.input.keyboard?.off('keydown', this.keydownListener);
-
-        // this.currentSceneStep = 'title';
-        // this.displaySceneStep(this.currentSceneStep);
-
+  
+        // ページをリロード
         window.location.reload();
       }
     };
     this.input.keyboard?.on('keydown', this.keydownListener);
   }
+  
+  
 
   displayGameOver() {
     this.keydownListener = (event: any) => {
@@ -1270,7 +1288,7 @@ export class QuizGame extends Phaser.Scene {
     }
     this.enterPressed = true; // Enterキーが押されたことを記録
     // 必要な処理が完了した後にフラグをリセットする
-    this.time.delayedCall(1, () => {// テスト用
+    this.time.delayedCall(1000, () => {// テスト用
       this.enterPressed = false;
     });
     return true;
