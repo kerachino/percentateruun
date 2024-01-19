@@ -13,6 +13,6 @@
   },
   "scripts": {
     "start": "webpack-dev-server",
-    "build": "react-scripts build"
+    "build": "vite build"
   }
 }
