@@ -1242,9 +1242,38 @@ export class QuizGame extends Phaser.Scene {
     graphics.strokeRect(50, rectY, this.mainWidth - 100, rectHeight);
 
     // テキストの追加
-    this.createText(60, rectY + 10, '短縮問題: ' + currentQuestion.omitQuestion, 16, '#000000');
-    this.createText(60, rectY + 40, '答え: ' + currentQuestion.answer, 16, '#000000');
-    this.createText(60, rectY + 70, '情報源: ' + currentQuestion.source, 16, '#000000');
+    this.add.text(60, rectY + 10, `問題: ${currentQuestion.omitQuestion}`, {
+      fontSize: '24px',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+      padding: {
+        x: 10,
+        y: 5
+      }
+    });
+
+    this.add.text(60, rectY + 40, `答え: ${currentQuestion.answer}`, {
+      fontSize: '24px',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+      padding: {
+        x: 10,
+        y: 5
+      }
+    });
+
+    this.add.text(60, rectY + 70, `ソース: ${currentQuestion.source}`, {
+      fontSize: '24px',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+      padding: {
+        x: 10,
+        y: 5
+      }
+    });
+    // this.createText(60, rectY + 10, '問題: ' + currentQuestion.omitQuestion, 16, '#000000');
+    // this.createText(60, rectY + 40, '答え: ' + currentQuestion.answer, 16, '#000000');
+    // this.createText(60, rectY + 70, '情報源: ' + currentQuestion.source, 16, '#000000');
 
 
     if (this.totalBalloons <= 0) {
