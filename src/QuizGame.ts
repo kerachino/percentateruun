@@ -498,7 +498,6 @@ export class QuizGame extends Phaser.Scene {
     if (this.currentQuestionIndex >= this.questions.length) {
       this.displayGameEnd();
       // alert("問題文が足りないエラー");
-      this.MainSceneStep('gameEnd');
     }
 
     // this.clearScene(); //処理を軽くするには下をfirstStepに入れ、これを削除できるようにする
@@ -533,6 +532,7 @@ export class QuizGame extends Phaser.Scene {
   }
 
   displayGameEnd() {
+    // window.location.reload();
     this.add.text(100, 500, 'Game End', {
       fontSize: '24px',
       color: '#ffffff'
@@ -1029,11 +1029,9 @@ export class QuizGame extends Phaser.Scene {
     const answers = JSON.parse(localStorage.getItem('userAnswers') || '{}');
     const userAnswer = answers[currentQuestion.number] || 0;
 
-
     // パーセンテージの差
     const correctAnswer = currentQuestion.answer;
     const difference = Math.round(Math.abs(correctAnswer - userAnswer));
-
 
     this.showBalloonsCount(this.totalBalloons);
     // 差の分だけ風船の数を減らす
