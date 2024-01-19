@@ -1106,10 +1106,18 @@ export class QuizGame extends Phaser.Scene {
           this.MainSceneStep(this.currentMainStep);
         } else {
           // ゲーム終了
-          this.add.text(100, 500, 'Game Over', {
+          /*this.add.text(100, 500, 'Game Over', {
             fontSize: '24px',
             color: '#ffffff'
           });
+          */
+          // ゲームクリアのメッセージを表示
+          const gameClearText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Congratulations!', {
+          font: '180px Roboto',
+          color: '#FFD700'
+          });
+          gameClearText.setOrigin(0.5);
+          alert("gameclear titleに戻る");
         }
       }
     };
@@ -1117,7 +1125,33 @@ export class QuizGame extends Phaser.Scene {
   }
 
   displayGameOver(){
-    alert("gameOver titleに戻る");
+// ゲームオーバーのメッセージを表示
+const gameOverText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 200, 'Game Over', {
+    font: '128px Roboto',
+    color: '#800000'
+});
+gameOverText.setOrigin(0.5);
+
+const gameOverText2 = this.add.text(this.scale.width / 2, this.scale.height / 2 +30, 'もう一度最初から頑張ろう！', {
+  font: '32px Roboto',
+  color: '#000000'
+});
+
+// テキストのサイズを取得
+const textBounds = gameOverText2.getBounds();
+// Graphics オブジェクトを作成
+const graphics = this.add.graphics();
+// 背景のサイズをテキストのサイズに合わせる
+const backgroundWidth = textBounds.width + 20; // 余白を追加
+const backgroundHeight = textBounds.height + 20; // 余白を追加
+// 四角形を描画して背景とする
+graphics.fillStyle(0xffffff, 0.2); // 色とアルファ（透明度）を設定
+graphics.fillRect(gameOverText2.x - backgroundWidth / 2, gameOverText2.y - backgroundHeight / 2, backgroundWidth, backgroundHeight);
+
+// テキストを背景と同じ位置に移動（テキストを中央に配置するため）
+gameOverText2.setPosition(gameOverText2.x- textBounds.width / 2, gameOverText2.y - textBounds.height / 2); 
+
+alert("gameOver titleに戻る");
 
     this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
