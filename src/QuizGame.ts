@@ -277,7 +277,7 @@ export class QuizGame extends Phaser.Scene {
     this.createVehicle();
 
     const logoX = this.mainWidth * 0.8
-    const logoY = this.mainHeight * 0.3
+    const logoY = this.mainHeight * 0.6
     const titleLogo = this.add.image(this.mainWidth * 0.1, this.mainHeight * 0.1, 'persent_balloon_logo2')
     //サイズ調整
 
@@ -586,6 +586,8 @@ export class QuizGame extends Phaser.Scene {
     this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
         this.input.keyboard?.off('keydown', this.keydownListener);
+
+        window.location.reload();
 
         this.currentSceneStep = 'title';
         this.displaySceneStep(this.currentSceneStep);
