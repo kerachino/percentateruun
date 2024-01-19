@@ -532,6 +532,13 @@ export class QuizGame extends Phaser.Scene {
   }
 
   displayGameEnd() {
+    /* ゲームクリアのメッセージを表示
+    const gameClearText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Congratulations!', {
+      font: '180px Roboto',
+      color: '#FFD700'
+    });
+    gameClearText.setOrigin(0.5);
+    */
   
     // 最終スコアを表示
     const finalScoreText = this.add.text(100, 500, `Final Score: ${this.totalBalloons}`, {
@@ -570,6 +577,12 @@ export class QuizGame extends Phaser.Scene {
   
 
   displayGameOver() {
+    const gameOverText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 200, 'Game Over', {
+      font: '128px Roboto',
+      color: '#800000'
+      });
+      gameOverText.setOrigin(0.5);
+      
     this.keydownListener = (event: any) => {
       if (event.key === 'Enter') {
         this.input.keyboard?.off('keydown', this.keydownListener);
@@ -1290,10 +1303,14 @@ export class QuizGame extends Phaser.Scene {
           this.MainSceneStep(this.currentMainStep);
         } else {
           // ゲーム終了
+          /*this.add.text(100, 500, 'Game Over', {
+            fontSize: '24px',
+            color: '#ffffff'
+          });
+          */
           this.input.keyboard?.off('keydown', this.keydownListener);
           this.currentMainStep = 'gameEnd';
           this.MainSceneStep(this.currentMainStep);
-
         }
       }
     };
